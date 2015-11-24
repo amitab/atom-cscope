@@ -16,3 +16,9 @@ module.exports =
     addResultSet: (resultSet) ->
       if typeof resultSet != 'undefined'
         @results = @results.concat(resultSet.results)
+        
+    isEmpty: ->
+      if @results.length == 0
+        return true
+      else
+        return false

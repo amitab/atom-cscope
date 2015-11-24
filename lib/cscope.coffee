@@ -18,7 +18,11 @@ module.exports = CscopeCommands =
     return process
     
   runCscopeCommand: (num, keyword, cwd) ->
-    return @runCommand 'cscope', ['-d', '-L' + num, keyword], {cwd: cwd}
+    if keyword.trim() == ''
+      return new Promise (resolve, reject) ->
+        resolve new ResultSetModel()
+    else
+      return @runCommand 'cscope', ['-d', '-L' + num, keyword], {cwd: cwd}
 
   runCscopeCommands: (num, keyword, paths) ->
     promises = []

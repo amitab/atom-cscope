@@ -10,6 +10,11 @@
   padding: 20px 0;
 }
 
+.atom-cscope .list-container {
+  position: relative;
+  height: 200px;
+}
+
 .atom-cscope ol {
   margin: 0;
 }
@@ -17,6 +22,10 @@
 .atom-cscope li {
   padding: 10px;
   cursor: pointer;
+}
+
+.atom-cscope li span.code-line {
+  color: @text-color-highlight;
 }
 
 .atom-cscope li.selected {
@@ -41,6 +50,10 @@
 .atom-cscope-input #form-container atom-text-editor {
   flex-grow: 2;
   margin: 0 10px;
+}
+
+.atom-cscope-input button#search::before {
+  font-size: 12px;
 }
 
 .atom-cscope-input #form-container select {
