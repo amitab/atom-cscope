@@ -12,18 +12,18 @@ module.exports = AtomCscope =
     @atomCscopeView.inputView.onSearch () =>
       option = @atomCscopeView.inputView.getSelectedOption()
       keyword = @atomCscopeView.inputView.getSearchKeyword()
-      cwd = atom.project.getPaths()
+      projects = atom.project.getPaths()
       
       switch option
-        when 0 then promise = cscope.findThisSymbol keyword, cwd
-        when 1 then promise = cscope.findThisGlobalDefinition keyword, cwd
-        when 2 then promise = cscope.findFunctionsCalledBy keyword, cwd
-        when 3 then promise = cscope.findFunctionsCalling keyword, cwd
-        when 4 then promise = cscope.findTextString keyword, cwd
-        when 5 then promise = cscope.findEgrepPattern keyword, cwd
-        when 7 then promise = cscope.findThisFile keyword, cwd
-        when 8 then promise = cscope.findFilesIncluding keyword, cwd
-        when 9 then promise = cscope.findAssignmentsTo keyword, cwd
+        when 0 then promise = cscope.findThisSymbol keyword, projects
+        when 1 then promise = cscope.findThisGlobalDefinition keyword, projects
+        when 2 then promise = cscope.findFunctionsCalledBy keyword, projects
+        when 3 then promise = cscope.findFunctionsCalling keyword, projects
+        when 4 then promise = cscope.findTextString keyword, projects
+        when 5 then promise = cscope.findEgrepPattern keyword, projects
+        when 7 then promise = cscope.findThisFile keyword, projects
+        when 8 then promise = cscope.findFilesIncluding keyword, projects
+        when 9 then promise = cscope.findAssignmentsTo keyword, projects
         else 
           notifier.addError "Error: Invalid Option"
           return
