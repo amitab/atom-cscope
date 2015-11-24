@@ -1,10 +1,12 @@
 {
   "name": "atom-cscope",
   "main": "./lib/atom-cscope",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Using cscope within Atom Code Editor CUZ I wanted one.",
   "keywords": [
-    "cscope", "code browsing", "browsing"
+    "cscope",
+    "code browsing",
+    "browsing"
   ],
   "activationCommands": {
     "atom-workspace": "atom-cscope:toggle"
