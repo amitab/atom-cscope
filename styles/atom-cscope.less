@@ -6,8 +6,8 @@
 
 .atom-cscope {
   height: 300px;
-  overflow: scroll;
-  padding: 20px;
+  overflow: hidden;
+  padding: 20px 0;
 }
 
 .atom-cscope ol {
@@ -23,8 +23,15 @@
   background: @background-color-selected;
 }
 
+.atom-cscope ol#result-container {
+  overflow: scroll;
+  height: 200px;
+  margin: 10px 0;
+}
+
 .atom-cscope-input #form-container {
   display: flex;
+  padding: 0 20px;
 }
 
 .atom-cscope-input #form-container atom-text-editor {
