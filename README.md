@@ -28,7 +28,7 @@ cscope -q -R -b -i cscope.files
 And then the package will be able to use the cscope.out file to generate results.
 
 ## Screenshots
-![Alt text](/screenshots/sample.png?raw=true "Sample Screenshot")
+![Alt text](https://drive.google.com/file/d/0B6krrt1QewVGMno0SS1qQkt0TWc/view?usp=sharing "Sample Screenshot")
 
 ## Further Improvements?
 1. Add 'Change this text string' functionality
