@@ -21,9 +21,9 @@ module.exports = AtomCscope =
         when 3 then promise = cscope.findFunctionsCalling keyword, cwd
         when 4 then promise = cscope.findTextString keyword, cwd
         when 5 then promise = cscope.findEgrepPattern keyword, cwd
-        when 6 then promise = cscope.findThisFile keyword, cwd
-        when 7 then promise = cscope.findFilesIncluding keyword, cwd
-        when 8 then promise = cscope.findAssignmentsTo keyword, cwd
+        when 7 then promise = cscope.findThisFile keyword, cwd
+        when 8 then promise = cscope.findFilesIncluding keyword, cwd
+        when 9 then promise = cscope.findAssignmentsTo keyword, cwd
         else 
           notifier.addError "Error: Invalid Option"
           return

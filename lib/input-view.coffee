@@ -7,14 +7,14 @@ class InputView extends View
       @div class: "inline-block", id: "form-container", =>
         @select id: "cscope-options", =>
           @option value: '0', "Find this C symbol"
-          @option value: '1', "Find this global deffgfgion"
+          @option value: '1', "Find this global definition"
           @option value: '2', "Find functions called by this"
           @option value: '3', "Find functions calling this"
           @option value: '4', "Find this text string"
           @option value: '5', "Find this egrep pattern"
-          @option value: '6', "Find this file"
-          @option value: '7', "Find files #including this file"
-          @option value: '8', "Find assignments to this symbol"
+          @option value: '7', "Find this file"
+          @option value: '8', "Find files #including this file"
+          @option value: '9', "Find assignments to this symbol"
         @button class: "btn", id: "search", "Do It!"
 
   initialize: (params) ->

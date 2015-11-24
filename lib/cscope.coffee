@@ -11,7 +11,7 @@ module.exports = CscopeCommands =
           args: args
           options: options
           stdout: (data) -> output += data.toString()
-          stderr: (data) -> reject {success: false, message: data.toString()}
+          stderr: (data) -> reject {success: false, message: "At " + options.cwd + ": " + data.toString()}
           exit: (code) -> resolve new ResultSetModel(output)
       catch
         reject "Couldn't find cscope"
