@@ -1,7 +1,7 @@
 {
   "name": "atom-cscope",
   "main": "./lib/atom-cscope",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Using cscope within Atom Code Editor CUZ I wanted one.",
   "keywords": [
     "cscope",
