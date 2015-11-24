@@ -43,32 +43,32 @@ module.exports = CscopeCommands =
 
   findThisGlobalDefinition: (keyword, paths) ->
     commandNumber = '1'
-    return @runCscopeCommand commandNumber, keyword, paths
+    return @runCscopeCommands commandNumber, keyword, paths
 
   findFunctionsCalledBy: (keyword, paths) ->
     commandNumber = '2'
-    return @runCscopeCommand commandNumber, keyword, paths
+    return @runCscopeCommands commandNumber, keyword, paths
 
   findFunctionsCalling: (keyword, paths) ->
     commandNumber = '3'
-    return @runCscopeCommand commandNumber, keyword, paths
+    return @runCscopeCommands commandNumber, keyword, paths
 
   findTextString: (keyword, paths) ->
     commandNumber = '4'
-    return @runCscopeCommand commandNumber, keyword, paths
+    return @runCscopeCommands commandNumber, keyword, paths
 
   findEgrepPattern: (keyword, paths) ->
     commandNumber = '5'
-    return @runCscopeCommand commandNumber, keyword, paths
+    return @runCscopeCommands commandNumber, keyword, paths
 
   findThisFile: (keyword, paths) ->
     commandNumber = '7'
-    return @runCscopeCommand commandNumber, keyword, paths
+    return @runCscopeCommands commandNumber, keyword, paths
 
   findFilesIncluding: (keyword, paths) ->
     commandNumber = '8'
-    return @runCscopeCommand commandNumber, keyword, paths
+    return @runCscopeCommands commandNumber, keyword, paths
 
   findAssignmentsTo: (keyword, paths) ->
     commandNumber = '9'
-    return @runCscopeCommand commandNumber, keyword, paths
+    return @runCscopeCommands commandNumber, keyword, paths

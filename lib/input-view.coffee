@@ -15,7 +15,7 @@ class InputView extends View
           @option value: '7', "Find this file"
           @option value: '8', "Find files #including this file"
           @option value: '9', "Find assignments to this symbol"
-        @button class: "btn", id: "search", "Do It!"
+        @button class: "btn", id: "search", "Scope It!"
 
   initialize: (params) ->
     @find('div#form-container select').after('<atom-text-editor id="search-keyword" mini placeholder="Something you typed..."></atom-text-editor>')
@@ -36,6 +36,7 @@ class InputView extends View
 
     @editor.getModel().onDidStopChanging wrapperCallback
     @on 'click', 'button#search', wrapperCallback
+    @on 'change', 'select#cscope-options', wrapperCallback
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->
