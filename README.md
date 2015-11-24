@@ -7,16 +7,28 @@ may be there but is probably buried under a million packages so I could not
 find it.)
 
 ## What it does?
-Find this C symbol:                         ✓
-Find this global definition:                ✓
-Find functions called by this function:     ✓
-Find functions calling this function:       ✓
-Find this text string:                      ✓
-Change this text string:                    ✗
-Find this egrep pattern:                    ✓
-Find this file:                             ✓
-Find files #including this file:            ✓
-Find assignments to this symbol:            ✓
+1.  Find this C symbol:                         ✓
+2.  Find this global definition:                ✓
+3.  Find functions called by this function:     ✓
+4.  Find functions calling this function:       ✓
+5.  Find this text string:                      ✓
+6.  Change this text string:                    ✗
+7.  Find this egrep pattern:                    ✓
+8.  Find this file:                             ✓
+9.  Find files #including this file:            ✓
+10. Find assignments to this symbol:            ✓
+
+## Set it up?
+You need to generate the cscope.out file before using this package.
+
+```bash
+find . -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" > cscope.files
+cscope -q -R -b -i cscope.files
+```
+And then the package will be able to use the cscope.out file to generate results.
+
+## Screenshots
+![Alt text](/screenshots/sample.png?raw=true "Sample Screenshot")
 
 ## Further Improvements?
 1. Add 'Change this text string' functionality
