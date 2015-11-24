@@ -1,14 +1,15 @@
 {
   "name": "atom-cscope",
   "main": "./lib/atom-cscope",
-  "version": "0.0.0",
-  "description": "A short description of your package",
+  "version": "0.1.0",
+  "description": "Using cscope within Atom Code Editor CUZ I wanted one.",
   "keywords": [
+    "cscope", "code browsing", "browsing"
   ],
   "activationCommands": {
     "atom-workspace": "atom-cscope:toggle"
   },
-  "repository": "https://github.com/atom/atom-cscope",
+  "repository": "https://github.com/amitab/atom-cscope",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
