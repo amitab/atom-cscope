@@ -28,7 +28,7 @@ cscope -q -R -b -i cscope.files
 And then the package will be able to use the cscope.out file to generate results.
 
 ## Screenshots
-![alt tag](blob:https%3A//drive.google.com/cd033353-b6b2-45cc-a78b-8f1c209655e9)
+![alt tag](http://s15.postimg.org/rwojyj8ga/sample.jpg)
 
 ## Further Improvements?
 1. Add 'Change this text string' functionality
