@@ -24,7 +24,7 @@ module.exports = CscopeCommands =
         console.log data
         resolve new ResultSetModel(data)
       .catch (data) ->
-        reject {success: false}
+        reject {success: false, message: "No can do!"}
         
     return response
 
@@ -34,7 +34,7 @@ module.exports = CscopeCommands =
       .then (data) ->
         resolve new ResultSetModel(data)
       .catch (data) ->
-        reject {success: false}
+        reject {success: false, message: "No can do!"}
         
     return response
 
@@ -44,7 +44,7 @@ module.exports = CscopeCommands =
       .then (data) ->
         resolve new ResultSetModel(data)
       .catch (data) ->
-        reject {success: false}
+        reject {success: false, message: "No can do!"}
         
     return response
 
@@ -54,7 +54,7 @@ module.exports = CscopeCommands =
       .then (data) ->
         resolve new ResultSetModel(data)
       .catch (data) ->
-        reject {success: false}
+        reject {success: false, message: "No can do!"}
         
     return response
 
@@ -64,7 +64,7 @@ module.exports = CscopeCommands =
       .then (data) ->
         resolve new ResultSetModel(data)
       .catch (data) ->
-        reject {success: false}
+        reject {success: false, message: "No can do!"}
         
     return response
 
@@ -84,7 +84,7 @@ module.exports = CscopeCommands =
       .then (data) ->
         resolve new ResultSetModel(data)
       .catch (data) ->
-        reject {success: false}
+        reject {success: false, message: "No can do!"}
         
     return response
 
@@ -94,7 +94,7 @@ module.exports = CscopeCommands =
       .then (data) ->
         resolve new ResultSetModel(data)
       .catch (data) ->
-        reject {success: false}
+        reject {success: false, message: "No can do!"}
         
     return response
 
@@ -104,6 +104,6 @@ module.exports = CscopeCommands =
       .then (data) ->
         resolve new ResultSetModel(data)
       .catch (data) ->
-        reject {success: false}
+        reject {success: false, message: "No can do!"}
         
     return response

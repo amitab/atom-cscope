@@ -1,10 +1,12 @@
 {View} = require 'space-pen'
+InputView = require './input-view'
 
 module.exports =
 class AtomCscopeView extends View
   @content: ->
     @div class: "atom-cscope", =>
       @h1 "Atom Cscope"
+      @subview 'inputView', new InputView()
       @ol id: "result-container", =>
         
   addItem: (name) ->
@@ -14,13 +16,14 @@ class AtomCscopeView extends View
     @find('ol#result-container').empty()
     
   addResult: (data) ->
-    console.log data
+    console.log data.functionName
     info = ""
-    info += data.fileName + ":" + data.lineNumber + " [" + data.functionName + "]<br>"
+    info += data.fileName + ":" + data.lineNumber + " [ " + data.functionName + " ]&nbsp;&nbsp;"
     info += data.lineText
     @addItem(info) 
     
   applyResultSet: (resultSet) ->
+    @resultSet = resultSet
     for result in resultSet.results
       @addResult(result)
 

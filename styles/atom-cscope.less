@@ -9,10 +9,31 @@
   overflow: scroll;
   padding: 20px;
 }
+
 .atom-cscope ol {
   margin: 0;
 }
 
 .atom-cscope li {
   padding: 10px;
+}
+
+.atom-cscope-input #form-container {
+  display: flex;
+}
+
+.atom-cscope-input #form-container atom-text-editor {
+  flex-grow: 2;
+  margin: 0 10px;
+}
+
+.atom-cscope-input #form-container select {
+  flex-basis: 200px;
+  background: @app-background-color;
+  border: 1px @background-color-highlight solid;
+  border-radius: 2px;
+}
+
+.atom-cscope-input #form-container button {
+  flex-basis: 100px;
 }

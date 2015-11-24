@@ -4,6 +4,8 @@ module.exports =
       @processResultString(response)
     
     processResultString: (response) ->
+      response = response.replace("<", "&lt;");
+      response = response.replace(">", "&gt;");
       @resultString = response
       data = response.split(" ", 3)
       data.push(response.replace(data.join(" ") + " ", ""))

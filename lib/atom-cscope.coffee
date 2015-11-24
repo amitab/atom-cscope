@@ -7,27 +7,44 @@ module.exports = AtomCscope =
   atomCscopeView: null
   modalPanel: null
   subscriptions: null
-  counter: 0
+  
+  setUpBindings: ->
+    @atomCscopeView.inputView.onSearch () =>
+      option = @atomCscopeView.inputView.getSelectedOption()
+      keyword = @atomCscopeView.inputView.getSearchKeyword()
+      cwd = '/home/amitabh/src/mysql-router'
+      
+      switch option
+        when 0 then promise = cscope.findThisSymbol keyword, cwd
+        when 1 then promise = cscope.findThisGlobalDefinition keyword, cwd
+        when 2 then promise = cscope.findFunctionsCalledBy keyword, cwd
+        when 3 then promise = cscope.findFunctionsCalling keyword, cwd
+        when 4 then promise = cscope.findTextString keyword, cwd
+        when 5 then promise = cscope.findEgrepPattern keyword, cwd
+        when 6 then promise = cscope.findThisFile keyword, cwd
+        when 7 then promise = cscope.findFilesIncluding keyword, cwd
+        when 8 then promise = cscope.findAssignmentsTo keyword, cwd
+        else 
+          notifier.addError "Error: Invalid Option"
+          return
+
+      promise
+      .then (data) =>
+        @atomCscopeView.clearItems()
+        @atomCscopeView.applyResultSet(data)
+      .catch (data) =>
+        notifier.addError "Error: " + data.message
 
   activate: (state) ->
     @atomCscopeView = new AtomCscopeView(state.atomCscopeViewState)
+    @setUpBindings()
+    
     @modalPanel = atom.workspace.addTopPanel(item: @atomCscopeView.element, visible: false)
-
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
 
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:toggle': => @toggle()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:run': => @sampleRun()
-    
-  sampleRun: ->
-    @atomCscopeView.clearItems()
-    cscope.findThisSymbol 'ConsoleOutputTest', '/home/amitabh/src/mysql-router'
-    .then (data) =>
-      console.log(data)
-      @atomCscopeView.applyResultSet(data)
-    .catch (data) =>
-      notifier.addError "Error: " + data.message
   
   deactivate: ->
     @modalPanel.destroy()
@@ -39,14 +56,6 @@ module.exports = AtomCscope =
 
   toggle: ->
     console.log 'AtomCscope was toggled!'
-    @atomCscopeView.addItem 'test' + @counter
-    @atomCscopeView.addItem 'test' + (@counter + 1)
-    @atomCscopeView.addItem 'test' + (@counter + 2)
-    @atomCscopeView.addItem 'test' + (@counter + 3)
-    @atomCscopeView.addItem 'test' + (@counter + 2)
-    @atomCscopeView.addItem 'test' + (@counter + 3)
-    @atomCscopeView.addItem 'test' + (@counter + 2)
-    @atomCscopeView.addItem 'test' + (@counter + 3)
 
     if @modalPanel.isVisible()
       @atomCscopeView.clearItems()
