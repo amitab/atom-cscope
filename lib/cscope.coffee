@@ -1,5 +1,5 @@
 {BufferedProcess} = require 'atom'
-ResultSetModel = require './result-set-model'
+ResultSetModel = require './models/result-set-model'
 
 module.exports = CscopeCommands =
   runCommand: (command, args, options = {}) ->

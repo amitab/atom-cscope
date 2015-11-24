@@ -1,6 +1,5 @@
 {View} = require 'space-pen'
 InputView = require './input-view'
-notifier = require './notifier'
 
 module.exports =
 class AtomCscopeView extends View

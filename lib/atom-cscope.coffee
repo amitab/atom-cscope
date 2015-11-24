@@ -1,4 +1,4 @@
-AtomCscopeView = require './atom-cscope-view'
+AtomCscopeView = require './views/atom-cscope-view'
 {CompositeDisposable} = require 'atom'
 notifier = require './notifier'
 cscope = require './cscope'
