@@ -12,7 +12,7 @@ module.exports = AtomCscope =
     @atomCscopeView.inputView.onSearch () =>
       option = @atomCscopeView.inputView.getSelectedOption()
       keyword = @atomCscopeView.inputView.getSearchKeyword()
-      cwd = atom.project.getPaths()[0]
+      cwd = atom.project.getPaths()
       
       switch option
         when 0 then promise = cscope.findThisSymbol keyword, cwd

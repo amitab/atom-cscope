@@ -20,29 +20,55 @@ module.exports = CscopeCommands =
   runCscopeCommand: (num, keyword, cwd) ->
     return @runCommand 'cscope', ['-d', '-L' + num, keyword], {cwd: cwd}
 
-  findThisSymbol: (keyword, cwd) ->
-    return @runCscopeCommand '0', keyword, cwd
+  runCscopeCommands: (num, keyword, paths) ->
+    promises = []
+    resultSet = new ResultSetModel()
+    for path in paths
+      promises.push(@runCscopeCommand num, keyword, path)
 
-  findThisGlobalDefinition: (keyword, cwd) ->
-    return @runCscopeCommand '1', keyword, cwd
+    motherSwear = new Promise (resolve, reject) =>
+      Promise.all(promises)
+      .then (values) ->
+        for value in values
+          resultSet.addResultSet(value)
+        resolve resultSet
+      .catch (data) ->
+        reject data
 
-  findFunctionsCalledBy: (keyword, cwd) ->
-    return @runCscopeCommand '2', keyword, cwd
+    return motherSwear
 
-  findFunctionsCalling: (keyword, cwd) ->
-    return @runCscopeCommand '3', keyword, cwd
+  findThisSymbol: (keyword, paths) ->
+    commandNumber = '0'
+    return @runCscopeCommands commandNumber, keyword, paths
 
-  findTextString: (keyword, cwd) ->
-    return @runCscopeCommand '4', keyword, cwd
+  findThisGlobalDefinition: (keyword, paths) ->
+    commandNumber = '1'
+    return @runCscopeCommand commandNumber, keyword, paths
 
-  findEgrepPattern: (keyword, cwd) ->
-    return @runCscopeCommand '5', keyword, cwd
+  findFunctionsCalledBy: (keyword, paths) ->
+    commandNumber = '2'
+    return @runCscopeCommand commandNumber, keyword, paths
 
-  findThisFile: (keyword, cwd) ->
-    return @runCscopeCommand '7', keyword, cwd
+  findFunctionsCalling: (keyword, paths) ->
+    commandNumber = '3'
+    return @runCscopeCommand commandNumber, keyword, paths
 
-  findFilesIncluding: (keyword, cwd) ->
-    return @runCscopeCommand '8', keyword, cwd
+  findTextString: (keyword, paths) ->
+    commandNumber = '4'
+    return @runCscopeCommand commandNumber, keyword, paths
 
-  findAssignmentsTo: (keyword, cwd) ->
-    return @runCscopeCommand '9', keyword, cwd
+  findEgrepPattern: (keyword, paths) ->
+    commandNumber = '5'
+    return @runCscopeCommand commandNumber, keyword, paths
+
+  findThisFile: (keyword, paths) ->
+    commandNumber = '7'
+    return @runCscopeCommand commandNumber, keyword, paths
+
+  findFilesIncluding: (keyword, paths) ->
+    commandNumber = '8'
+    return @runCscopeCommand commandNumber, keyword, paths
+
+  findAssignmentsTo: (keyword, paths) ->
+    commandNumber = '9'
+    return @runCscopeCommand commandNumber, keyword, paths
