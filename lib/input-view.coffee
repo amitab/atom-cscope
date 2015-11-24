@@ -29,10 +29,13 @@ class InputView extends View
     return parseInt(@find('select#cscope-options').val())
     
   onSearch: (callback) ->
-    @editor.getModel().onDidStopChanging () =>
+    wrapperCallback = () => 
+      @parentView.toggleLoading true
       callback()
-    @on 'click', 'button#search', =>
-      callback()
+      @parentView.toggleLoading false
+
+    @editor.getModel().onDidStopChanging wrapperCallback
+    @on 'click', 'button#search', wrapperCallback
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->

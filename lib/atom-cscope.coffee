@@ -34,6 +34,9 @@ module.exports = AtomCscope =
         @atomCscopeView.applyResultSet(data)
       .catch (data) =>
         notifier.addError "Error: " + data.message
+        
+    @atomCscopeView.onResultClick (result) =>
+      atom.workspace.open(result.fileName, {initialLine: result.lineNumber})
 
   activate: (state) ->
     @atomCscopeView = new AtomCscopeView(state.atomCscopeViewState)
