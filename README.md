@@ -28,7 +28,7 @@ cscope -q -R -b -i cscope.files
 And then the package will be able to use the cscope.out file to generate results.
 
 ## Screenshots
-[[http://s15.postimg.org/rwojyj8ga/sample.jpg]]=
+[[http://s15.postimg.org/rwojyj8ga/sample.jpg]]
 
 ## Further Improvements?
 1. Add 'Change this text string' functionality
