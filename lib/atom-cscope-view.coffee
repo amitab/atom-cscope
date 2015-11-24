@@ -47,11 +47,13 @@ class AtomCscopeView extends View
   
   showLoading: ->
     callback = => @find('span.loading').removeClass('no-show')
-    setTimeout callback, 100
+    setTimeout callback, 10
 
   onResultClick: (callback) ->
     self = this
     @on 'click', 'li.result-item', () ->
+      self.find('li.selected').removeClass('selected')
+      @classList.add 'selected'
       key = parseInt(@getAttribute('data-key'))
       callback(self.resultSet.results[key])
 

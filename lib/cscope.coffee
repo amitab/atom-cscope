@@ -2,108 +2,47 @@
 ResultSetModel = require './result-set-model'
 
 module.exports = CscopeCommands =
-  runCommand: (args, options = {}) ->
+  runCommand: (command, args, options = {}) ->
     process = new Promise (resolve, reject) =>
       output = ''
       try
         new BufferedProcess
-          command: 'cscope'
+          command: command
           args: args
           options: options
           stdout: (data) -> output += data.toString()
-          stderr: (data) -> reject data.toString()
-          exit: (code) -> resolve output
+          stderr: (data) -> reject {success: false, message: data.toString()}
+          exit: (code) -> resolve new ResultSetModel(output)
       catch
         reject "Couldn't find cscope"
     return process
+    
+  runCscopeCommand: (num, keyword, cwd) ->
+    return @runCommand 'cscope', ['-d', '-L' + num, keyword], {cwd: cwd}
 
   findThisSymbol: (keyword, cwd) ->
-    response = new Promise (resolve, reject) =>
-      @runCommand ['-d', '-L0', keyword], {cwd: cwd}
-      .then (data) ->
-        console.log data
-        resolve new ResultSetModel(data)
-      .catch (data) ->
-        reject {success: false, message: "No can do!"}
-        
-    return response
+    return @runCscopeCommand '0', keyword, cwd
 
   findThisGlobalDefinition: (keyword, cwd) ->
-    response = new Promise (resolve, reject) =>
-      @runCommand ['-d', '-L1', keyword], {cwd: cwd}
-      .then (data) ->
-        resolve new ResultSetModel(data)
-      .catch (data) ->
-        reject {success: false, message: "No can do!"}
-        
-    return response
+    return @runCscopeCommand '1', keyword, cwd
 
   findFunctionsCalledBy: (keyword, cwd) ->
-    response = new Promise (resolve, reject) =>
-      @runCommand ['-d', '-L2', keyword], {cwd: cwd}
-      .then (data) ->
-        resolve new ResultSetModel(data)
-      .catch (data) ->
-        reject {success: false, message: "No can do!"}
-        
-    return response
+    return @runCscopeCommand '2', keyword, cwd
 
   findFunctionsCalling: (keyword, cwd) ->
-    response = new Promise (resolve, reject) =>
-      @runCommand ['-d', '-L3', keyword], {cwd: cwd}
-      .then (data) ->
-        resolve new ResultSetModel(data)
-      .catch (data) ->
-        reject {success: false, message: "No can do!"}
-        
-    return response
+    return @runCscopeCommand '3', keyword, cwd
 
   findTextString: (keyword, cwd) ->
-    response = new Promise (resolve, reject) =>
-      @runCommand ['-d', '-L4', keyword], {cwd: cwd}
-      .then (data) ->
-        resolve new ResultSetModel(data)
-      .catch (data) ->
-        reject {success: false, message: "No can do!"}
-        
-    return response
+    return @runCscopeCommand '4', keyword, cwd
 
   findEgrepPattern: (keyword, cwd) ->
-    response = new Promise (resolve, reject) =>
-      @runCommand ['-d', '-L5', keyword], {cwd: cwd}
-      .then (data) ->
-        resolve new ResultSetModel(data)
-      .catch (data) ->
-        reject {success: false, message: "No can do!"}
-        
-    return response
+    return @runCscopeCommand '5', keyword, cwd
 
   findThisFile: (keyword, cwd) ->
-    response = new Promise (resolve, reject) =>
-      @runCommand ['-d', '-L7', keyword], {cwd: cwd}
-      .then (data) ->
-        resolve new ResultSetModel(data)
-      .catch (data) ->
-        reject {success: false, message: "No can do!"}
-        
-    return response
+    return @runCscopeCommand '7', keyword, cwd
 
   findFilesIncluding: (keyword, cwd) ->
-    response = new Promise (resolve, reject) =>
-      @runCommand ['-d', '-L8', keyword], {cwd: cwd}
-      .then (data) ->
-        resolve new ResultSetModel(data)
-      .catch (data) ->
-        reject {success: false, message: "No can do!"}
-        
-    return response
+    return @runCscopeCommand '8', keyword, cwd
 
   findAssignmentsTo: (keyword, cwd) ->
-    response = new Promise (resolve, reject) =>
-      @runCommand ['-d', '-L9', keyword], {cwd: cwd}
-      .then (data) ->
-        resolve new ResultSetModel(data)
-      .catch (data) ->
-        reject {success: false, message: "No can do!"}
-        
-    return response
+    return @runCscopeCommand '9', keyword, cwd

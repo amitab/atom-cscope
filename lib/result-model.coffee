@@ -12,6 +12,6 @@ module.exports =
 
       @fileName = data[0]
       @functionName = data[1]
-      @lineNumber = data[2]
+      @lineNumber = parseInt(data[2])
       @lineText = data[3]
       

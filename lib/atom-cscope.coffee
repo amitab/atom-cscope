@@ -12,7 +12,7 @@ module.exports = AtomCscope =
     @atomCscopeView.inputView.onSearch () =>
       option = @atomCscopeView.inputView.getSelectedOption()
       keyword = @atomCscopeView.inputView.getSearchKeyword()
-      cwd = '/home/amitabh/src/mysql-router'
+      cwd = atom.project.getPaths()[0]
       
       switch option
         when 0 then promise = cscope.findThisSymbol keyword, cwd
@@ -36,7 +36,7 @@ module.exports = AtomCscope =
         notifier.addError "Error: " + data.message
         
     @atomCscopeView.onResultClick (result) =>
-      atom.workspace.open(result.fileName, {initialLine: result.lineNumber})
+      atom.workspace.open(result.fileName, {initialLine: (result.lineNumber - 1)})
 
   activate: (state) ->
     @atomCscopeView = new AtomCscopeView(state.atomCscopeViewState)
