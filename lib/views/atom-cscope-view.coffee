@@ -1,33 +1,26 @@
 {View} = require 'space-pen'
 InputView = require './input-view'
+ResultItemView = require './result-item-view'
 
 module.exports =
 class AtomCscopeView extends View
   @content: ->
     @div class: "atom-cscope", =>
       @div class: "header", =>
-        @h4 class: "inline-block", "Atom Cscope v0.1"
+        @h4 class: "inline-block", "Atom Cscope"
+        @h6 class: "inline-block", id: 'result-count', "0 results"
         @span class: 'loading loading-spinner-tiny inline-block no-show'
       @subview 'inputView', new InputView()
       @div class: "list-container", =>
         @ul id: "empty-container", class: "background-message centered", =>
           @li "No Results"
-        @ol id: "result-container", class: "hidden", =>
-        
-  addItem: (name, key) ->
-    @find('ol#result-container').append "<li class='result-item' data-key='#{key}'>#{name}</li>"
+        @ol id: "result-container", class: "hidden", => 
     
   clearItems: ->
     @find('ol#result-container').empty()
     
   addResult: (data, key) ->
-    console.log data.functionName
-    info = ""
-    info += data.fileName + ":"
-    info += "<strong>" + data.lineNumber + "</strong>"
-    info += "&nbsp;&nbsp;<span class='highlight'>" + data.functionName + "</span>&nbsp;&nbsp;"
-    info += "<span class='code-line'>" + data.lineText + "</span>"
-    @addItem(info, key) 
+    @find('ol#result-container').append(new ResultItemView(data, key))
     
   applyResultSet: (resultSet) ->
     if resultSet.isEmpty()
@@ -36,6 +29,7 @@ class AtomCscopeView extends View
       @toggleHidden false
       
     @resultSet = resultSet
+    @find('h6#result-count').text(resultSet.results.length + ' results')
     for result, index in resultSet.results
       @addResult(result, index)
       
