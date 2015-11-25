@@ -65,3 +65,4 @@ module.exports = AtomCscope =
       @modalPanel.hide()
     else
       @modalPanel.show()
+      @atomCscopeView.inputView.findEditor.focus()

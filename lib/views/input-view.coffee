@@ -1,4 +1,5 @@
 {View} = require 'space-pen'
+{TextEditorView}  = require 'atom-space-pen-views'
 
 module.exports =
 class InputView extends View
@@ -15,15 +16,11 @@ class InputView extends View
           @option value: '7', "Find this file"
           @option value: '8', "Find files #including this file"
           @option value: '9', "Find assignments to this symbol"
-        @tag 'atom-text-editor', mini: 'true', id: 'search-keyword'
+        @subview 'findEditor', new TextEditorView(mini: true, placeholderText: 'Input query here...')
         @button class: "btn icon icon-search", id: "search", "Scope It!"
-
-  initialize: (params) ->
-    @editor = @find('atom-text-editor#search-keyword')[0]
-    @editor.getModel().setPlaceholderText("Write something!")
     
   getSearchKeyword: ->
-    return @editor.getModel().getText()
+    return @findEditor.getText()
     
   getSelectedOption: ->
     return parseInt(@find('select#cscope-options').val())
@@ -34,7 +31,7 @@ class InputView extends View
       callback()
       @parentView.toggleLoading false
 
-    @editor.getModel().onDidStopChanging wrapperCallback
+    @findEditor.getModel().onDidStopChanging wrapperCallback
     @on 'click', 'button#search', wrapperCallback
     @on 'change', 'select#cscope-options', wrapperCallback
 
