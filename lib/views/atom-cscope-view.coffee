@@ -20,7 +20,9 @@ class AtomCscopeView extends View
     @find('ol#result-container').empty()
     
   addResult: (data, key) ->
-    @find('ol#result-container').append(new ResultItemView(data, key))
+    option = @inputView.getSelectedOption()
+    keyword = @inputView.getSearchKeyword()
+    @find('ol#result-container').append(new ResultItemView(data, key, option, keyword))
     
   applyResultSet: (resultSet) ->
     if resultSet.isEmpty()
