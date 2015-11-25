@@ -12,7 +12,7 @@ class InputView extends View
           @option value: '2', "Find functions called by this"
           @option value: '3', "Find functions calling this"
           @option value: '4', "Find this text string"
-          @option value: '5', "Find this egrep pattern"
+          @option value: '6', "Find this egrep pattern"
           @option value: '7', "Find this file"
           @option value: '8', "Find files #including this file"
           @option value: '9', "Find assignments to this symbol"

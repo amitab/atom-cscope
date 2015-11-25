@@ -20,7 +20,7 @@ module.exports = AtomCscope =
         when 2 then promise = cscope.findFunctionsCalledBy keyword, projects
         when 3 then promise = cscope.findFunctionsCalling keyword, projects
         when 4 then promise = cscope.findTextString keyword, projects
-        when 5 then promise = cscope.findEgrepPattern keyword, projects
+        when 6 then promise = cscope.findEgrepPattern keyword, projects
         when 7 then promise = cscope.findThisFile keyword, projects
         when 8 then promise = cscope.findFilesIncluding keyword, projects
         when 9 then promise = cscope.findAssignmentsTo keyword, projects
@@ -56,7 +56,7 @@ module.exports = AtomCscope =
       @autoInputFromCursor(4)
     @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-egrep-pattern': => 
       @toggle()
-      @autoInputFromCursor(5)
+      @autoInputFromCursor(6)
     @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-this-file': => 
       @toggle()
       @autoInputFromCursor(7)

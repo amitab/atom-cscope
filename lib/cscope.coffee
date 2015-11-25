@@ -22,7 +22,7 @@ module.exports = CscopeCommands =
       return new Promise (resolve, reject) ->
         resolve new ResultSetModel()
     else
-      return @runCommand 'cscope', ['-d', '-L' + num, keyword], {cwd: cwd}
+      return @runCommand 'cscope', ['-d', '-L', '-' + num, keyword], {cwd: cwd}
 
   runCscopeCommands: (num, keyword, paths) ->
     promises = []
@@ -62,7 +62,7 @@ module.exports = CscopeCommands =
     return @runCscopeCommands commandNumber, keyword, paths
 
   findEgrepPattern: (keyword, paths) ->
-    commandNumber = '5'
+    commandNumber = '6'
     return @runCscopeCommands commandNumber, keyword, paths
 
   findThisFile: (keyword, paths) ->

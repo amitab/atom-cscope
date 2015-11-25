@@ -13,20 +13,30 @@ class ResultItemView extends View
         @span class: 'highlight function-name', result.functionName
         @span class: 'gap'
         
+        if option == 6
+          keyword = new RegExp(keyword)
+          match = keyword.exec(result.lineText)
+          if match != null && match.length == 1
+            highlight = match[0]
+          else
+            highlight = ""
+        else
+          highlight = keyword
+  
         codeLine = result.lineText.split(keyword)
         
         if codeLine[0] == ""
           @div class: 'inline-block', =>
-            @span class: 'text-highlight bold', keyword
+            @span class: 'text-highlight bold', highlight
             @span codeLine[1]
         else if codeLine[codeLine.length - 1] == ""
           @div class: 'inline-block', =>
             @span codeLine[0]
-            @span class: 'text-highlight bold', keyword
+            @span class: 'text-highlight bold', highlight
         else if codeLine.length == 2
           @div class: 'inline-block', =>
             @span codeLine[0]
-            @span class: 'text-highlight bold', keyword
+            @span class: 'text-highlight bold', highlight
             @span codeLine[1]
         else
           @span result.lineText
