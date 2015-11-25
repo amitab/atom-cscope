@@ -4,7 +4,6 @@ module.exports =
       @processResultString(response)
     
     processResultString: (response) ->
-      console.log response
       @resultString = response
       data = response.split(" ", 3)
       data.push(response.replace(data.join(" ") + " ", ""))

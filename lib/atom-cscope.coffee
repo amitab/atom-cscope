@@ -58,8 +58,6 @@ module.exports = AtomCscope =
     atomCscopeViewState: @atomCscopeView.serialize()
 
   toggle: ->
-    console.log 'AtomCscope was toggled!'
-
     if @modalPanel.isVisible()
       @atomCscopeView.clearItems()
       @modalPanel.hide()
