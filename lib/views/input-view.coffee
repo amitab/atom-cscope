@@ -18,7 +18,10 @@ class InputView extends View
           @option value: '9', "Find assignments to this symbol"
         @subview 'findEditor', new TextEditorView(mini: true, placeholderText: 'Input query here...')
         @button class: "btn icon icon-search", id: "search", "Scope It!"
-    
+
+  initialize: (params) ->
+    @findEditor.getModel().getBuffer().stoppedChangingDelay = 800
+
   getSearchKeyword: ->
     return @findEditor.getText()
     
@@ -34,12 +37,19 @@ class InputView extends View
     @findEditor.getModel().onDidStopChanging wrapperCallback
     @on 'click', 'button#search', wrapperCallback
     @on 'change', 'select#cscope-options', wrapperCallback
+
+    atom.views.getView(@findEditor).onkeyup = (event) ->
+      keycode = if event.keyCode then event.keyCode else event.which
+      if keycode == 13
+        wrapperCallback()
     
   autoFill: (option, keyword) ->
     @findEditor.setText(keyword)
     @find('select#cscope-options').val(option.toString())
     
   invokeSearch: (option, keyword) ->
+    throw new Error("No search callback set!") if !@wrapperCallback
+
     @autoFill(option, keyword)
     @wrapperCallback()
 
