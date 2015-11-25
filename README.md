@@ -18,9 +18,31 @@ find it.)
 9.  Find files #including this file:            ✓
 10. Find assignments to this symbol:            ✓
 
+Finds the selected text or word under cursor to perform a cscope lookup and displays
+the results in a panel which shows up above (Check screenshot).
+Or you could just toggle the display of the atom-cscope panel and look it up yourself.
+The following commands are registered:
+
+```
+atom-cscope:toggle
+atom-cscope:find-this-symbol
+atom-cscope:find-this-global-definition
+atom-cscope:find-functions-called-by
+atom-cscope:find-functions-calling
+atom-cscope:find-text-string
+atom-cscope:find-egrep-pattern
+atom-cscope:find-this-file
+atom-cscope:find-files-including
+atom-cscope:find-assignments-to
+```
+
+Only `atom-cscope:toggle` has a keymap set. You can setup your own keymaps for the other
+commands.
+
 ## Set it up?
 You need to generate the cscope.out file before using this package.
 
+In your project directory, run:
 ```bash
 find . -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" > cscope.files
 cscope -q -R -b -i cscope.files

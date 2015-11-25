@@ -8,7 +8,7 @@ module.exports = AtomCscope =
   modalPanel: null
   subscriptions: null
   
-  setUpBindings: ->
+  setUpEvents: ->
     @atomCscopeView.inputView.onSearch () =>
       option = @atomCscopeView.inputView.getSelectedOption()
       keyword = @atomCscopeView.inputView.getSearchKeyword()
@@ -37,14 +37,50 @@ module.exports = AtomCscope =
         
     @atomCscopeView.onResultClick (result) =>
       atom.workspace.open(result.fileName, {initialLine: (result.lineNumber - 1)})
+  
+  setUpBindings: ->
+    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-this-symbol': => 
+      @toggle()
+      @autoInputFromCursor(0)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-this-global-definition': => 
+      @toggle()
+      @autoInputFromCursor(1)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-functions-called-by': => 
+      @toggle()
+      @autoInputFromCursor(2)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-functions-calling': => 
+      @toggle()
+      @autoInputFromCursor(3)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-text-string': => 
+      @toggle()
+      @autoInputFromCursor(4)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-egrep-pattern': => 
+      @toggle()
+      @autoInputFromCursor(5)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-this-file': => 
+      @toggle()
+      @autoInputFromCursor(7)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-files-including': => 
+      @toggle()
+      @autoInputFromCursor(8)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-assignments-to': => 
+      @toggle()
+      @autoInputFromCursor(9)
 
+  autoInputFromCursor: (option) ->
+    activeEditor = atom.workspace.getActiveTextEditor()
+    selectedText = activeEditor.getSelectedText()
+
+    keyword = if selectedText == "" then activeEditor.getWordUnderCursor() else selectedText
+    @atomCscopeView.inputView.invokeSearch(option, keyword)
+  
   activate: (state) ->
     @atomCscopeView = new AtomCscopeView(state.atomCscopeViewState)
-    @setUpBindings()
-    
     @modalPanel = atom.workspace.addTopPanel(item: @atomCscopeView.element, visible: false)
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
+    @setUpBindings()
+    @setUpEvents()
 
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:toggle': => @toggle()

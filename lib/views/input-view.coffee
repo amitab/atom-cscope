@@ -26,7 +26,7 @@ class InputView extends View
     return parseInt(@find('select#cscope-options').val())
     
   onSearch: (callback) ->
-    wrapperCallback = () => 
+    @wrapperCallback = wrapperCallback = () => 
       @parentView.toggleLoading true
       callback()
       @parentView.toggleLoading false
@@ -34,6 +34,14 @@ class InputView extends View
     @findEditor.getModel().onDidStopChanging wrapperCallback
     @on 'click', 'button#search', wrapperCallback
     @on 'change', 'select#cscope-options', wrapperCallback
+    
+  autoFill: (option, keyword) ->
+    @findEditor.setText(keyword)
+    @find('select#cscope-options').val(option.toString())
+    
+  invokeSearch: (option, keyword) ->
+    @autoFill(option, keyword)
+    @wrapperCallback()
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->
