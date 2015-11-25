@@ -1,3 +1,16 @@
-## 0.1.0 - First Release
-* Every feature added
-* Every bug fixed
+## 0.6.0
+* Fix working egrep
+* Search on Enter key or 800ms later
+## 0.5.0
+* Display total number of results on top
+* Highlight search substring
+* AutoFocus on input on toggle
+* Run search with words under cursor or selection 
+## 0.4.0
+* Code Cleanup
+## 0.3.0
+* Code Cleanup
+## 0.2.0
+* Updated Styling
+## 0.1.0
+* Initial Release
