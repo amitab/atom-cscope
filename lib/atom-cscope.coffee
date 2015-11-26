@@ -7,7 +7,19 @@ module.exports = AtomCscope =
   atomCscopeView: null
   modalPanel: null
   subscriptions: null
-  
+
+  config:
+    LiveSearch:
+      type: 'boolean'
+      default: true
+    LiveSearchDelay:
+      type: 'integer'
+      default: 800
+    WidgetLocation:
+      type: 'string'
+      default: 'top'
+      enum: ['top', 'bottom']
+
   setUpEvents: ->
     @atomCscopeView.inputView.onSearch () =>
       option = @atomCscopeView.inputView.getSelectedOption()
@@ -39,33 +51,40 @@ module.exports = AtomCscope =
       atom.workspace.open(result.fileName, {initialLine: (result.lineNumber - 1)})
   
   setUpBindings: ->
-    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-this-symbol': => 
-      @toggle()
-      @autoInputFromCursor(0)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-this-global-definition': => 
-      @toggle()
-      @autoInputFromCursor(1)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-functions-called-by': => 
-      @toggle()
-      @autoInputFromCursor(2)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-functions-calling': => 
-      @toggle()
-      @autoInputFromCursor(3)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-text-string': => 
-      @toggle()
-      @autoInputFromCursor(4)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-egrep-pattern': => 
-      @toggle()
-      @autoInputFromCursor(6)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-this-file': => 
-      @toggle()
-      @autoInputFromCursor(7)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-files-including': => 
-      @toggle()
-      @autoInputFromCursor(8)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:find-assignments-to': => 
-      @toggle()
-      @autoInputFromCursor(9)
+    @subscriptions = new CompositeDisposable
+    @subscriptions.add atom.commands.add @atomCscopeView.element,
+      'core:close': => @modalPanel.hide()
+      'core:cancel': => @modalPanel.hide()
+
+    @subscriptions.add atom.commands.add 'atom-workspace', 
+      'atom-cscope:toggle': => @toggle()
+      'atom-cscope:find-this-symbol': => 
+        @toggle()
+        @autoInputFromCursor(0)
+      'atom-cscope:find-this-global-definition': => 
+        @toggle()
+        @autoInputFromCursor(1)
+      'atom-cscope:find-functions-called-by': => 
+        @toggle()
+        @autoInputFromCursor(2)
+      'atom-cscope:find-functions-calling': => 
+        @toggle()
+        @autoInputFromCursor(3)
+      'atom-cscope:find-text-string': => 
+        @toggle()
+        @autoInputFromCursor(4)
+      'atom-cscope:find-egrep-pattern': => 
+        @toggle()
+        @autoInputFromCursor(6)
+      'atom-cscope:find-this-file': => 
+        @toggle()
+        @autoInputFromCursor(7)
+      'atom-cscope:find-files-including': => 
+        @toggle()
+        @autoInputFromCursor(8)
+      'atom-cscope:find-assignments-to': => 
+        @toggle()
+        @autoInputFromCursor(9)
 
   autoInputFromCursor: (option) ->
     activeEditor = atom.workspace.getActiveTextEditor()
@@ -74,16 +93,25 @@ module.exports = AtomCscope =
     keyword = if selectedText == "" then activeEditor.getWordUnderCursor() else selectedText
     @atomCscopeView.inputView.invokeSearch(option, keyword)
   
-  activate: (state) ->
+  attachModal: (state) ->
     @atomCscopeView = new AtomCscopeView(state.atomCscopeViewState)
-    @modalPanel = atom.workspace.addTopPanel(item: @atomCscopeView.element, visible: false)
-    # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
-    @subscriptions = new CompositeDisposable
+    @setupModalLocation()
+    atom.config.onDidChange 'atom-cscope.WidgetLocation', (event) =>
+      wasVisible = if @modalPanel.isVisible() then true else false
+      @modalPanel.destroy()
+      @setupModalLocation()
+      @modalPanel.show() if wasVisible
+
+  setupModalLocation: ->
+    switch atom.config.get('atom-cscope.WidgetLocation')
+      when 'bottom' then @modalPanel = atom.workspace.addBottomPanel(item: @atomCscopeView.element, visible: false)
+      when 'top' then @modalPanel = atom.workspace.addTopPanel(item: @atomCscopeView.element, visible: false)
+      else @modalPanel = atom.workspace.addTopPanel(item: @atomCscopeView.element, visible: false)
+  
+  activate: (state) ->
+    @attachModal(state)
     @setUpBindings()
     @setUpEvents()
-
-    # Register command that toggles this view
-    @subscriptions.add atom.commands.add 'atom-workspace', 'atom-cscope:toggle': => @toggle()
   
   deactivate: ->
     @modalPanel.destroy()
@@ -95,7 +123,6 @@ module.exports = AtomCscope =
 
   toggle: ->
     if @modalPanel.isVisible()
-      @atomCscopeView.clearItems()
       @modalPanel.hide()
     else
       @modalPanel.show()

@@ -20,7 +20,9 @@ class InputView extends View
         @button class: "btn icon icon-search", id: "search", "Scope It!"
 
   initialize: (params) ->
-    @findEditor.getModel().getBuffer().stoppedChangingDelay = 800
+    @findEditor.getModel().getBuffer().stoppedChangingDelay = atom.config.get('atom-cscope.LiveSearchDelay')
+    atom.config.onDidChange 'atom-cscope.LiveSearchDelay', (event) =>
+      @findEditor.getModel().getBuffer().stoppedChangingDelay = event.newValue
 
   getSearchKeyword: ->
     return @findEditor.getText()
@@ -28,13 +30,25 @@ class InputView extends View
   getSelectedOption: ->
     return parseInt(@find('select#cscope-options').val())
     
+  setupLiveSearchListener: (callback) ->
+    if atom.config.get('atom-cscope.LiveSearch')
+      @liveSearchListener = @findEditor.getModel().onDidStopChanging callback
+    else
+      @liveSearchListener = false
+
+    atom.config.onDidChange 'atom-cscope.LiveSearch', (event) =>
+      if event.newValue && !@liveSearchListener
+        @liveSearchListener = @findEditor.getModel().onDidStopChanging callback
+      else
+        @liveSearchListener.dispose()
+
   onSearch: (callback) ->
     @wrapperCallback = wrapperCallback = () => 
       @parentView.toggleLoading true
       callback()
       @parentView.toggleLoading false
-
-    @findEditor.getModel().onDidStopChanging wrapperCallback
+    
+    @setupLiveSearchListener wrapperCallback
     @on 'click', 'button#search', wrapperCallback
     @on 'change', 'select#cscope-options', wrapperCallback
 

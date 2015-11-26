@@ -15,7 +15,7 @@ class AtomCscopeView extends View
         @ul id: "empty-container", class: "background-message centered", =>
           @li "No Results"
         @ol id: "result-container", class: "hidden", => 
-    
+
   clearItems: ->
     @find('ol#result-container').empty()
     
