@@ -58,9 +58,10 @@ module.exports = AtomCscope =
   
   setUpBindings: ->
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add @atomCscopeView.element,
-      'core:close': => @modalPanel.hide()
-      'core:cancel': => @modalPanel.hide()
+    @subscriptions.add atom.commands.add 'atom-workspace',
+      'core:cancel': => 
+        if @modalPanel.isVisible()
+          @modalPanel.hide()
 
     @subscriptions.add atom.commands.add 'atom-workspace', 
       'atom-cscope:toggle': => @toggle()
