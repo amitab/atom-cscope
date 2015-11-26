@@ -1,3 +1,6 @@
+## 0.7.0
+* Append all the result items at once, decreasing lag
+* Fix correct keyword highlighting
 ## 0.6.0
 * Fix working egrep
 * Search on Enter key or 800ms later
