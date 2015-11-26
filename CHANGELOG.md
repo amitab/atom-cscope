@@ -1,3 +1,9 @@
+## 0.8.0
+* Press `esc` to close widget
+* Configurable position of widget
+* Option to disable Live Search
+* Option to change Live Search delay
+
 ## 0.7.0
 * Append all the result items at once, decreasing lag
 * Fix correct keyword highlighting
