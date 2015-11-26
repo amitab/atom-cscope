@@ -19,10 +19,8 @@ class AtomCscopeView extends View
   clearItems: ->
     @find('ol#result-container').empty()
     
-  addResult: (data, key) ->
-    option = @inputView.getSelectedOption()
-    keyword = @inputView.getSearchKeyword()
-    @find('ol#result-container').append(new ResultItemView(data, key, option, keyword))
+  addResults: (resultViews) ->
+    @find('ol#result-container').append(resultViews)
     
   applyResultSet: (resultSet) ->
     if resultSet.isEmpty()
@@ -31,9 +29,15 @@ class AtomCscopeView extends View
       @toggleHidden false
       
     @resultSet = resultSet
+    resultViews = []
+    option = @inputView.getSelectedOption()
+    keyword = @inputView.getSearchKeyword()
+
     @find('h6#result-count').text(resultSet.results.length + ' results')
     for result, index in resultSet.results
-      @addResult(result, index)
+      resultViews.push new ResultItemView(result, index, option, keyword)
+      
+    @addResults(resultViews)
       
   toggleHidden: (show) ->
     if typeof show == 'undefined'
