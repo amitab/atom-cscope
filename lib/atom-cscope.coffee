@@ -66,31 +66,31 @@ module.exports = AtomCscope =
     @subscriptions.add atom.commands.add 'atom-workspace', 
       'atom-cscope:toggle': => @toggle()
       'atom-cscope:find-this-symbol': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(0)
       'atom-cscope:find-this-global-definition': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(1)
       'atom-cscope:find-functions-called-by': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(2)
       'atom-cscope:find-functions-calling': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(3)
       'atom-cscope:find-text-string': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(4)
       'atom-cscope:find-egrep-pattern': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(6)
       'atom-cscope:find-this-file': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(7)
       'atom-cscope:find-files-including': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(8)
       'atom-cscope:find-assignments-to': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(9)
 
   autoInputFromCursor: (option) ->
@@ -128,9 +128,12 @@ module.exports = AtomCscope =
   serialize: ->
     atomCscopeViewState: @atomCscopeView.serialize()
 
+  show: ->
+    @modalPanel.show()
+    @atomCscopeView.inputView.findEditor.focus()
+
   toggle: ->
     if @modalPanel.isVisible()
       @modalPanel.hide()
     else
-      @modalPanel.show()
-      @atomCscopeView.inputView.findEditor.focus()
+      @show()
