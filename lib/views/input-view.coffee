@@ -31,6 +31,9 @@ class InputView extends View
   getSelectedOption: ->
     return parseInt(@find('select#cscope-options').val())
     
+  setSelectedOption: (option) ->
+    @find('select#cscope-options').val(option.toString())
+    
   getCurrentSearch: ->
     return { keyword: @getSearchKeyword(), option: @getSelectedOption() }
     

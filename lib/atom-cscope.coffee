@@ -62,6 +62,35 @@ module.exports = AtomCscope =
       'atom-cscope:toggle': => @toggle()
       'core:cancel': => @hide() if @modalPanel.isVisible()
       'atom-cscope:focus-next': => @switchPanes() if @modalPanel.isVisible()
+      
+    @subscriptions.add atom.commands.add 'atom-workspace', 
+      'atom-cscope:toggle-symbol': => 
+        @atomCscopeView.inputView.setSelectedOption(0)
+        @toggle()
+      'atom-cscope:toggle-definition': => 
+        @atomCscopeView.inputView.setSelectedOption(1)
+        @toggle()
+      'atom-cscope:toggle-functions-called-by': => 
+        @atomCscopeView.inputView.setSelectedOption(2)
+        @toggle()
+      'atom-cscope:toggle-functions-calling': => 
+        @atomCscopeView.inputView.setSelectedOption(3)
+        @toggle()
+      'atom-cscope:toggle-text-string': => 
+        @atomCscopeView.inputView.setSelectedOption(4)
+        @toggle()
+      'atom-cscope:toggle-egrep-pattern': => 
+        @atomCscopeView.inputView.setSelectedOption(6)
+        @toggle()
+      'atom-cscope:toggle-file': => 
+        @atomCscopeView.inputView.setSelectedOption(7)
+        @toggle()
+      'atom-cscope:toggle-files-including': => 
+        @atomCscopeView.inputView.setSelectedOption(8)
+        @toggle()
+      'atom-cscope:toggle-assignments-to': => 
+        @atomCscopeView.inputView.setSelectedOption(9)
+        @toggle()
 
     @subscriptions.add atom.commands.add 'atom-workspace', 
       'atom-cscope:find-this-symbol': => 

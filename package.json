@@ -19,7 +19,16 @@
       "atom-cscope:find-egrep-pattern",
       "atom-cscope:find-this-file",
       "atom-cscope:find-files-including",
-      "atom-cscope:find-assignments-to"
+      "atom-cscope:find-assignments-to",
+      "atom-cscope:toggle-symbol",
+      "atom-cscope:toggle-definition",
+      "atom-cscope:toggle-functions-called-by",
+      "atom-cscope:toggle-functions-calling",
+      "atom-cscope:toggle-text-string",
+      "atom-cscope:toggle-egrep-pattern",
+      "atom-cscope:toggle-file",
+      "atom-cscope:toggle-files-including",
+      "atom-cscope:toggle-assignments-to"
     ]
   },
   "repository": "https://github.com/amitab/atom-cscope",
