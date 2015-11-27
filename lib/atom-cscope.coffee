@@ -59,12 +59,11 @@ module.exports = AtomCscope =
   setUpBindings: ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',
-      'core:cancel': => 
-        if @modalPanel.isVisible()
-          @modalPanel.hide()
+      'atom-cscope:toggle': => @toggle()
+      'core:cancel': => @hide() if @modalPanel.isVisible()
+      'atom-cscope:focus-next': => @switchPanes() if @modalPanel.isVisible()
 
     @subscriptions.add atom.commands.add 'atom-workspace', 
-      'atom-cscope:toggle': => @toggle()
       'atom-cscope:find-this-symbol': => 
         @show()
         @autoInputFromCursor(0)
@@ -129,11 +128,19 @@ module.exports = AtomCscope =
     atomCscopeViewState: @atomCscopeView.serialize()
 
   show: ->
+    @prevEditor = atom.workspace.getActiveTextEditor()
     @modalPanel.show()
     @atomCscopeView.inputView.findEditor.focus()
+    
+  hide: ->
+    @modalPanel.hide()
+    atom.views.getView(@prevEditor).focus()
 
   toggle: ->
-    if @modalPanel.isVisible()
-      @modalPanel.hide()
+    if @modalPanel.isVisible() then @hide() else @show()
+    
+  switchPanes: ->
+    if @atomCscopeView.inputView.findEditor.hasFocus()
+      atom.views.getView(@prevEditor).focus()
     else
-      @show()
+      @atomCscopeView.inputView.findEditor.focus()
