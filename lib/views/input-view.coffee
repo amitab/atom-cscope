@@ -43,19 +43,10 @@ class InputView extends View
         @liveSearchListener.dispose()
 
   onSearch: (callback) ->
-    @wrapperCallback = wrapperCallback = () => 
-      @parentView.toggleLoading true
-      callback()
-      @parentView.toggleLoading false
-    
-    @setupLiveSearchListener wrapperCallback
-    @on 'click', 'button#search', wrapperCallback
-    @on 'change', 'select#cscope-options', wrapperCallback
-
-    atom.views.getView(@findEditor).onkeyup = (event) ->
-      keycode = if event.keyCode then event.keyCode else event.which
-      if keycode == 13
-        wrapperCallback()
+    @setupLiveSearchListener callback
+    @on 'click', 'button#search', callback
+    @on 'change', 'select#cscope-options', callback
+    # @on 'core:confirm', @findEditor, wrapperCallback
     
   autoFill: (option, keyword) ->
     @findEditor.setText(keyword)

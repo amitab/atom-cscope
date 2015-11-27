@@ -27,7 +27,7 @@ module.exports = AtomCscope =
       enum: ['top', 'bottom']
 
   setUpEvents: ->
-    @atomCscopeView.inputView.onSearch () =>
+    @atomCscopeView.onSearch () =>
       option = @atomCscopeView.inputView.getSelectedOption()
       keyword = @atomCscopeView.inputView.getSearchKeyword()
       projects = atom.project.getPaths()

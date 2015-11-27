@@ -1,5 +1,6 @@
 {$, View} = require 'space-pen'
 InputView = require './input-view'
+ListView = require './list-view'
 
 module.exports =
 class AtomCscopeView extends View
@@ -10,45 +11,29 @@ class AtomCscopeView extends View
         @h6 class: "inline-block", id: 'result-count', "0 results"
         @span class: 'loading loading-spinner-tiny inline-block no-show'
       @subview 'inputView', new InputView()
-      @div class: "list-container", =>
-        @ul id: "empty-container", class: "background-message centered", =>
-          @li "No Results"
-        @ol id: "result-container", class: "hidden", => 
-
+      @subview 'listView', new ListView()
+  
+  initialize: ->
+    @on 'core:move-up', =>
+      @listView.selectPreviousItemView()
+    @on 'core:move-down', =>
+      @listView.selectNextItemView()
+    @on 'core:move-to-top', =>
+      @listView.selectFirstItemView()
+    @on 'core:move-to-bottom', =>
+      @listView.selectLastItemView()
+  
   clearItems: ->
-    @find('ol#result-container').empty()
-    
-  addResults: (resultViews) ->
-    @find('ol#result-container').append(resultViews)
+    @listView.clearItems()
     
   applyResultSet: (@resultSet = []) ->
-    if @resultSet.isEmpty() then @showHidden() else @removeHidden()
     @find('h6#result-count').text(resultSet.results.length + ' results')
-
-    resultViews = []
-    for result in resultSet.results
-      resultViews.push result.generateView()
-
-    @addResults(resultViews)
-
-  removeHidden: ->
-    @find('ul#empty-container').addClass('hidden')
-    @find('ol#result-container').removeClass('hidden')
-  
-  showHidden: ->
-    @find('ul#empty-container').removeClass('hidden')
-    @find('ol#result-container').addClass('hidden')
-
-  toggleLoading: (show) ->
-    if typeof show == 'undefined'
-      if @find('span.loading').hasClass('no-show')
-        @showLoading()
-      else
-        @removeLoading()
-    else if !show
-      @removeLoading()
-    else if show
-      @showLoading()
+    @listView.setItems(@resultSet.results)
+    
+  onSearch: (callback) ->
+    @showLoading()
+    @inputView.onSearch callback
+    @removeLoading()
       
   removeLoading: ->
     callback = => @find('span.loading').addClass('no-show')
@@ -59,11 +44,7 @@ class AtomCscopeView extends View
     setTimeout callback, 10
 
   onResultClick: (callback) ->
-    @on 'click', 'li.result-item', (e) =>
-      @find('li.selected').removeClass('selected')
-      target = $(e.target).closest('li')
-      target.addClass('selected')
-      callback(target.data('result-item'))
+    @listView.onConfirm callback
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->

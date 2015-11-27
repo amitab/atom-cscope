@@ -20,12 +20,9 @@ module.exports =
       if @isJustFile
         @fileName = @fileName.replace(@keyword, '<span class="text-highlight bold">\$&</span>')
       
-      debugger
       if !@keyword
-        debugger
         @lineText = data[3]
       else
-        debugger
         @keyword = new RegExp(@keyword)
         @lineText = data[3].replace(/</g, '&lt;')
         @lineText = @lineText.replace(/>/g, '&gt;')
