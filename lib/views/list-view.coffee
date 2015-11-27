@@ -9,6 +9,9 @@ class ListView extends View
       @ul id: "empty-container", class: "background-message centered", outlet: 'emptyList', =>
         @li "No Results"
       @ol id: "result-container", class: "hidden", outlet: 'resultList'
+      
+  initialize: ->
+    @keyUsed = false
 
   setItems: (@items=[]) ->
     if @items.length == 0 then @setResultsNotAvailable() else @setResultsAvailable()
@@ -22,12 +25,14 @@ class ListView extends View
     @on 'click', 'li.result-item', (e) =>
       target = $(e.target).closest('li')
       return if target.length == 0
+      @keyUsed = false
       @selectItemView(target)
       callback(target.data('result-item'))
   
     @parentView.on 'core:confirm', (e) =>
       target = @getSelectedItemView()
-      return if target.length == 0
+      return if target.length == 0 || (!@keyUsed && !@parentView.inputView.isSamePreviousSearch()) || !target.hasClass('selected')
+      @keyUsed = false
       callback(target.data('result-item'))
 
   setResultsNotAvailable: ->

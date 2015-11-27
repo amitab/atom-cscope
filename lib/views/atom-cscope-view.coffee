@@ -15,12 +15,16 @@ class AtomCscopeView extends View
   
   initialize: ->
     @on 'core:move-up', =>
+      @listView.keyUsed = true
       @listView.selectPreviousItemView()
     @on 'core:move-down', =>
+      @listView.keyUsed = true
       @listView.selectNextItemView()
     @on 'core:move-to-top', =>
+      @listView.keyUsed = true
       @listView.selectFirstItemView()
     @on 'core:move-to-bottom', =>
+      @listView.keyUsed = true
       @listView.selectLastItemView()
   
   clearItems: ->
@@ -31,9 +35,7 @@ class AtomCscopeView extends View
     @listView.setItems(@resultSet.results)
     
   onSearch: (callback) ->
-    @showLoading()
     @inputView.onSearch callback
-    @removeLoading()
       
   removeLoading: ->
     callback = => @find('span.loading').addClass('no-show')
