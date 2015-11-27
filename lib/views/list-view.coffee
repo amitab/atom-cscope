@@ -19,12 +19,12 @@ class ListView extends View
     @resultList.empty()
     
   onConfirm: (callback) ->
-    wrapperCallback = (e) =>
+    @on 'click', 'li.result-item', (e) =>
       target = $(e.target).closest('li')
+      return if target.length == 0
       @selectItemView(target)
       callback(target.data('result-item'))
-      
-    @on 'click', 'li.result-item', wrapperCallback
+  
     @parentView.on 'core:confirm', (e) =>
       target = @getSelectedItemView()
       return if target.length == 0
