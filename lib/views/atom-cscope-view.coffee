@@ -1,6 +1,5 @@
 {$, View} = require 'space-pen'
 InputView = require './input-view'
-ResultItemView = require './result-item-view'
 
 module.exports =
 class AtomCscopeView extends View
@@ -24,17 +23,14 @@ class AtomCscopeView extends View
     
   applyResultSet: (@resultSet = []) ->
     if @resultSet.isEmpty() then @showHidden() else @removeHidden()
-    
-    resultViews = []
-    option = @inputView.getSelectedOption()
-    keyword = @inputView.getSearchKeyword()
-
     @find('h6#result-count').text(resultSet.results.length + ' results')
-    for result, index in resultSet.results
-      resultViews.push ResultItemView.setup(result, index, option, keyword)
-      
+
+    resultViews = []
+    for result in resultSet.results
+      resultViews.push result.generateView()
+
     @addResults(resultViews)
-      
+
   removeHidden: ->
     @find('ul#empty-container').addClass('hidden')
     @find('ol#result-container').removeClass('hidden')

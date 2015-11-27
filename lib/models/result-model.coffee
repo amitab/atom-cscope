@@ -30,4 +30,7 @@ module.exports =
         @lineText = data[3].replace(/</g, '&lt;')
         @lineText = @lineText.replace(/>/g, '&gt;')
         @lineText = @lineText.replace(@keyword, '<span class="text-highlight bold">\$&</span>')
+
+    generateView: ->
+      return ResultItemView.setup(@)
       

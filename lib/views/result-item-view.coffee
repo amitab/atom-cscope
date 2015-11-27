@@ -4,7 +4,8 @@ module.exports =
 class ResultItemView extends View
   @content: ->
     @li class: 'result-item',  =>
-      @span class: 'file-name'
+      @div class: 'inline-block', style: 'margin-right: 0px', =>
+        @span class: 'file-name'
       @div class: 'inline-block', outlet: 'fileDetails', =>
         @span ":"
         @span class: 'line-number bold'
@@ -13,7 +14,7 @@ class ResultItemView extends View
         @span class: 'gap'
         @div class: 'inline-block code-line', =>
       
-  @setup: (result, keyword) ->
+  @setup: (result) ->
     resultItem = new @
     item = resultItem.containingView()
     item.data('result-item', result)
