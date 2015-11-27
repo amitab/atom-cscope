@@ -23,7 +23,7 @@ class AtomCscopeView extends View
     @find('ol#result-container').append(resultViews)
     
   applyResultSet: (@resultSet = []) ->
-    if resultSet.isEmpty() then @showHidden() else @removeHidden()
+    if @resultSet.isEmpty() then @showHidden() else @removeHidden()
     
     resultViews = []
     option = @inputView.getSelectedOption()

@@ -17,12 +17,13 @@ class ResultItemView extends View
     resultItem = new @
     item = resultItem.containingView()
     item.data('result-item', result)
-    item.find('.file-name').text(result.fileName)
     if !result.isJustFile
+      item.find('.file-name').text(result.fileName)
       item.find('.line-number').text(result.lineNumber)
       item.find('.function-name').text(result.functionName)
       item.find('.code-line').html(result.lineText)
     else
+      item.find('.file-name').html(result.fileName)
       resultItem.fileDetails.remove()
       
     return resultItem

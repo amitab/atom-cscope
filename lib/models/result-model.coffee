@@ -17,6 +17,9 @@ module.exports =
       
       @isJustFile = data[3].trim() == '<unknown>' 
       
+      if @isJustFile
+        @fileName = @fileName.replace(@keyword, '<span class="text-highlight bold">\$&</span>')
+      
       debugger
       if !@keyword
         debugger
