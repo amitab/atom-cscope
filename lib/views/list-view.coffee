@@ -20,8 +20,8 @@ class ListView extends View
     
   onConfirm: (callback) ->
     @on 'click', 'li.result-item', (e) =>
-      target = $(e.target).closest('li')
-      return if target.length == 0
+      target = $(e.target)
+      return if target.length == 0 || !target.is('li')
       @selectItemView(target)
       callback(target.data('result-item'))
   
@@ -67,7 +67,7 @@ class ListView extends View
   scrollToItemView: (view) ->
     scrollTop = @resultList.scrollTop()
     desiredTop = view.position().top + scrollTop
-    desiredBottom = desiredTop + view.outerHeight()
+    desiredBottom = desiredTop + view.outerHeight() + 50
 
     if desiredTop < scrollTop
       @resultList.scrollTop(desiredTop)
