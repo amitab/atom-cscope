@@ -2,23 +2,21 @@ ResultModel = require './result-model'
 
 module.exports = 
   class ResultSetModel
-    constructor: (response) ->
+    constructor: (keyword, response) ->
       @results = []
+      @keyword = keyword
       @addResults(response)
             
     addResults: (response) ->
       if typeof response != 'undefined'
         for line in response.split("\n")
           if line != ""
-            result = new ResultModel(line)
+            result = new ResultModel(line, @keyword)
             @results.push(result)
             
     addResultSet: (resultSet) ->
-      if typeof resultSet != 'undefined'
+      if typeof resultSet != 'undefined' && resultSet.keyword == @keyword
         @results = @results.concat(resultSet.results)
         
     isEmpty: ->
-      if @results.length == 0
-        return true
-      else
-        return false
+      return @results.length == 0

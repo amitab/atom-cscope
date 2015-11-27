@@ -1,4 +1,4 @@
-{View} = require 'space-pen'
+{$, View} = require 'space-pen'
 InputView = require './input-view'
 ResultItemView = require './result-item-view'
 
@@ -22,33 +22,18 @@ class AtomCscopeView extends View
   addResults: (resultViews) ->
     @find('ol#result-container').append(resultViews)
     
-  applyResultSet: (resultSet) ->
-    if resultSet.isEmpty()
-      @toggleHidden true
-    else
-      @toggleHidden false
-      
-    @resultSet = resultSet
+  applyResultSet: (@resultSet = []) ->
+    if resultSet.isEmpty() then @showHidden() else @removeHidden()
+    
     resultViews = []
     option = @inputView.getSelectedOption()
     keyword = @inputView.getSearchKeyword()
 
     @find('h6#result-count').text(resultSet.results.length + ' results')
     for result, index in resultSet.results
-      resultViews.push new ResultItemView(result, index, option, keyword)
+      resultViews.push ResultItemView.setup(result, index, option, keyword)
       
     @addResults(resultViews)
-      
-  toggleHidden: (show) ->
-    if typeof show == 'undefined'
-      if @find('ul#empty-container').hasClass('hidden')
-        @showHidden()
-      else
-        @removeHidden()
-    else if !show
-      @removeHidden()
-    else if show
-      @showHidden()
       
   removeHidden: ->
     @find('ul#empty-container').addClass('hidden')
@@ -78,12 +63,11 @@ class AtomCscopeView extends View
     setTimeout callback, 10
 
   onResultClick: (callback) ->
-    self = this
-    @on 'click', 'li.result-item', () ->
-      self.find('li.selected').removeClass('selected')
-      @classList.add 'selected'
-      key = parseInt(@getAttribute('data-key'))
-      callback(self.resultSet.results[key])
+    @on 'click', 'li.result-item', (e) =>
+      @find('li.selected').removeClass('selected')
+      target = $(e.target).closest('li')
+      target.addClass('selected')
+      callback(target.data('result-item'))
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->

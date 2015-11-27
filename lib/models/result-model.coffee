@@ -1,6 +1,9 @@
+ResultItemView = require '../views/result-item-view'
+
 module.exports = 
   class ResultModel
-    constructor: (response) ->
+    constructor: (response, keyword) ->
+      @keyword = if typeof keyword != 'undefined' then keyword else false
       @processResultString(response)
     
     processResultString: (response) ->
@@ -11,5 +14,17 @@ module.exports =
       @fileName = data[0]
       @functionName = data[1]
       @lineNumber = parseInt(data[2])
-      @lineText = data[3]
+      
+      @isJustFile = data[3].trim() == '<unknown>' 
+      
+      debugger
+      if !@keyword
+        debugger
+        @lineText = data[3]
+      else
+        debugger
+        @keyword = new RegExp(@keyword)
+        @lineText = data[3].replace(/</g, '&lt;')
+        @lineText = @lineText.replace(/>/g, '&gt;')
+        @lineText = @lineText.replace(@keyword, '<span class="text-highlight bold">\$&</span>')
       
