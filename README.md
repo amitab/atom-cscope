@@ -59,10 +59,10 @@ The command `atom-cscope:focus-next` allows you to switch between the main
 editor and the widget, while the widget is open.
 
 There are 3 ways of executing a search:
-1. Live search: Executes a search with configurable delay after you input your 
+* Live search: Executes a search with configurable delay after you input your 
    search term.
-2. Enter Key: Just press enter after typing your input.
-3. "SCOPE IT!" button: Click the button.
+* Enter Key: Just press enter after typing your input.
+* "SCOPE IT!" button: Click the button.
 
 If new search is same as previous search, no action is taken. However you can
 force search by clicking on the "SCOPE IT!" button
