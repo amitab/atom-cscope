@@ -27,9 +27,9 @@ module.exports = AtomCscope =
       enum: ['top', 'bottom']
 
   setUpEvents: ->
-    @atomCscopeView.inputView.onSearch () =>
-      option = @atomCscopeView.inputView.getSelectedOption()
-      keyword = @atomCscopeView.inputView.getSearchKeyword()
+    @atomCscopeView.onSearch (params) =>
+      option = params.option
+      keyword = params.keyword
       projects = atom.project.getPaths()
       
       switch option
@@ -59,38 +59,66 @@ module.exports = AtomCscope =
   setUpBindings: ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',
-      'core:cancel': => 
-        if @modalPanel.isVisible()
-          @modalPanel.hide()
+      'atom-cscope:toggle': => @toggle()
+      'core:cancel': => @hide() if @modalPanel.isVisible()
+      'atom-cscope:focus-next': => @switchPanes() if @modalPanel.isVisible()
+      
+    @subscriptions.add atom.commands.add 'atom-workspace', 
+      'atom-cscope:toggle-symbol': => 
+        @atomCscopeView.inputView.setSelectedOption(0)
+        @toggle()
+      'atom-cscope:toggle-definition': => 
+        @atomCscopeView.inputView.setSelectedOption(1)
+        @toggle()
+      'atom-cscope:toggle-functions-called-by': => 
+        @atomCscopeView.inputView.setSelectedOption(2)
+        @toggle()
+      'atom-cscope:toggle-functions-calling': => 
+        @atomCscopeView.inputView.setSelectedOption(3)
+        @toggle()
+      'atom-cscope:toggle-text-string': => 
+        @atomCscopeView.inputView.setSelectedOption(4)
+        @toggle()
+      'atom-cscope:toggle-egrep-pattern': => 
+        @atomCscopeView.inputView.setSelectedOption(6)
+        @toggle()
+      'atom-cscope:toggle-file': => 
+        @atomCscopeView.inputView.setSelectedOption(7)
+        @toggle()
+      'atom-cscope:toggle-files-including': => 
+        @atomCscopeView.inputView.setSelectedOption(8)
+        @toggle()
+      'atom-cscope:toggle-assignments-to': => 
+        @atomCscopeView.inputView.setSelectedOption(9)
+        @toggle()
 
     @subscriptions.add atom.commands.add 'atom-workspace', 
-      'atom-cscope:toggle': => @toggle()
       'atom-cscope:find-this-symbol': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(0)
       'atom-cscope:find-this-global-definition': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(1)
       'atom-cscope:find-functions-called-by': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(2)
       'atom-cscope:find-functions-calling': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(3)
       'atom-cscope:find-text-string': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(4)
       'atom-cscope:find-egrep-pattern': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(6)
       'atom-cscope:find-this-file': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(7)
       'atom-cscope:find-files-including': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(8)
       'atom-cscope:find-assignments-to': => 
-        @toggle()
+        @show()
         @autoInputFromCursor(9)
 
   autoInputFromCursor: (option) ->
@@ -128,9 +156,20 @@ module.exports = AtomCscope =
   serialize: ->
     atomCscopeViewState: @atomCscopeView.serialize()
 
+  show: ->
+    @prevEditor = atom.workspace.getActiveTextEditor()
+    @modalPanel.show()
+    @atomCscopeView.inputView.findEditor.focus()
+    
+  hide: ->
+    @modalPanel.hide()
+    atom.views.getView(@prevEditor).focus()
+
   toggle: ->
-    if @modalPanel.isVisible()
-      @modalPanel.hide()
+    if @modalPanel.isVisible() then @hide() else @show()
+    
+  switchPanes: ->
+    if @atomCscopeView.inputView.findEditor.hasFocus()
+      atom.views.getView(@prevEditor).focus()
     else
-      @modalPanel.show()
       @atomCscopeView.inputView.findEditor.focus()

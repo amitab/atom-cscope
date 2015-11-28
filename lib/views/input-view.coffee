@@ -20,6 +20,7 @@ class InputView extends View
         @button class: "btn icon icon-search", id: "search", "Scope It!"
 
   initialize: (params) ->
+    @prevSearch = { keyword: '', option: -1 }
     @findEditor.getModel().getBuffer().stoppedChangingDelay = atom.config.get('atom-cscope.LiveSearchDelay')
     atom.config.onDidChange 'atom-cscope.LiveSearchDelay', (event) =>
       @findEditor.getModel().getBuffer().stoppedChangingDelay = event.newValue
@@ -29,6 +30,19 @@ class InputView extends View
     
   getSelectedOption: ->
     return parseInt(@find('select#cscope-options').val())
+    
+  setSelectedOption: (option) ->
+    @find('select#cscope-options').val(option.toString())
+    
+  getCurrentSearch: ->
+    return { keyword: @getSearchKeyword(), option: @getSelectedOption() }
+    
+  isCurrentSearchSameAs: (search) ->
+    currentSearch = @getCurrentSearch()
+    return currentSearch.keyword == search.keyword && currentSearch.option == search.option
+    
+  isSamePreviousSearch: ->
+    return @isCurrentSearchSameAs(@prevSearch)
     
   setupLiveSearchListener: (callback) ->
     if atom.config.get('atom-cscope.LiveSearch')
@@ -43,19 +57,20 @@ class InputView extends View
         @liveSearchListener.dispose()
 
   onSearch: (callback) ->
-    @wrapperCallback = wrapperCallback = () => 
-      @parentView.toggleLoading true
-      callback()
-      @parentView.toggleLoading false
+    wrapperCallback = () =>
+      @parentView.showLoading()
+      @prevSearch = @getCurrentSearch()
+      callback(@prevSearch)
+      @parentView.removeLoading()
     
     @setupLiveSearchListener wrapperCallback
     @on 'click', 'button#search', wrapperCallback
     @on 'change', 'select#cscope-options', wrapperCallback
-
-    atom.views.getView(@findEditor).onkeyup = (event) ->
-      keycode = if event.keyCode then event.keyCode else event.which
-      if keycode == 13
-        wrapperCallback()
+    @on 'core:confirm', @findEditor, (e) =>
+      return if @isSamePreviousSearch()
+      wrapperCallback()
+      e.preventDefault()
+      false
     
   autoFill: (option, keyword) ->
     @findEditor.setText(keyword)

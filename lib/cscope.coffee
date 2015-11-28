@@ -12,7 +12,7 @@ module.exports = CscopeCommands =
           options: options
           stdout: (data) -> output += data.toString()
           stderr: (data) -> reject {success: false, message: "At " + options.cwd + ": " + data.toString()}
-          exit: (code) -> resolve new ResultSetModel(output)
+          exit: (code) -> resolve output
       catch
         reject "Couldn't find cscope"
     return process
@@ -22,11 +22,16 @@ module.exports = CscopeCommands =
       return new Promise (resolve, reject) ->
         resolve new ResultSetModel()
     else
-      return @runCommand 'cscope', ['-d', '-L', '-' + num, keyword], {cwd: cwd}
+      return new Promise (resolve, reject) =>
+        @runCommand 'cscope', ['-d', '-L', '-' + num, keyword], {cwd: cwd}
+        .then (data) ->
+          resolve new ResultSetModel(keyword, data)
+        .catch (data) ->
+          reject data
 
   runCscopeCommands: (num, keyword, paths) ->
     promises = []
-    resultSet = new ResultSetModel()
+    resultSet = new ResultSetModel(keyword)
     for path in paths
       promises.push(@runCscopeCommand num, keyword, path)
 
