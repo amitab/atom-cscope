@@ -1,3 +1,7 @@
+## 0.10.0
+* Fix search under cursor/selection (Issue #2)
+* Change event handling methods in Input View
+* Fix filenames on file search
 ## 0.9.0
 * Press `enter` to execute a new search
 * Navigate Results list with arrow keys and select with `enter` (Issue #1)
