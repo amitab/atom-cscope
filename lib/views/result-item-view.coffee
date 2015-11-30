@@ -22,9 +22,9 @@ class ResultItemView extends View
       item.find('.file-name').text(result.fileName)
       item.find('.line-number').text(result.lineNumber)
       item.find('.function-name').text(result.functionName)
-      item.find('.code-line').html(result.lineText)
+      item.find('.code-line').html(result.htmlLineText)
     else
-      item.find('.file-name').html(result.fileName)
+      item.find('.file-name').html(result.htmlFileName)
       resultItem.fileDetails.remove()
       
     return resultItem

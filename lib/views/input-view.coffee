@@ -24,6 +24,19 @@ class InputView extends View
     @findEditor.getModel().getBuffer().stoppedChangingDelay = atom.config.get('atom-cscope.LiveSearchDelay')
     atom.config.onDidChange 'atom-cscope.LiveSearchDelay', (event) =>
       @findEditor.getModel().getBuffer().stoppedChangingDelay = event.newValue
+    
+    @on 'click', 'button#search', @searchCallback
+    @on 'change', 'select#cscope-options', @searchCallback
+    @on 'core:confirm', @findEditor, (event) => @searchCallback(event) unless @isSamePreviousSearch()
+    @setupLiveSearchListener()
+
+  searchCallback: (event) =>
+    @parentView.showLoading()
+    @customSearchCallback(@getCurrentSearch()) if @customSearchCallback
+    @prevSearch = @getCurrentSearch()
+    @parentView.removeLoading()
+    event.preventDefault() if event
+    false
 
   getSearchKeyword: ->
     return @findEditor.getText()
@@ -44,43 +57,29 @@ class InputView extends View
   isSamePreviousSearch: ->
     return @isCurrentSearchSameAs(@prevSearch)
     
-  setupLiveSearchListener: (callback) ->
+  setupLiveSearchListener: () ->
     if atom.config.get('atom-cscope.LiveSearch')
-      @liveSearchListener = @findEditor.getModel().onDidStopChanging callback
+      @liveSearchListener = @findEditor.getModel().onDidStopChanging @searchCallback
     else
       @liveSearchListener = false
 
     atom.config.onDidChange 'atom-cscope.LiveSearch', (event) =>
       if event.newValue && !@liveSearchListener
-        @liveSearchListener = @findEditor.getModel().onDidStopChanging callback
+        @liveSearchListener = @findEditor.getModel().onDidStopChanging @searchCallback
       else
         @liveSearchListener.dispose()
+        @liveSearchListener = false
 
   onSearch: (callback) ->
-    wrapperCallback = () =>
-      @parentView.showLoading()
-      @prevSearch = @getCurrentSearch()
-      callback(@prevSearch)
-      @parentView.removeLoading()
-    
-    @setupLiveSearchListener wrapperCallback
-    @on 'click', 'button#search', wrapperCallback
-    @on 'change', 'select#cscope-options', wrapperCallback
-    @on 'core:confirm', @findEditor, (e) =>
-      return if @isSamePreviousSearch()
-      wrapperCallback()
-      e.preventDefault()
-      false
+    @customSearchCallback = callback
     
   autoFill: (option, keyword) ->
     @findEditor.setText(keyword)
     @find('select#cscope-options').val(option.toString())
     
   invokeSearch: (option, keyword) ->
-    throw new Error("No search callback set!") if !@wrapperCallback
-
     @autoFill(option, keyword)
-    @wrapperCallback()
+    @findEditor.trigger 'core:confirm'
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->

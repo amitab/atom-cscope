@@ -14,19 +14,18 @@ module.exports =
       @fileName = data[0]
       @functionName = data[1]
       @lineNumber = parseInt(data[2])
+      @lineText = data[3]
       
       @isJustFile = data[3].trim() == '<unknown>' 
+      regex = new RegExp(@keyword, 'g')
       
       if @isJustFile
-        @fileName = @fileName.replace(@keyword, '<span class="text-highlight bold">\$&</span>')
+        @htmlFileName = @fileName.replace(regex, '<span class="text-highlight bold">\$&</span>')
       
-      if !@keyword
-        @lineText = data[3]
-      else
-        @keyword = new RegExp(@keyword)
-        @lineText = data[3].replace(/</g, '&lt;')
-        @lineText = @lineText.replace(/>/g, '&gt;')
-        @lineText = @lineText.replace(@keyword, '<span class="text-highlight bold">\$&</span>')
+      if @keyword
+        @htmlLineText = data[3].replace(/</g, '&lt;')
+        @htmlLineText = @htmlLineText.replace(/>/g, '&gt;')
+        @htmlLineText = @htmlLineText.replace(regex, '<span class="text-highlight bold">\$&</span>')
 
     generateView: ->
       return ResultItemView.setup(@)
