@@ -69,7 +69,10 @@ module.exports = AtomCscope =
         @atomCscopeView.clearItems()
         @atomCscopeView.applyResultSet(data)
       .catch (data) =>
-        notifier.addError "Error: " + data.message
+        if data.message.indexOf("cannot open file cscope.out") > 0
+          notifier.addError "Error: Please generate the cscope database."
+        else
+          notifier.addError "Error: " + data.message
         
     @atomCscopeView.onResultClick (result) =>
       atom.workspace.open(result.fileName, {initialLine: (result.lineNumber - 1)})
@@ -163,7 +166,6 @@ module.exports = AtomCscope =
       else @modalPanel = atom.workspace.addTopPanel(item: @atomCscopeView.element, visible: false)
   
   activate: (state) ->
-    cscope.setupCscope atom.project.getPaths(), atom.config.get('atom-cscope.cscopeSourceFiles')
     @attachModal(state)
     @setUpBindings()
     @setUpEvents()

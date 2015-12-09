@@ -8,7 +8,7 @@ class AtomCscopeView extends View
     @div class: "atom-cscope", =>
       @div class: "header", =>
         @div class: "inline-block spaced-item", =>
-          @button class: "btn just-btn icon icon-repo-sync", id: "refresh"
+          @button class: "btn just-btn icon icon-zap", id: "refresh"
         @h4 class: "inline-block", "Atom Cscope"
         @h6 class: "inline-block", id: 'result-count', "0 results"
         @span class: 'loading loading-spinner-tiny inline-block no-show'
