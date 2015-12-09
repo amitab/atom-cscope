@@ -25,9 +25,17 @@ module.exports = AtomCscope =
       type: 'string'
       default: 'top'
       enum: ['top', 'bottom']
+    cscopeSourceFiles:
+      title: 'Source file extensions'
+      description: 'Enter the extensions of the source files with which you want cscope generated (with spaces)'
+      type: 'string'
+      default: '.c .cc .cpp .h .hpp'
       
   refreshCscopeDB: ->
-    cscope.setupCscope atom.project.getPaths(), true
+    exts = atom.config.get('atom-cscope.cscopeSourceFiles')
+    console.log exts
+    return if exts.trim() == ""
+    cscope.setupCscope atom.project.getPaths(), exts, true
     .then (data) ->
       notifier.addSuccess "Success: Refreshed cscope database"
     .catch (data) ->
@@ -155,7 +163,7 @@ module.exports = AtomCscope =
       else @modalPanel = atom.workspace.addTopPanel(item: @atomCscopeView.element, visible: false)
   
   activate: (state) ->
-    cscope.setupCscope atom.project.getPaths()
+    cscope.setupCscope atom.project.getPaths(), atom.config.get('atom-cscope.cscopeSourceFiles')
     @attachModal(state)
     @setUpBindings()
     @setUpEvents()

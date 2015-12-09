@@ -21,12 +21,11 @@ module.exports = CscopeCommands =
         reject {success: false, info: err.toString()} if err
         resolve {success: true}
         
-  setupCscopeForPath: (path, force) ->
+  setupCscopeForPath: (path, exts, force) ->
     cscopeExists = if force then Promise.reject force else @cscopeExists path
     cscopeExists.then (data) =>
       return Promise.resolve {success: true}
     .catch (data) =>
-      exts = '.c .cc .cpp .h .hpp'
       sourceFileGen = @getSourceFiles path, exts
       writeCscopeFiles = sourceFileGen.then (data) =>
         return @writeToFile path, 'cscope.files', data
@@ -35,10 +34,10 @@ module.exports = CscopeCommands =
         
       return Promise.all([sourceFileGen, writeCscopeFiles, dbGen])
       
-  setupCscope: (paths, force = false) ->
+  setupCscope: (paths, exts, force = false) ->
     promises = []
     for path in paths
-      promises.push @setupCscopeForPath path, force
+      promises.push @setupCscopeForPath path, exts, force
       
     return Promise.all(promises)
     
