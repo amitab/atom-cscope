@@ -25,8 +25,26 @@ module.exports = AtomCscope =
       type: 'string'
       default: 'top'
       enum: ['top', 'bottom']
+    cscopeSourceFiles:
+      title: 'Source file extensions'
+      description: 'Enter the extensions of the source files with which you want cscope generated (with spaces)'
+      type: 'string'
+      default: '.c .cc .cpp .h .hpp'
+      
+  refreshCscopeDB: ->
+    exts = atom.config.get('atom-cscope.cscopeSourceFiles')
+    console.log exts
+    return if exts.trim() == ""
+    cscope.setupCscope atom.project.getPaths(), exts, true
+    .then (data) ->
+      notifier.addSuccess "Success: Refreshed cscope database"
+    .catch (data) ->
+      notifier.addError "Error: Unable to refresh cscope database"
+      console.log data
 
   setUpEvents: ->
+    @atomCscopeView.on 'click', 'button#refresh', => @refreshCscopeDB()
+
     @atomCscopeView.onSearch (params) =>
       option = params.option
       keyword = params.keyword
@@ -51,7 +69,10 @@ module.exports = AtomCscope =
         @atomCscopeView.clearItems()
         @atomCscopeView.applyResultSet(data)
       .catch (data) =>
-        notifier.addError "Error: " + data.message
+        if data.message.indexOf("cannot open file cscope.out") > 0
+          notifier.addError "Error: Please generate the cscope database."
+        else
+          notifier.addError "Error: " + data.message
         
     @atomCscopeView.onResultClick (result) =>
       atom.workspace.open(result.fileName, {initialLine: (result.lineNumber - 1)})
@@ -62,6 +83,7 @@ module.exports = AtomCscope =
       'atom-cscope:toggle': => @toggle()
       'core:cancel': => @hide() if @modalPanel.isVisible()
       'atom-cscope:focus-next': => @switchPanes() if @modalPanel.isVisible()
+      'atom-cscope:refresh-db': => @refreshCscopeDB() if @modalPanel.isVisible()
       
     @subscriptions.add atom.commands.add 'atom-workspace', 
       'atom-cscope:toggle-symbol': => 

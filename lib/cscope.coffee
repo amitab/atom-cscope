@@ -2,6 +2,52 @@
 ResultSetModel = require './models/result-set-model'
 
 module.exports = CscopeCommands =
+  getSourceFiles: (path, exts) ->
+    args = ['.']
+    for ext,index in exts.split(/\s+/)
+      args.push '-o' if index > 0
+      args.push '-name'
+      args.push '*' + ext
+      
+    return @runCommand 'find', args, {cwd: path}
+    
+  generateCscopeDB: (path) ->
+    return @runCommand 'cscope', ['-q', '-R', '-b', '-i', 'cscope.files'], {cwd: path}
+    
+  writeToFile: (path, fileName, content) ->
+    filePath = path + '/' + fileName
+    return new Promise (resolve, reject) ->
+      fs.writeFile filePath, content, (err) ->
+        reject {success: false, info: err.toString()} if err
+        resolve {success: true}
+        
+  setupCscopeForPath: (path, exts, force) ->
+    cscopeExists = if force then Promise.reject force else @cscopeExists path
+    cscopeExists.then (data) =>
+      return Promise.resolve {success: true}
+    .catch (data) =>
+      sourceFileGen = @getSourceFiles path, exts
+      writeCscopeFiles = sourceFileGen.then (data) =>
+        return @writeToFile path, 'cscope.files', data
+      dbGen = writeCscopeFiles.then (data) =>
+        return @generateCscopeDB path
+        
+      return Promise.all([sourceFileGen, writeCscopeFiles, dbGen])
+      
+  setupCscope: (paths, exts, force = false) ->
+    promises = []
+    for path in paths
+      promises.push @setupCscopeForPath path, exts, force
+      
+    return Promise.all(promises)
+    
+  cscopeExists: (path) ->
+    filePath = path + '/' + 'cscope.out'
+    return new Promise (resolve, reject) ->
+      fs.access filePath, fs.R_OK | fs.W_OK, (err) =>
+        reject err if err
+        resolve err
+    
   runCommand: (command, args, options = {}) ->
     process = new Promise (resolve, reject) =>
       output = ''
