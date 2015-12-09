@@ -27,6 +27,14 @@ module.exports = AtomCscope =
       enum: ['top', 'bottom']
 
   setUpEvents: ->
+    @atomCscopeView.on 'click', 'button#refresh', ->
+      cscope.setupCscope atom.project.getPaths(), true
+      .then (data) ->
+        notifier.addSuccess "Success: Refreshed cscope database"
+      .catch (data) ->
+        notifier.addError "Error: Unable to refresh cscope database"
+        console.log data
+
     @atomCscopeView.onSearch (params) =>
       option = params.option
       keyword = params.keyword

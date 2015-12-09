@@ -24,7 +24,7 @@ module.exports = CscopeCommands =
   setupCscopeForPath: (path, force) ->
     cscopeExists = if force then Promise.reject force else @cscopeExists path
     cscopeExists.then (data) =>
-      return {success: true}
+      return Promise.resolve {success: true}
     .catch (data) =>
       exts = '.c .cc .cpp .h .hpp'
       sourceFileGen = @getSourceFiles path, exts
