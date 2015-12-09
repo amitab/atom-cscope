@@ -2,6 +2,42 @@
 ResultSetModel = require './models/result-set-model'
 
 module.exports = CscopeCommands =
+  getSourceFiles: (path, exts) ->
+    args = ['.']
+    for ext,index in exts.split(/\s+/)
+      args.push '-o' if index > 0
+      args.push '-name'
+      args.push '*' + ext
+      
+    return @runCommand 'find', args, {cwd: path}
+    
+  generateCscopeDB: (path) ->
+    return @runCommand 'cscope', ['-q', '-R', '-b', '-i', 'cscope.files'], {cwd: path}
+    
+  writeToFile: (path, fileName, content) ->
+    filePath = path + '/' + fileName
+    return new Promise (resolve, reject) ->
+      fs.writeFile filePath, content, (err) ->
+        reject {success: false, info: err.toString()} if err
+        resolve {success: true}
+        
+  setupCscopeForPath: (path) ->
+    exts = '.c .cc .cpp .h .hpp'
+    sourceFileGen = @getSourceFiles path, exts
+    writeCscopeFiles = sourceFileGen.then (data) =>
+      return @writeToFile path, 'cscope.files', data
+    dbGen = writeCscopeFiles.then (data) =>
+      return @generateCscopeDB path
+      
+    return Promise.all([sourceFileGen, writeCscopeFiles, dbGen])
+      
+  setupCscope: (paths) ->
+    promises = []
+    for path in paths
+      promises.push @setupCscopeForPath path
+      
+    return Promise.all(promises)
+    
   runCommand: (command, args, options = {}) ->
     process = new Promise (resolve, reject) =>
       output = ''

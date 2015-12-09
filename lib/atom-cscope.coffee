@@ -144,6 +144,7 @@ module.exports = AtomCscope =
       else @modalPanel = atom.workspace.addTopPanel(item: @atomCscopeView.element, visible: false)
   
   activate: (state) ->
+    cscope.setupCscope atom.project.getPaths()
     @attachModal(state)
     @setUpBindings()
     @setUpEvents()
