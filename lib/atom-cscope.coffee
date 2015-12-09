@@ -25,15 +25,17 @@ module.exports = AtomCscope =
       type: 'string'
       default: 'top'
       enum: ['top', 'bottom']
+      
+  refreshCscopeDB: ->
+    cscope.setupCscope atom.project.getPaths(), true
+    .then (data) ->
+      notifier.addSuccess "Success: Refreshed cscope database"
+    .catch (data) ->
+      notifier.addError "Error: Unable to refresh cscope database"
+      console.log data
 
   setUpEvents: ->
-    @atomCscopeView.on 'click', 'button#refresh', ->
-      cscope.setupCscope atom.project.getPaths(), true
-      .then (data) ->
-        notifier.addSuccess "Success: Refreshed cscope database"
-      .catch (data) ->
-        notifier.addError "Error: Unable to refresh cscope database"
-        console.log data
+    @atomCscopeView.on 'click', 'button#refresh', => @refreshCscopeDB()
 
     @atomCscopeView.onSearch (params) =>
       option = params.option
@@ -70,6 +72,7 @@ module.exports = AtomCscope =
       'atom-cscope:toggle': => @toggle()
       'core:cancel': => @hide() if @modalPanel.isVisible()
       'atom-cscope:focus-next': => @switchPanes() if @modalPanel.isVisible()
+      'atom-cscope:refresh-db': => @refreshCscopeDB() if @modalPanel.isVisible()
       
     @subscriptions.add atom.commands.add 'atom-workspace', 
       'atom-cscope:toggle-symbol': => 
