@@ -1,3 +1,6 @@
+## 0.11.0
+* Can build cscope db within atom
+* Adds `atom-cscope:refresh-db` as command to build db
 ## 0.10.0
 * Fix search under cursor/selection (Issue #2)
 * Change event handling methods in Input View

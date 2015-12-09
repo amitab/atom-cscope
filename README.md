@@ -71,9 +71,10 @@ You can navigate the Result Items using arrow keys and press `enter` to execute
 or click on the Result Item for the same effect.
 
 ## Set it up?
-You need to generate the cscope.out file before using this package.
+You can use the existing cscope.out file, generate on your own, or generate
+through the widget with the lightning button.
 
-In your project directory run:
+To generate cscope.out manually, in your project directory run:
 ```bash
 find . -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" > cscope.files
 cscope -q -R -b -i cscope.files
