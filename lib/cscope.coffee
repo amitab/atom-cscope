@@ -21,22 +21,33 @@ module.exports = CscopeCommands =
         reject {success: false, info: err.toString()} if err
         resolve {success: true}
         
-  setupCscopeForPath: (path) ->
-    exts = '.c .cc .cpp .h .hpp'
-    sourceFileGen = @getSourceFiles path, exts
-    writeCscopeFiles = sourceFileGen.then (data) =>
-      return @writeToFile path, 'cscope.files', data
-    dbGen = writeCscopeFiles.then (data) =>
-      return @generateCscopeDB path
+  setupCscopeForPath: (path, force) ->
+    cscopeExists = if force then Promise.reject force else @cscopeExists path
+    cscopeExists.then (data) =>
+      return {success: true}
+    .catch (data) =>
+      exts = '.c .cc .cpp .h .hpp'
+      sourceFileGen = @getSourceFiles path, exts
+      writeCscopeFiles = sourceFileGen.then (data) =>
+        return @writeToFile path, 'cscope.files', data
+      dbGen = writeCscopeFiles.then (data) =>
+        return @generateCscopeDB path
+        
+      return Promise.all([sourceFileGen, writeCscopeFiles, dbGen])
       
-    return Promise.all([sourceFileGen, writeCscopeFiles, dbGen])
-      
-  setupCscope: (paths) ->
+  setupCscope: (paths, force = false) ->
     promises = []
     for path in paths
-      promises.push @setupCscopeForPath path
+      promises.push @setupCscopeForPath path, force
       
     return Promise.all(promises)
+    
+  cscopeExists: (path) ->
+    filePath = path + '/' + 'cscope.out'
+    return new Promise (resolve, reject) ->
+      fs.access filePath, fs.R_OK | fs.W_OK, (err) =>
+        reject err if err
+        resolve err
     
   runCommand: (command, args, options = {}) ->
     process = new Promise (resolve, reject) =>
