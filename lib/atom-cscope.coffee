@@ -38,7 +38,7 @@ module.exports = AtomCscope =
     cscope.setupCscope atom.project.getPaths(), exts, true
     .then (data) =>
       notifier.addSuccess "Success: Refreshed cscope database"
-      @atomCscopeView.inputView.resetPrevSearch()
+      @atomCscopeView.inputView.redoSearch()
     .catch (data) ->
       notifier.addError "Error: Unable to refresh cscope database"
       console.log data

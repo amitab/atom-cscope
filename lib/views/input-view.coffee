@@ -83,6 +83,10 @@ class InputView extends View
   invokeSearch: (option, keyword) ->
     @autoFill(option, keyword)
     @findEditor.trigger 'core:confirm'
+    
+  redoSearch: ->
+    @resetPrevSearch()
+    @findEditor.trigger 'core:confirm'
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->

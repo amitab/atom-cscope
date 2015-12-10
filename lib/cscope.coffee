@@ -65,8 +65,7 @@ module.exports = CscopeCommands =
     
   runCscopeCommand: (num, keyword, cwd) ->
     if keyword.trim() == ''
-      return new Promise (resolve, reject) ->
-        resolve new ResultSetModel()
+      return Promise.resolve new ResultSetModel()
     else
       return new Promise (resolve, reject) =>
         @runCommand 'cscope', ['-d', '-L', '-' + num, keyword], {cwd: cwd}
