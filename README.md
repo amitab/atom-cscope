@@ -82,7 +82,7 @@ cscope -q -R -b -i cscope.files
 And then the package will be able to use the cscope.out file to generate results.
 
 ## Screenshots
-![ScreenShot](http://i.imgur.com/RCiTm26.png)
+![ScreenShot](http://i.imgur.com/wIxWRg2.png)
 
 ## Further Improvements?
 1. Add 'Change this text string' functionality
