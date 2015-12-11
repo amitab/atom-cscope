@@ -185,13 +185,15 @@ module.exports = AtomCscope =
     
   hide: ->
     @modalPanel.hide()
-    atom.views.getView(@prevEditor).focus()
+    prevEditorView = atom.views.getView(@prevEditor)
+    prevEditorView.focus() if typeof prevEditorView != 'undefined'
 
   toggle: ->
     if @modalPanel.isVisible() then @hide() else @show()
     
   switchPanes: ->
     if @atomCscopeView.inputView.findEditor.hasFocus()
-      atom.views.getView(@prevEditor).focus()
+      prevEditorView = atom.views.getView(@prevEditor)
+      prevEditorView.focus() if typeof prevEditorView != 'undefined'
     else
       @atomCscopeView.inputView.findEditor.focus()
