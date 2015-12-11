@@ -1,5 +1,6 @@
 {BufferedProcess} = require 'atom'
 ResultSetModel = require './models/result-set-model'
+fs = require 'fs'
 
 module.exports = CscopeCommands =
   getSourceFiles: (path, exts) ->
