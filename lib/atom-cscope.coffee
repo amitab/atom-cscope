@@ -41,6 +41,7 @@ module.exports = AtomCscope =
     .catch (data) ->
       notifier.addError "Error: Unable to refresh cscope database"
       console.log data
+    @atomCscopeView.inputView.findEditor.focus() if @atomCscopeView.isVisible()
 
   setUpEvents: ->
     @atomCscopeView.on 'click', 'button#refresh', => @refreshCscopeDB()
@@ -83,7 +84,7 @@ module.exports = AtomCscope =
       'atom-cscope:toggle': => @toggle()
       'core:cancel': => @hide() if @modalPanel.isVisible()
       'atom-cscope:focus-next': => @switchPanes() if @modalPanel.isVisible()
-      'atom-cscope:refresh-db': => @refreshCscopeDB() if @modalPanel.isVisible()
+      'atom-cscope:refresh-db': => @refreshCscopeDB()
       
     @subscriptions.add atom.commands.add 'atom-workspace', 
       'atom-cscope:toggle-symbol': => 
