@@ -20,7 +20,7 @@ class InputView extends View
         @button class: "btn icon icon-search", id: "search", "Scope It!"
 
   initialize: (params) ->
-    @prevSearch = { keyword: '', option: -1 }
+    @resetPrevSearch()
     @findEditor.getModel().getBuffer().stoppedChangingDelay = atom.config.get('atom-cscope.LiveSearchDelay')
     atom.config.onDidChange 'atom-cscope.LiveSearchDelay', (event) =>
       @findEditor.getModel().getBuffer().stoppedChangingDelay = event.newValue
@@ -29,6 +29,9 @@ class InputView extends View
     @on 'change', 'select#cscope-options', @searchCallback
     @on 'core:confirm', @findEditor, (event) => @searchCallback(event) unless @isSamePreviousSearch()
     @setupLiveSearchListener()
+    
+  resetPrevSearch: ->
+    @prevSearch = { keyword: '', option: -1 }
 
   searchCallback: (event) =>
     @parentView.showLoading()
@@ -79,6 +82,10 @@ class InputView extends View
     
   invokeSearch: (option, keyword) ->
     @autoFill(option, keyword)
+    @findEditor.trigger 'core:confirm'
+    
+  redoSearch: ->
+    @resetPrevSearch()
     @findEditor.trigger 'core:confirm'
 
   # Returns an object that can be retrieved when package is activated
