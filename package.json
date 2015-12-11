@@ -28,7 +28,8 @@
       "atom-cscope:toggle-egrep-pattern",
       "atom-cscope:toggle-file",
       "atom-cscope:toggle-files-including",
-      "atom-cscope:toggle-assignments-to"
+      "atom-cscope:toggle-assignments-to",
+      "atom-cscope:refresh-db"
     ]
   },
   "repository": "https://github.com/amitab/atom-cscope",
