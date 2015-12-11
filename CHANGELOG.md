@@ -1,3 +1,8 @@
+## 0.12.0
+* Fix issue#5 can't run refresh-db
+* Fix issue#6 refresh command as activation command
+* Fix issue#7 Error on closing widget
+* Fix issue#8 can't execute same query after rebuild cscope db
 ## 0.11.0
 * Can build cscope db within atom
 * Adds `atom-cscope:refresh-db` as command to build db
