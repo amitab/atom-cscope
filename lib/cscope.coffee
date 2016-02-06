@@ -13,7 +13,8 @@ module.exports = CscopeCommands =
     return @runCommand 'find', args, {cwd: path}
     
   generateCscopeDB: (path) ->
-    return @runCommand 'cscope', ['-q', '-R', '-b', '-i', 'cscope.files'], {cwd: path}
+    cscope_binary = atom.config.get('atom-cscope.cscopeBinaryLocation')
+    return @runCommand cscope_binary, ['-q', '-R', '-b', '-i', 'cscope.files'], {cwd: path}
     
   writeToFile: (path, fileName, content) ->
     filePath = path + '/' + fileName
@@ -65,11 +66,12 @@ module.exports = CscopeCommands =
     return process
     
   runCscopeCommand: (num, keyword, cwd) ->
+    cscope_binary = atom.config.get('atom-cscope.cscopeBinaryLocation')
     if keyword.trim() == ''
       return Promise.resolve new ResultSetModel()
     else
       return new Promise (resolve, reject) =>
-        @runCommand 'cscope', ['-d', '-L', '-' + num, keyword], {cwd: cwd}
+        @runCommand cscope_binary, ['-d', '-L', '-' + num, keyword], {cwd: cwd}
         .then (data) ->
           resolve new ResultSetModel(keyword, data)
         .catch (data) ->

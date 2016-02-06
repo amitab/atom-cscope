@@ -30,7 +30,12 @@ module.exports = AtomCscope =
       description: 'Enter the extensions of the source files with which you want cscope generated (with spaces)'
       type: 'string'
       default: '.c .cc .cpp .h .hpp'
-      
+    cscopeBinaryLocation:
+      title: 'Path for cscope binary'
+      description: 'Enter the full path to cscope program'
+      type: 'string'
+      default: 'cscope'
+
   refreshCscopeDB: ->
     exts = atom.config.get('atom-cscope.cscopeSourceFiles')
     console.log exts
