@@ -1,5 +1,6 @@
 {View} = require 'space-pen'
 {TextEditorView}  = require 'atom-space-pen-views'
+_ = require 'underscore-plus'
 
 module.exports =
 class InputView extends View
@@ -17,6 +18,11 @@ class InputView extends View
           @option value: '8', "Find files #including this file"
           @option value: '9', "Find assignments to this symbol"
         @subview 'findEditor', new TextEditorView(mini: true, placeholderText: 'Input query here...')
+        @select id: "path-options", =>
+          @option value: '-1', "All Projects"
+          for project, index in atom.project.getPaths()
+            @option value: index.toString(), path.basename(project)
+
         @button class: "btn icon icon-search", id: "search", "Scope It!"
 
   initialize: (params) ->
@@ -27,11 +33,12 @@ class InputView extends View
     
     @on 'click', 'button#search', @searchCallback
     @on 'change', 'select#cscope-options', @searchCallback
+    @on 'change', 'select#path-options', @searchCallback
     @on 'core:confirm', @findEditor, (event) => @searchCallback(event) unless @isSamePreviousSearch()
     @setupLiveSearchListener()
     
   resetPrevSearch: ->
-    @prevSearch = { keyword: '', option: -1 }
+    @prevSearch = { keyword: null, option: null, projectPath: null }
 
   searchCallback: (event) =>
     @parentView.showLoading()
@@ -47,15 +54,18 @@ class InputView extends View
   getSelectedOption: ->
     return parseInt(@find('select#cscope-options').val())
     
+  getSelectedProjectPath: ->
+    return parseInt(@find('select#path-options').val())
+
   setSelectedOption: (option) ->
     @find('select#cscope-options').val(option.toString())
     
   getCurrentSearch: ->
-    return { keyword: @getSearchKeyword(), option: @getSelectedOption() }
+    return { keyword: @getSearchKeyword(), option: @getSelectedOption(), projectPath: @getSelectedProjectPath() }
     
   isCurrentSearchSameAs: (search) ->
     currentSearch = @getCurrentSearch()
-    return currentSearch.keyword is search.keyword and currentSearch.option is search.option
+    return _.isEqual(search, currentSearch)
     
   isSamePreviousSearch: ->
     return @isCurrentSearchSameAs(@prevSearch)
@@ -82,11 +92,11 @@ class InputView extends View
     
   invokeSearch: (option, keyword) ->
     @autoFill(option, keyword)
-    @findEditor.trigger 'core:confirm'
+    @searchCallback()
     
   redoSearch: ->
     @resetPrevSearch()
-    @findEditor.trigger 'core:confirm'
+    @searchCallback()
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->

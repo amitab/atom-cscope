@@ -74,7 +74,7 @@ module.exports = CscopeCommands =
       return new Promise (resolve, reject) =>
         @runCommand cscope_binary, ['-dL' + num, keyword], {cwd: cwd}
         .then (data) ->
-          resolve new ResultSetModel(keyword, data)
+          resolve new ResultSetModel(keyword, data, cwd)
         .catch (data) ->
           reject data
 

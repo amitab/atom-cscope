@@ -1,10 +1,15 @@
 ResultItemView = require '../views/result-item-view'
+path = require 'path'
 
 module.exports = 
   class ResultModel
-    constructor: (response, keyword) ->
-      @keyword = if keyword? then keyword else false
+    constructor: (response, keyword, cwd) ->
+      @keyword = if keyword? and keyword.trim() isnt "" then keyword else false
+      @cwd = cwd
       @processResultString(response)
+
+    getFilePath: ->
+      return path.join(@cwd, @fileName)
     
     processResultString: (response) ->
       @resultString = response
@@ -18,9 +23,8 @@ module.exports =
       
       @isJustFile = data[3].trim() is '<unknown>' 
       regex = new RegExp(@keyword, 'g')
-      
-      if @isJustFile
-        @htmlFileName = @fileName.replace(regex, '<span class="text-highlight bold">\$&</span>')
+      @htmlFileName = @fileName.replace(regex, '<span class="text-highlight bold">\$&</span>')
+      @projectPath = path.basename(@cwd)
       
       if @keyword
         @htmlLineText = data[3].replace(/</g, '&lt;')
