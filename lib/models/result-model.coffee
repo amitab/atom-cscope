@@ -3,7 +3,7 @@ ResultItemView = require '../views/result-item-view'
 module.exports = 
   class ResultModel
     constructor: (response, keyword) ->
-      @keyword = keyword?
+      @keyword = if keyword? then keyword else false
       @processResultString(response)
     
     processResultString: (response) ->
