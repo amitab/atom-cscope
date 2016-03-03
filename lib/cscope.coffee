@@ -1,50 +1,51 @@
 {BufferedProcess} = require 'atom'
 ResultSetModel = require './models/result-set-model'
 fs = require 'fs'
+path = require 'path'
 
 module.exports = CscopeCommands =
-  getSourceFiles: (path, exts) ->
+  getSourceFiles: (project, exts) ->
     args = ['.']
     for ext,index in exts.split(/\s+/)
       args.push '-o' if index > 0
       args.push '-name'
       args.push '*' + ext
       
-    return @runCommand 'find', args, {cwd: path}
+    return @runCommand 'find', args, {cwd: project}
     
-  generateCscopeDB: (path) ->
+  generateCscopeDB: (project) ->
     cscope_binary = atom.config.get('atom-cscope.cscopeBinaryLocation')
-    return @runCommand cscope_binary, ['-q', '-R', '-b', '-i', 'cscope.files'], {cwd: path}
+    return @runCommand cscope_binary, ['-qRbi', 'cscope.files'], {cwd: project}
     
-  writeToFile: (path, fileName, content) ->
-    filePath = path + '/' + fileName
+  writeToFile: (project, fileName, content) ->
+    filePath = path.join(project, fileName)
     return new Promise (resolve, reject) ->
       fs.writeFile filePath, content, (err) ->
         reject {success: false, info: err.toString()} if err
         resolve {success: true}
         
-  setupCscopeForPath: (path, exts, force) ->
-    cscopeExists = if force then Promise.reject force else @cscopeExists path
+  setupCscopeForPath: (project, exts, force) ->
+    cscopeExists = if force then Promise.reject force else @cscopeExists project
     cscopeExists.then (data) =>
       return Promise.resolve {success: true}
     .catch (data) =>
-      sourceFileGen = @getSourceFiles path, exts
+      sourceFileGen = @getSourceFiles project, exts
       writeCscopeFiles = sourceFileGen.then (data) =>
-        return @writeToFile path, 'cscope.files', data
+        return @writeToFile project, 'cscope.files', data
       dbGen = writeCscopeFiles.then (data) =>
-        return @generateCscopeDB path
+        return @generateCscopeDB project
         
       return Promise.all([sourceFileGen, writeCscopeFiles, dbGen])
       
-  setupCscope: (paths, exts, force = false) ->
+  setupCscope: (projects, exts, force = false) ->
     promises = []
-    for path in paths
-      promises.push @setupCscopeForPath path, exts, force
+    for project in projects
+      promises.push @setupCscopeForPath project, exts, force
       
     return Promise.all(promises)
     
-  cscopeExists: (path) ->
-    filePath = path + '/' + 'cscope.out'
+  cscopeExists: (project) ->
+    filePath = path.join(project, 'cscope.out')
     return new Promise (resolve, reject) ->
       fs.access filePath, fs.R_OK | fs.W_OK, (err) =>
         reject err if err
@@ -67,21 +68,21 @@ module.exports = CscopeCommands =
     
   runCscopeCommand: (num, keyword, cwd) ->
     cscope_binary = atom.config.get('atom-cscope.cscopeBinaryLocation')
-    if keyword.trim() == ''
+    if keyword.trim() is ''
       return Promise.resolve new ResultSetModel()
     else
       return new Promise (resolve, reject) =>
-        @runCommand cscope_binary, ['-d', '-L', '-' + num, keyword], {cwd: cwd}
+        @runCommand cscope_binary, ['-dL' + num, keyword], {cwd: cwd}
         .then (data) ->
           resolve new ResultSetModel(keyword, data)
         .catch (data) ->
           reject data
 
-  runCscopeCommands: (num, keyword, paths) ->
+  runCscopeCommands: (num, keyword, projects) ->
     promises = []
     resultSet = new ResultSetModel(keyword)
-    for path in paths
-      promises.push(@runCscopeCommand num, keyword, path)
+    for project in projects
+      promises.push(@runCscopeCommand num, keyword, project)
 
     motherSwear = new Promise (resolve, reject) =>
       Promise.all(promises)
