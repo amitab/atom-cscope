@@ -15,7 +15,7 @@ module.exports =
         @results.push(result)
             
     addResultSet: (resultSet) ->
-      if typeof resultSet isnt 'undefined' && resultSet.keyword is @keyword
+      if typeof resultSet isnt 'undefined' and resultSet.keyword is @keyword
         @results = @results.concat(resultSet.results)
         
     isEmpty: ->
