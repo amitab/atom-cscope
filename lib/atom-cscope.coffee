@@ -38,8 +38,8 @@ module.exports = AtomCscope =
 
   refreshCscopeDB: ->
     exts = atom.config.get('atom-cscope.cscopeSourceFiles')
-    console.log exts
-    return if exts.trim() == ""
+    return if exts.trim() is ""
+
     cscope.setupCscope atom.project.getPaths(), exts, true
     .then (data) =>
       notifier.addSuccess "Success: Refreshed cscope database"
@@ -57,21 +57,12 @@ module.exports = AtomCscope =
       keyword = params.keyword
       projects = atom.project.getPaths()
       
-      switch option
-        when 0 then promise = cscope.findThisSymbol keyword, projects
-        when 1 then promise = cscope.findThisGlobalDefinition keyword, projects
-        when 2 then promise = cscope.findFunctionsCalledBy keyword, projects
-        when 3 then promise = cscope.findFunctionsCalling keyword, projects
-        when 4 then promise = cscope.findTextString keyword, projects
-        when 6 then promise = cscope.findEgrepPattern keyword, projects
-        when 7 then promise = cscope.findThisFile keyword, projects
-        when 8 then promise = cscope.findFilesIncluding keyword, projects
-        when 9 then promise = cscope.findAssignmentsTo keyword, projects
-        else 
-          notifier.addError "Error: Invalid Option"
-          return
+      # The option must be acceptable by cscope
+      if option not in [0, 1, 2, 3, 4, 6, 7, 8, 9]
+        notifier.addError "Error: Invalid option: " + option
+        return
 
-      promise
+      cscope.runCscopeCommands option, keyword, projects
       .then (data) =>
         @atomCscopeView.clearItems()
         @atomCscopeView.applyResultSet(data)
@@ -154,13 +145,15 @@ module.exports = AtomCscope =
     activeEditor = atom.workspace.getActiveTextEditor()
     selectedText = activeEditor.getSelectedText()
 
-    keyword = if selectedText == "" then activeEditor.getWordUnderCursor() else selectedText
+    keyword = if selectedText is "" then activeEditor.getWordUnderCursor() else selectedText
     @atomCscopeView.inputView.invokeSearch(option, keyword)
   
   attachModal: (state) ->
     @atomCscopeView = new AtomCscopeView(state.atomCscopeViewState)
     @setupModalLocation()
     atom.config.onDidChange 'atom-cscope.WidgetLocation', (event) =>
+      # Just for UX sake - If the panel was already visible when the user
+      # changed location in settings, we display it again
       wasVisible = if @modalPanel.isVisible() then true else false
       @modalPanel.destroy()
       @setupModalLocation()
@@ -193,7 +186,7 @@ module.exports = AtomCscope =
   hide: ->
     @modalPanel.hide()
     prevEditorView = atom.views.getView(@prevEditor)
-    prevEditorView.focus() if typeof prevEditorView != 'undefined'
+    prevEditorView?.focus()
 
   toggle: ->
     if @modalPanel.isVisible() then @hide() else @show()
@@ -201,6 +194,6 @@ module.exports = AtomCscope =
   switchPanes: ->
     if @atomCscopeView.inputView.findEditor.hasFocus()
       prevEditorView = atom.views.getView(@prevEditor)
-      prevEditorView.focus() if typeof prevEditorView != 'undefined'
+      prevEditorView?.focus()
     else
       @atomCscopeView.inputView.findEditor.focus()

@@ -8,15 +8,15 @@ module.exports =
       @addResults(response)
             
     addResults: (response) ->
-      if typeof response != 'undefined'
-        for line in response.split("\n")
-          if line != ""
-            result = new ResultModel(line, @keyword)
-            @results.push(result)
+      return if typeof response is 'undefined'
+      for line in response.split("\n")
+        continue if line is ""
+        result = new ResultModel(line, @keyword)
+        @results.push(result)
             
     addResultSet: (resultSet) ->
-      if typeof resultSet != 'undefined' && resultSet.keyword == @keyword
+      if typeof resultSet isnt 'undefined' && resultSet.keyword is @keyword
         @results = @results.concat(resultSet.results)
         
     isEmpty: ->
-      return @results.length == 0
+      return @results.length is 0

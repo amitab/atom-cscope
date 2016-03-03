@@ -18,7 +18,7 @@ class ResultItemView extends View
     resultItem = new @
     item = resultItem.containingView()
     item.data('result-item', result)
-    if !result.isJustFile
+    if not result.isJustFile
       item.find('.file-name').text(result.fileName)
       item.find('.line-number').text(result.lineNumber)
       item.find('.function-name').text(result.functionName)

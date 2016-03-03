@@ -35,10 +35,10 @@ class InputView extends View
 
   searchCallback: (event) =>
     @parentView.showLoading()
-    @customSearchCallback(@getCurrentSearch()) if @customSearchCallback
+    @customSearchCallback?(@getCurrentSearch())
     @prevSearch = @getCurrentSearch()
     @parentView.removeLoading()
-    event.preventDefault() if event
+    event?.preventDefault?()
     false
 
   getSearchKeyword: ->
@@ -55,7 +55,7 @@ class InputView extends View
     
   isCurrentSearchSameAs: (search) ->
     currentSearch = @getCurrentSearch()
-    return currentSearch.keyword == search.keyword && currentSearch.option == search.option
+    return currentSearch.keyword is search.keyword and currentSearch.option is search.option
     
   isSamePreviousSearch: ->
     return @isCurrentSearchSameAs(@prevSearch)
@@ -67,7 +67,7 @@ class InputView extends View
       @liveSearchListener = false
 
     atom.config.onDidChange 'atom-cscope.LiveSearch', (event) =>
-      if event.newValue && !@liveSearchListener
+      if event.newValue and not @liveSearchListener
         @liveSearchListener = @findEditor.getModel().onDidStopChanging @searchCallback
       else
         @liveSearchListener.dispose()

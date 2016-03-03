@@ -3,7 +3,7 @@ ResultItemView = require '../views/result-item-view'
 module.exports = 
   class ResultModel
     constructor: (response, keyword) ->
-      @keyword = if typeof keyword != 'undefined' then keyword else false
+      @keyword = keyword?
       @processResultString(response)
     
     processResultString: (response) ->
@@ -16,7 +16,7 @@ module.exports =
       @lineNumber = parseInt(data[2])
       @lineText = data[3]
       
-      @isJustFile = data[3].trim() == '<unknown>' 
+      @isJustFile = data[3].trim() is '<unknown>' 
       regex = new RegExp(@keyword, 'g')
       
       if @isJustFile

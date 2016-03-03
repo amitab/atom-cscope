@@ -93,39 +93,3 @@ module.exports = CscopeCommands =
         reject data
 
     return motherSwear
-
-  findThisSymbol: (keyword, paths) ->
-    commandNumber = '0'
-    return @runCscopeCommands commandNumber, keyword, paths
-
-  findThisGlobalDefinition: (keyword, paths) ->
-    commandNumber = '1'
-    return @runCscopeCommands commandNumber, keyword, paths
-
-  findFunctionsCalledBy: (keyword, paths) ->
-    commandNumber = '2'
-    return @runCscopeCommands commandNumber, keyword, paths
-
-  findFunctionsCalling: (keyword, paths) ->
-    commandNumber = '3'
-    return @runCscopeCommands commandNumber, keyword, paths
-
-  findTextString: (keyword, paths) ->
-    commandNumber = '4'
-    return @runCscopeCommands commandNumber, keyword, paths
-
-  findEgrepPattern: (keyword, paths) ->
-    commandNumber = '6'
-    return @runCscopeCommands commandNumber, keyword, paths
-
-  findThisFile: (keyword, paths) ->
-    commandNumber = '7'
-    return @runCscopeCommands commandNumber, keyword, paths
-
-  findFilesIncluding: (keyword, paths) ->
-    commandNumber = '8'
-    return @runCscopeCommands commandNumber, keyword, paths
-
-  findAssignmentsTo: (keyword, paths) ->
-    commandNumber = '9'
-    return @runCscopeCommands commandNumber, keyword, paths

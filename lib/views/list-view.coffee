@@ -14,7 +14,7 @@ class ListView extends View
     @keyUsed = false
 
   setItems: (@items=[]) ->
-    if @items.length == 0 then @setResultsNotAvailable() else @setResultsAvailable()
+    if @items.length is 0 then @setResultsNotAvailable() else @setResultsAvailable()
     @resultList.append _.map(@items, (item) -> item.generateView())
 
   clearItems: ->
@@ -24,14 +24,16 @@ class ListView extends View
   onConfirm: (callback) ->
     @on 'click', 'li.result-item', (e) =>
       target = $(e.target).closest('li')
-      return if target.length == 0
+      return if target.length is 0
       @keyUsed = false
       @selectItemView(target)
       callback(target.data('result-item'))
   
     @parentView.on 'core:confirm', (e) =>
       target = @getSelectedItemView()
-      return if target.length == 0 || (!@keyUsed && !@parentView.inputView.isSamePreviousSearch()) || !target.hasClass('selected')
+      return if target.length is 0 
+      return if not (@keyUsed or @parentView.inputView.isSamePreviousSearch()) 
+      return if not target.hasClass('selected')
       @keyUsed = false
       callback(target.data('result-item'))
 
