@@ -35,6 +35,7 @@ class InputView extends View
     @on 'change', 'select#cscope-options', @searchCallback
     @on 'change', 'select#path-options', @searchCallback
     @on 'core:confirm', @findEditor, (event) => @searchCallback(event) unless @isSamePreviousSearch()
+    atom.project.onDidChangePaths @searchCallback
     @setupLiveSearchListener()
     
   resetPrevSearch: ->

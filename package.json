@@ -41,6 +41,7 @@
     "atom-notify": "^1.0.1",
     "space-pen": "^5.0",
     "underscore-plus": "1.x",
-    "atom-space-pen-views": "^2.0.0"
+    "atom-space-pen-views": "^2.0.0",
+    "chosen-npm": "1.4.2"
   }
 }
