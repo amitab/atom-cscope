@@ -142,6 +142,11 @@ module.exports = AtomCscope =
 
   autoInputFromCursor: (option) ->
     activeEditor = atom.workspace.getActiveTextEditor()
+
+    if not activeEditor?
+      notifier.addInfo "Could not find text under cursor."
+      return
+
     selectedText = activeEditor.getSelectedText()
 
     keyword = if selectedText is "" then activeEditor.getWordUnderCursor() else selectedText
