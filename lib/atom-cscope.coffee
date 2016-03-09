@@ -78,6 +78,14 @@ module.exports = AtomCscope =
     @atomCscopeView.onResultClick (result) =>
       atom.workspace.open(result.getFilePath(), {initialLine: (result.lineNumber - 1)})
   
+  togglePanelOption: (option) ->
+    if @atomCscopeView.inputView.getSelectedOption() is option
+      @toggle()
+    else
+      @show()
+      @atomCscopeView.inputView.autoFill(option, '')
+      @atomCscopeView.listView.clearItems()
+
   setUpBindings: ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',
@@ -88,32 +96,23 @@ module.exports = AtomCscope =
       
     @subscriptions.add atom.commands.add 'atom-workspace', 
       'atom-cscope:toggle-symbol': => 
-        @atomCscopeView.inputView.setSelectedOption(0)
-        @toggle()
+        @togglePanelOption(0)
       'atom-cscope:toggle-definition': => 
-        @atomCscopeView.inputView.setSelectedOption(1)
-        @toggle()
+        @togglePanelOption(1)
       'atom-cscope:toggle-functions-called-by': => 
-        @atomCscopeView.inputView.setSelectedOption(2)
-        @toggle()
+        @togglePanelOption(2)
       'atom-cscope:toggle-functions-calling': => 
-        @atomCscopeView.inputView.setSelectedOption(3)
-        @toggle()
+        @togglePanelOption(3)
       'atom-cscope:toggle-text-string': => 
-        @atomCscopeView.inputView.setSelectedOption(4)
-        @toggle()
+        @togglePanelOption(4)
       'atom-cscope:toggle-egrep-pattern': => 
-        @atomCscopeView.inputView.setSelectedOption(6)
-        @toggle()
+        @togglePanelOption(6)
       'atom-cscope:toggle-file': => 
-        @atomCscopeView.inputView.setSelectedOption(7)
-        @toggle()
+        @togglePanelOption(7)
       'atom-cscope:toggle-files-including': => 
-        @atomCscopeView.inputView.setSelectedOption(8)
-        @toggle()
+        @togglePanelOption(8)
       'atom-cscope:toggle-assignments-to': => 
-        @atomCscopeView.inputView.setSelectedOption(9)
-        @toggle()
+        @togglePanelOption(9)
 
     @subscriptions.add atom.commands.add 'atom-workspace', 
       'atom-cscope:find-this-symbol': => 
@@ -146,6 +145,11 @@ module.exports = AtomCscope =
 
   autoInputFromCursor: (option) ->
     activeEditor = atom.workspace.getActiveTextEditor()
+
+    if not activeEditor?
+      notifier.addInfo "Could not find text under cursor."
+      return
+
     selectedText = activeEditor.getSelectedText()
 
     keyword = if selectedText is "" then activeEditor.getWordUnderCursor() else selectedText
