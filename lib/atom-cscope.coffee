@@ -107,33 +107,15 @@ module.exports = AtomCscope =
       'atom-cscope:toggle-assignments-to': => @togglePanelOption(9)
 
     @subscriptions.add atom.commands.add 'atom-workspace', 
-      'atom-cscope:find-symbol': => 
-        @show()
-        @autoInputFromCursor(0)
-      'atom-cscope:find-global-definition': => 
-        @show()
-        @autoInputFromCursor(1)
-      'atom-cscope:find-functions-called-by': => 
-        @show()
-        @autoInputFromCursor(2)
-      'atom-cscope:find-functions-calling': => 
-        @show()
-        @autoInputFromCursor(3)
-      'atom-cscope:find-text-string': => 
-        @show()
-        @autoInputFromCursor(4)
-      'atom-cscope:find-egrep-pattern': => 
-        @show()
-        @autoInputFromCursor(6)
-      'atom-cscope:find-file': => 
-        @show()
-        @autoInputFromCursor(7)
-      'atom-cscope:find-files-including': => 
-        @show()
-        @autoInputFromCursor(8)
-      'atom-cscope:find-assignments-to': => 
-        @show()
-        @autoInputFromCursor(9)
+      'atom-cscope:find-symbol': => @autoInputFromCursor(0)
+      'atom-cscope:find-global-definition': => @autoInputFromCursor(1)
+      'atom-cscope:find-functions-called-by': => @autoInputFromCursor(2)
+      'atom-cscope:find-functions-calling': => @autoInputFromCursor(3)
+      'atom-cscope:find-text-string': => @autoInputFromCursor(4)
+      'atom-cscope:find-egrep-pattern': => @autoInputFromCursor(6)
+      'atom-cscope:find-file': => @autoInputFromCursor(7)
+      'atom-cscope:find-files-including': => @autoInputFromCursor(8)
+      'atom-cscope:find-assignments-to': => @autoInputFromCursor(9)
 
   autoInputFromCursor: (option) ->
     activeEditor = atom.workspace.getActiveTextEditor()
@@ -145,6 +127,7 @@ module.exports = AtomCscope =
     selectedText = activeEditor.getSelectedText()
 
     keyword = if selectedText is "" then activeEditor.getWordUnderCursor() else selectedText
+    @show()
     @atomCscopeView.inputView.invokeSearch(option, keyword)
   
   attachModal: (state) ->
