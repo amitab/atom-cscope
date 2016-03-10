@@ -1,6 +1,6 @@
 {View} = require 'space-pen'
 {TextEditorView}  = require 'atom-space-pen-views'
-{CompositeDisposable} = require 'event-kit'
+{CompositeDisposable} = require 'atom'
 _ = require 'underscore-plus'
 
 module.exports =
@@ -30,9 +30,8 @@ class InputView extends View
     @subscriptions = new CompositeDisposable
     @resetPrevSearch()
 
-    @findEditor.getModel().getBuffer().stoppedChangingDelay = atom.config.get('atom-cscope.LiveSearchDelay')
-    @subscriptions.add atom.config.onDidChange 'atom-cscope.LiveSearchDelay', (event) =>
-      @findEditor.getModel().getBuffer().stoppedChangingDelay = event.newValue
+    @subscriptions.add atom.config.observe 'atom-cscope.LiveSearchDelay', (newValue) =>
+      @findEditor.getModel().getBuffer().stoppedChangingDelay = newValue
     
     @on 'click', 'button#search', @searchCallback
     @on 'change', 'select#cscope-options', @searchCallback
@@ -97,17 +96,9 @@ class InputView extends View
     return @isCurrentSearchSameAs(@prevSearch)
     
   setupLiveSearchListener: () ->
-    if atom.config.get('atom-cscope.LiveSearch')
-      @liveSearchListener = @findEditor.getModel().onDidStopChanging @searchCallback
-    else
-      @liveSearchListener = false
-
-    @subscriptions.add atom.config.onDidChange 'atom-cscope.LiveSearch', (event) =>
-      if event.newValue and not @liveSearchListener
-        @liveSearchListener = @findEditor.getModel().onDidStopChanging @searchCallback
-      else
-        @liveSearchListener.dispose()
-        @liveSearchListener = false
+    @subscriptions.add atom.config.observe 'atom-cscope.LiveSearch', (newValue) =>
+      @liveSearchListener = @findEditor.getModel().onDidStopChanging @searchCallback if newValue
+      @liveSearchListener?.dispose?() if not newValue
 
   onSearch: (callback) ->
     @customSearchCallback = callback
