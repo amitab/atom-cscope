@@ -2,6 +2,7 @@
 {TextEditorView}  = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 _ = require 'underscore-plus'
+path = require 'path'
 
 module.exports =
 class InputView extends View
