@@ -1,8 +1,17 @@
+## 0.14.0
+* Loads of code cleaning
+* Fix Issue #11 - with the updates to Atom, a few changes were needed
+* Fix Issue #12 - Added support for multiple projects
+* Fix Issue #14 - Run find commands with no buffer open
+
+## 0.13.0
+* Fix Issue #9 by @vishalpatel
+
 ## 0.12.0
-* Fix issue#5 can't run refresh-db
-* Fix issue#6 refresh command as activation command
-* Fix issue#7 Error on closing widget
-* Fix issue#8 can't execute same query after rebuild cscope db
+* Fix issue #5 can't run refresh-db
+* Fix issue #6 refresh command as activation command
+* Fix issue #7 Error on closing widget
+* Fix issue #8 can't execute same query after rebuild cscope db
 ## 0.11.0
 * Can build cscope db within atom
 * Adds `atom-cscope:refresh-db` as command to build db

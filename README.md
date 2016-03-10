@@ -26,13 +26,13 @@ yourself.
 The following commands are registered to execute search with the word in 
 selection or under cursor:
 ```
-atom-cscope:find-this-symbol
-atom-cscope:find-this-global-definition
+atom-cscope:find-symbol
+atom-cscope:find-global-definition
 atom-cscope:find-functions-called-by
 atom-cscope:find-functions-calling
 atom-cscope:find-text-string
 atom-cscope:find-egrep-pattern
-atom-cscope:find-this-file
+atom-cscope:find-file
 atom-cscope:find-files-including
 atom-cscope:find-assignments-to
 ```
@@ -42,7 +42,7 @@ pre-selected options to save time.
 ```
 atom-cscope:toggle
 atom-cscope:toggle-symbol
-atom-cscope:toggle-definition
+atom-cscope:toggle-global-definition
 atom-cscope:toggle-functions-called-by
 atom-cscope:toggle-functions-calling
 atom-cscope:toggle-text-string
@@ -58,17 +58,25 @@ the other commands.
 The command `atom-cscope:focus-next` allows you to switch between the main 
 editor and the widget, while the widget is open.
 
+Command `atom-cscope:refresh-db` allows you to create/re-create the cscope
+database for all the projects in the Atom workspace.
+
+Command `atom-cscope:project-select` allows you to open the dropdown to select
+the project in which you want to run the cscope query in (For all those who do
+not want to touch your mouse :P)
+
 There are 3 ways of executing a search:
 * Live search: Executes a search with configurable delay after you input your 
    search term.
 * Enter Key: Just press enter after typing your input.
 * "SCOPE IT!" button: Click the button.
 
-If new search is same as previous search, no action is taken. However you can
+If new search is same as previous search, no action is taken. However, you can
 force search by clicking on the "SCOPE IT!" button
 
-You can navigate the Result Items using arrow keys and press `enter` to execute
-or click on the Result Item for the same effect.
+You can navigate the Result Items using arrow keys and press `enter` to open 
+the target file in a new buffer and the cursor automatically moves to the 
+location of the query or you can click on the Result Item for the same effect.
 
 ## Set it up?
 You can use the existing cscope.out file, generate on your own, or generate
@@ -82,7 +90,7 @@ cscope -q -R -b -i cscope.files
 And then the package will be able to use the cscope.out file to generate results.
 
 ## Screenshots
-![ScreenShot](http://i.imgur.com/wIxWRg2.png)
+![ScreenShot](http://i.imgur.com/t7p7lvn.png)
 
 ## Further Improvements?
 1. Add 'Change this text string' functionality
