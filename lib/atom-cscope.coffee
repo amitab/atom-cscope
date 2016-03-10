@@ -96,30 +96,21 @@ module.exports = AtomCscope =
       'atom-cscope:project-select': => @atomCscopeView.inputView.openProjectSelector()
       
     @subscriptions.add atom.commands.add 'atom-workspace', 
-      'atom-cscope:toggle-symbol': => 
-        @togglePanelOption(0)
-      'atom-cscope:toggle-definition': => 
-        @togglePanelOption(1)
-      'atom-cscope:toggle-functions-called-by': => 
-        @togglePanelOption(2)
-      'atom-cscope:toggle-functions-calling': => 
-        @togglePanelOption(3)
-      'atom-cscope:toggle-text-string': => 
-        @togglePanelOption(4)
-      'atom-cscope:toggle-egrep-pattern': => 
-        @togglePanelOption(6)
-      'atom-cscope:toggle-file': => 
-        @togglePanelOption(7)
-      'atom-cscope:toggle-files-including': => 
-        @togglePanelOption(8)
-      'atom-cscope:toggle-assignments-to': => 
-        @togglePanelOption(9)
+      'atom-cscope:toggle-symbol': => @togglePanelOption(0)
+      'atom-cscope:toggle-global-definition': => @togglePanelOption(1)
+      'atom-cscope:toggle-functions-called-by': => @togglePanelOption(2)
+      'atom-cscope:toggle-functions-calling': => @togglePanelOption(3)
+      'atom-cscope:toggle-text-string': => @togglePanelOption(4)
+      'atom-cscope:toggle-egrep-pattern': => @togglePanelOption(6)
+      'atom-cscope:toggle-file': => @togglePanelOption(7)
+      'atom-cscope:toggle-files-including': => @togglePanelOption(8)
+      'atom-cscope:toggle-assignments-to': => @togglePanelOption(9)
 
     @subscriptions.add atom.commands.add 'atom-workspace', 
-      'atom-cscope:find-this-symbol': => 
+      'atom-cscope:find-symbol': => 
         @show()
         @autoInputFromCursor(0)
-      'atom-cscope:find-this-global-definition': => 
+      'atom-cscope:find-global-definition': => 
         @show()
         @autoInputFromCursor(1)
       'atom-cscope:find-functions-called-by': => 
@@ -134,7 +125,7 @@ module.exports = AtomCscope =
       'atom-cscope:find-egrep-pattern': => 
         @show()
         @autoInputFromCursor(6)
-      'atom-cscope:find-this-file': => 
+      'atom-cscope:find-file': => 
         @show()
         @autoInputFromCursor(7)
       'atom-cscope:find-files-including': => 

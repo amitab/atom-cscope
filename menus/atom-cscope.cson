@@ -18,11 +18,11 @@
         },
         {
           'label': 'Find symbol under cursor/selection'
-          'command': 'atom-cscope:find-this-symbol'
+          'command': 'atom-cscope:find-symbol'
         },
         {
           'label': 'Find definition under cursor/selection'
-          'command': 'atom-cscope:find-this-global-definition'
+          'command': 'atom-cscope:find-global-definition'
         },
         {
           'label': 'Find functions called by function under cursor/selection'
@@ -42,7 +42,7 @@
         },
         {
           'label': 'Find the file under cursor/selection'
-          'command': 'atom-cscope:find-this-file'
+          'command': 'atom-cscope:find-file'
         },
         {
           'label': 'Find files including word under cursor/selection'
