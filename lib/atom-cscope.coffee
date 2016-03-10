@@ -37,6 +37,7 @@ module.exports = AtomCscope =
       default: 'cscope'
 
   refreshCscopeDB: ->
+    notifier.addInfo "Refreshing... Please wait"
     exts = atom.config.get('atom-cscope.cscopeSourceFiles')
     return if exts.trim() is ""
 
@@ -55,7 +56,9 @@ module.exports = AtomCscope =
     @atomCscopeView.onSearch (params) =>
       option = params.option
       keyword = params.keyword
-      projects = atom.project.getPaths()
+      path = params.projectPath
+
+      projects = if path is -1 then atom.project.getPaths() else [atom.project.getPaths()[path]]
       
       # The option must be acceptable by cscope
       if option not in [0, 1, 2, 3, 4, 6, 7, 8, 9]
@@ -73,7 +76,7 @@ module.exports = AtomCscope =
           notifier.addError "Error: " + data.message
         
     @atomCscopeView.onResultClick (result) =>
-      atom.workspace.open(result.fileName, {initialLine: (result.lineNumber - 1)})
+      atom.workspace.open(result.getFilePath(), {initialLine: (result.lineNumber - 1)})
   
   togglePanelOption: (option) ->
     if @atomCscopeView.inputView.getSelectedOption() is option
@@ -90,6 +93,7 @@ module.exports = AtomCscope =
       'core:cancel': => @hide() if @modalPanel.isVisible()
       'atom-cscope:focus-next': => @switchPanes() if @modalPanel.isVisible()
       'atom-cscope:refresh-db': => @refreshCscopeDB()
+      'atom-cscope:project-select': => @atomCscopeView.inputView.openProjectSelector()
       
     @subscriptions.add atom.commands.add 'atom-workspace', 
       'atom-cscope:toggle-symbol': => 

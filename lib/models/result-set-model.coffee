@@ -2,16 +2,17 @@ ResultModel = require './result-model'
 
 module.exports = 
   class ResultSetModel
-    constructor: (keyword, response) ->
+    constructor: (keyword, response, cwd) ->
       @results = []
       @keyword = keyword
+      @cwd = cwd
       @addResults(response)
             
     addResults: (response) ->
       return if typeof response is 'undefined'
       for line in response.split("\n")
         continue if line is ""
-        result = new ResultModel(line, @keyword)
+        result = new ResultModel(line, @keyword, @cwd)
         @results.push(result)
             
     addResultSet: (resultSet) ->

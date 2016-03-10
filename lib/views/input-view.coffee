@@ -1,5 +1,7 @@
 {View} = require 'space-pen'
 {TextEditorView}  = require 'atom-space-pen-views'
+{CompositeDisposable} = require 'event-kit'
+_ = require 'underscore-plus'
 
 module.exports =
 class InputView extends View
@@ -17,21 +19,38 @@ class InputView extends View
           @option value: '8', "Find files #including this file"
           @option value: '9', "Find assignments to this symbol"
         @subview 'findEditor', new TextEditorView(mini: true, placeholderText: 'Input query here...')
+        @select id: "path-options", outlet: 'projectSelector', =>
+          @option value: '-1', "All Projects"
+          for project, index in atom.project.getPaths()
+            @option value: index.toString(), path.basename(project)
+
         @button class: "btn icon icon-search", id: "search", "Scope It!"
 
   initialize: (params) ->
+    @subscriptions = new CompositeDisposable
     @resetPrevSearch()
+
     @findEditor.getModel().getBuffer().stoppedChangingDelay = atom.config.get('atom-cscope.LiveSearchDelay')
-    atom.config.onDidChange 'atom-cscope.LiveSearchDelay', (event) =>
+    @subscriptions.add atom.config.onDidChange 'atom-cscope.LiveSearchDelay', (event) =>
       @findEditor.getModel().getBuffer().stoppedChangingDelay = event.newValue
     
     @on 'click', 'button#search', @searchCallback
     @on 'change', 'select#cscope-options', @searchCallback
+    @on 'change', 'select#path-options', => @findEditor.focus()
     @on 'core:confirm', @findEditor, (event) => @searchCallback(event) unless @isSamePreviousSearch()
     @setupLiveSearchListener()
     
+    @subscriptions.add atom.project.onDidChangePaths (projects) =>
+      prevSelection = @projectSelector.val()
+      @projectSelector.empty()
+      @projectSelector.append new Option "All", "-1"
+      
+      for project, index in projects
+        @projectSelector.append new Option path.basename(project), index.toString()
+      @projectSelector.val prevSelection
+    
   resetPrevSearch: ->
-    @prevSearch = { keyword: '', option: -1 }
+    @prevSearch = { keyword: null, option: null, projectPath: null }
 
   searchCallback: (event) =>
     @parentView.showLoading()
@@ -40,6 +59,20 @@ class InputView extends View
     @parentView.removeLoading()
     event?.preventDefault?()
     false
+  
+  # Courtesy: http://stackoverflow.com/a/20906852
+  openSelectBox: (element) ->
+    event = document.createEvent 'MouseEvents'
+    event.initMouseEvent 'mousedown', true, true, window
+    element.dispatchEvent event
+  
+  openProjectSelector: ->
+    dropdown = document.getElementById 'path-options'
+    try
+      @openSelectBox dropdown
+    catch error
+      console.log error
+    false
 
   getSearchKeyword: ->
     return @findEditor.getText()
@@ -47,15 +80,18 @@ class InputView extends View
   getSelectedOption: ->
     return parseInt(@find('select#cscope-options').val())
     
+  getSelectedProjectPath: ->
+    return parseInt(@find('select#path-options').val())
+
   setSelectedOption: (option) ->
     @find('select#cscope-options').val(option.toString())
     
   getCurrentSearch: ->
-    return { keyword: @getSearchKeyword(), option: @getSelectedOption() }
+    return { keyword: @getSearchKeyword(), option: @getSelectedOption(), projectPath: @getSelectedProjectPath() }
     
   isCurrentSearchSameAs: (search) ->
     currentSearch = @getCurrentSearch()
-    return currentSearch.keyword is search.keyword and currentSearch.option is search.option
+    return _.isEqual(search, currentSearch)
     
   isSamePreviousSearch: ->
     return @isCurrentSearchSameAs(@prevSearch)
@@ -66,7 +102,7 @@ class InputView extends View
     else
       @liveSearchListener = false
 
-    atom.config.onDidChange 'atom-cscope.LiveSearch', (event) =>
+    @subscriptions.add atom.config.onDidChange 'atom-cscope.LiveSearch', (event) =>
       if event.newValue and not @liveSearchListener
         @liveSearchListener = @findEditor.getModel().onDidStopChanging @searchCallback
       else
@@ -82,11 +118,11 @@ class InputView extends View
     
   invokeSearch: (option, keyword) ->
     @autoFill(option, keyword)
-    @findEditor.trigger 'core:confirm'
+    @searchCallback()
     
   redoSearch: ->
     @resetPrevSearch()
-    @findEditor.trigger 'core:confirm'
+    @searchCallback()
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->
@@ -94,6 +130,7 @@ class InputView extends View
   # Tear down any state and detach
   destroy: ->
     @element.remove()
+    @subscriptions.dispose()
 
   getElement: ->
     @element

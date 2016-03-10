@@ -29,7 +29,8 @@
       "atom-cscope:toggle-file",
       "atom-cscope:toggle-files-including",
       "atom-cscope:toggle-assignments-to",
-      "atom-cscope:refresh-db"
+      "atom-cscope:refresh-db",
+      "atom-cscope:project-select"
     ]
   },
   "repository": "https://github.com/amitab/atom-cscope",
@@ -41,6 +42,7 @@
     "atom-notify": "^1.0.1",
     "space-pen": "^5.0",
     "underscore-plus": "1.x",
-    "atom-space-pen-views": "^2.0.0"
+    "atom-space-pen-views": "^2.0.0",
+    "event-kit": "^2.0.0"
   }
 }
