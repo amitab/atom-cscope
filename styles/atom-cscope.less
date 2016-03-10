@@ -41,6 +41,7 @@
 
 .atom-cscope-input #form-container {
   display: flex;
+  width: 100%;
 }
 
 .atom-cscope .header, .atom-cscope-input #form-container {
@@ -49,6 +50,7 @@
 
 .atom-cscope-input #form-container atom-text-editor {
   flex-grow: 2;
+  flex-basis: 100px;
   margin: 0 10px;
 }
 
@@ -57,7 +59,9 @@
 }
 
 .atom-cscope-input #form-container select {
-  flex-basis: 200px;
+  flex-basis: 100px;
+  max-width: 200px;
+  flex-grow: 2;
   background: @app-background-color;
   border: 1px @background-color-highlight solid;
   border-radius: 2px;

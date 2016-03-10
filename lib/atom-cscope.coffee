@@ -93,6 +93,7 @@ module.exports = AtomCscope =
       'core:cancel': => @hide() if @modalPanel.isVisible()
       'atom-cscope:focus-next': => @switchPanes() if @modalPanel.isVisible()
       'atom-cscope:refresh-db': => @refreshCscopeDB()
+      'atom-cscope:project-select': => @atomCscopeView.inputView.openProjectSelector()
       
     @subscriptions.add atom.commands.add 'atom-workspace', 
       'atom-cscope:toggle-symbol': => 
