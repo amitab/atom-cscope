@@ -30,7 +30,9 @@
       "atom-cscope:toggle-files-including",
       "atom-cscope:toggle-assignments-to",
       "atom-cscope:refresh-db",
-      "atom-cscope:project-select"
+      "atom-cscope:project-select",
+      "atom-cscope:next",
+      "atom-cscope:prev"
     ]
   },
   "repository": "https://github.com/amitab/atom-cscope",

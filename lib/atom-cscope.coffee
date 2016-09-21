@@ -8,6 +8,10 @@ module.exports = AtomCscope =
   modalPanel: null
   subscriptions: null
 
+  historyPrev: []
+  historyCurr: null
+  historyNext: []
+
   config:
     LiveSearch:
       title: 'Live Search toggle'
@@ -76,8 +80,55 @@ module.exports = AtomCscope =
           notifier.addError "Error: " + data.message
         
     @atomCscopeView.onResultClick (result) =>
-      atom.workspace.open(result.getFilePath(), {initialLine: (result.lineNumber - 1)})
-  
+
+      if not @historyCurr?
+        @pushCurrentToHistoryPrev()
+      else
+        if @historyCurr.keyword?
+          if @historyCurr.keyword isnt result.keyword
+            @historyPrev.push @historyCurr
+            @pushCurrentToHistoryPrev()
+        else
+          @pushCurrentToHistoryPrev()
+
+      @historyCurr =
+        path: result.getFilePath()
+        pos:
+          column: 0
+          row: result.lineNumber - 1
+        keyword: result.keyword
+      @historyNext = []
+
+      @openHistoryCurr()
+
+  pushCurrentToHistoryPrev: ->
+    editor = atom.workspace.getActiveTextEditor()
+    pos = editor?.getCursorBufferPosition()
+    file = editor?.buffer.file
+    filePath = file?.path
+    if pos? and filePath?
+      @historyPrev.push
+        path: filePath
+        pos: pos
+        keyword: null
+
+  openHistoryCurr: ->
+    atom.workspace.open(@historyCurr.path, {initialLine: @historyCurr.pos.row, initialColumn: @historyCurr.pos.column})
+
+  goNext: ->
+    next = @historyNext.pop()
+    return if not next?
+    @historyPrev.push @historyCurr if @historyCurr?
+    @historyCurr = next
+    @openHistoryCurr()
+
+  goPrev: ->
+    prev = @historyPrev.pop()
+    return if not prev?
+    @historyNext.push @historyCurr if @historyCurr?
+    @historyCurr = prev
+    @openHistoryCurr()
+
   togglePanelOption: (option) ->
     if @atomCscopeView.inputView.getSelectedOption() is option
       @toggle()
@@ -94,6 +145,8 @@ module.exports = AtomCscope =
       'atom-cscope:focus-next': => @switchPanes() if @modalPanel.isVisible()
       'atom-cscope:refresh-db': => @refreshCscopeDB()
       'atom-cscope:project-select': => @atomCscopeView.inputView.openProjectSelector()
+      'atom-cscope:next': => @goNext()
+      'atom-cscope:prev': => @goPrev()
       
     @subscriptions.add atom.commands.add 'atom-workspace', 
       'atom-cscope:toggle-symbol': => @togglePanelOption(0)
