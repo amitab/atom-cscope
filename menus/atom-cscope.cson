@@ -52,6 +52,14 @@
           'label': 'Find assignments to variable under cursor/selection'
           'command': 'atom-cscope:find-assignments-to'
         }
+        {
+          'label': 'Go to the next location in the stack'
+          'command': 'atom-cscope:next'
+        },
+        {
+          'label': 'Go to the previous location in the stack'
+          'command': 'atom-cscope:prev'
+        }
       ]
     ]
   }
