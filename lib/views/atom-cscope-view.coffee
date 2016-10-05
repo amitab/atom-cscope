@@ -32,9 +32,9 @@ class AtomCscopeView extends View
   clearItems: ->
     @listView.clearItems()
     
-  applyResultSet: (@resultSet = []) ->
+  applyResultSet: (resultSet = []) ->
     @find('h6#result-count').text(resultSet.results.length + ' results')
-    @listView.setItems(@resultSet.results)
+    @listView.setItems(resultSet.results)
     
   onSearch: (callback) ->
     @inputView.onSearch callback

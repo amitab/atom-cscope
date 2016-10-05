@@ -13,9 +13,9 @@ class ListView extends View
   initialize: ->
     @keyUsed = false
 
-  setItems: (@items=[]) ->
-    if @items.length is 0 then @setResultsNotAvailable() else @setResultsAvailable()
-    @resultList.append _.map(@items, (item) -> item.generateView())
+  setItems: (items=[]) ->
+    if items.length is 0 then @setResultsNotAvailable() else @setResultsAvailable()
+    @resultList.append _.map(items, (item) -> item.generateView())
 
   clearItems: ->
     @setResultsNotAvailable()
