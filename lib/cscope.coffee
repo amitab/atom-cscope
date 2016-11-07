@@ -2,6 +2,7 @@
 ResultSetModel = require './models/result-set-model'
 fs = require 'fs'
 path = require 'path'
+spawn = require('child_process').spawn
 
 module.exports = CscopeCommands =
   getSourceFiles: (project, exts) ->
@@ -53,17 +54,24 @@ module.exports = CscopeCommands =
     
   runCommand: (command, args, options = {}) ->
     process = new Promise (resolve, reject) =>
+      complete = false
       output = ''
-      try
-        new BufferedProcess
-          command: command
-          args: args
-          options: options
-          stdout: (data) -> output += data.toString()
-          stderr: (data) -> reject {success: false, message: "At " + options.cwd + ": " + data.toString()}
-          exit: (code) -> resolve output
-      catch
-        reject "Couldn't find cscope"
+      child = spawn command, args, options
+      child.stdout.on 'data', (data) =>
+        output += data.toString()
+      child.stderr.on 'data', (data) =>
+        if complete then return
+        complete = true
+        reject data.toString()
+
+      child.on 'error', (err) =>
+        if complete then return
+        complete = true
+        reject err.toString()
+      child.on 'close', (code) =>
+        if complete then return
+        complete = true
+        if code != 0 then reject code else resolve output
     return process
     
   runCscopeCommand: (num, keyword, cwd) ->
