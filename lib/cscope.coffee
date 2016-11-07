@@ -1,42 +1,32 @@
-{BufferedProcess} = require 'atom'
 ResultSetModel = require './models/result-set-model'
 fs = require 'fs'
 path = require 'path'
 spawn = require('child_process').spawn
+platform = require('os').platform()
 
 module.exports = CscopeCommands =
-  getSourceFiles: (project, exts) ->
-    args = ['.']
-    for ext,index in exts.split(/\s+/)
-      args.push '-o' if index > 0
-      args.push '-name'
-      args.push '*' + ext
-      
-    return @runCommand 'find', args, {cwd: project}
+  getSourceFiles: (project, extStr) ->
+    exts = extStr.split(/\s+/)
+    out = fs.openSync(path.join(project, 'cscope.files'), 'w')
+    if platform == "win32"
+      cmd = 'dir'
+      args = ['/b/a/s'].concat(exts)
+    else
+      cmd = 'find'
+      args = [].concat.apply(['.', '-name', '*' + exts.shift()], ['-o', '-name', '*' + ext] for ext in exts)
+    return @runCommand cmd, args, {cwd: project, detached: true, stdio: ['ignore', out, 'pipe']}
     
   generateCscopeDB: (project) ->
     cscope_binary = atom.config.get('atom-cscope.cscopeBinaryLocation')
     return @runCommand cscope_binary, ['-qRbi', 'cscope.files'], {cwd: project}
     
-  writeToFile: (project, fileName, content) ->
-    filePath = path.join(project, fileName)
-    return new Promise (resolve, reject) ->
-      fs.writeFile filePath, content, (err) ->
-        reject {success: false, info: err.toString()} if err
-        resolve {success: true}
-        
   setupCscopeForPath: (project, exts, force) ->
     cscopeExists = if force then Promise.reject force else @cscopeExists project
     cscopeExists.then (data) =>
       return Promise.resolve {success: true}
     .catch (data) =>
-      sourceFileGen = @getSourceFiles project, exts
-      writeCscopeFiles = sourceFileGen.then (data) =>
-        return @writeToFile project, 'cscope.files', data
-      dbGen = writeCscopeFiles.then (data) =>
+      return @getSourceFiles(project, exts).then (data) =>
         return @generateCscopeDB project
-        
-      return Promise.all([sourceFileGen, writeCscopeFiles, dbGen])
       
   setupCscope: (projects, exts, force = false) ->
     promises = []
@@ -54,24 +44,19 @@ module.exports = CscopeCommands =
     
   runCommand: (command, args, options = {}) ->
     process = new Promise (resolve, reject) =>
-      complete = false
       output = ''
       child = spawn command, args, options
-      child.stdout.on 'data', (data) =>
+      if child.stdout != null then child.stdout.on 'data', (data) =>
         output += data.toString()
-      child.stderr.on 'data', (data) =>
-        if complete then return
-        complete = true
+      if child.stderr != null then child.stderr.on 'data', (data) =>
         reject data.toString()
 
       child.on 'error', (err) =>
-        if complete then return
-        complete = true
         reject err.toString()
       child.on 'close', (code) =>
-        if complete then return
-        complete = true
         if code != 0 then reject code else resolve output
+
+      if args.detached then child.unref()
     return process
     
   runCscopeCommand: (num, keyword, cwd) ->
