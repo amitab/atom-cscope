@@ -9,7 +9,7 @@ module.exports =
       @processResultString(response)
 
     getFilePath: ->
-      filePath = if @fileName.startsWith('/') then @fileName else path.join(@cwd, @fileName)
+      filePath = if path.isAbsolute(@fileName) then @fileName else path.join(@cwd, @fileName)
       return filePath
     
     processResultString: (response) ->
