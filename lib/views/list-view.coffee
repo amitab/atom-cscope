@@ -14,8 +14,9 @@ class ListView extends View
     @keyUsed = false
 
   setItems: (items=[]) ->
+    @items = items
     if items.length is 0 then @setResultsNotAvailable() else @setResultsAvailable()
-    @resultList.append _.map(items, (item) -> item.generateView())
+    @resultList[0].innerHTML = (item.generateHTML(index) for item, index in @items)
 
   clearItems: ->
     @setResultsNotAvailable()
@@ -27,7 +28,7 @@ class ListView extends View
       return if target.length is 0
       @keyUsed = false
       @selectItemView(target)
-      callback(target.data('result-item'))
+      callback(@items[parseInt(target[0].dataset.index)])
   
     @parentView.on 'core:confirm', (e) =>
       target = @getSelectedItemView()
@@ -35,7 +36,7 @@ class ListView extends View
       return if not (@keyUsed or @parentView.inputView.isSamePreviousSearch()) 
       return if not target.hasClass('selected')
       @keyUsed = false
-      callback(target.data('result-item'))
+      callback(@items[parseInt(target[0].dataset.index)])
 
   setResultsNotAvailable: ->
     @resultList.addClass('hidden')
