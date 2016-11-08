@@ -1,3 +1,9 @@
+## 0.15.0
+* PR - Check for absolute paths #16
+* Fix Issue #18 - Open files which are not in project directory
+* Fix Issue #20 - Changes required for CoffeeScript update
+* Performance fixes
+
 ## 0.14.0
 * Loads of code cleaning
 * Fix Issue #11 - with the updates to Atom, a few changes were needed
