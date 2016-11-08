@@ -34,4 +34,26 @@ module.exports =
 
     generateView: ->
       return ResultItemView.setup(@)
-      
+
+    encodeHtmlEntity: (str) ->
+      buf = []
+      buf.unshift(['&#', str[i].charCodeAt(), ';'].join('')) for i in [str.length-1...-1] by -1
+      return buf.join('')
+
+    generateHTML: (index) ->
+      html  = '<li class="result-item" data-index="' + index + '">'
+      html += '<div class="inline-block", style="margin-right=0px;">'
+      html += '<span class="project-directory">[' + @projectPath + ']</span>'
+      html += '<span class="gap"></span>'
+      html += '<span class="file-name">' + @htmlFileName + '<span>'
+      html += '</div>'
+      if not @isJustFile
+        html += '<div class="inline-block">'
+        html += '<span>:</span>'
+        html += '<span class="line-number bold">' + @lineNumber + '</span>'
+        html += '<span class="gap"></span>'
+        html += '<span class="highlight function-name">' + @encodeHtmlEntity(@functionName) + '</span>'
+        html += '<span class="gap"></span>'
+        html += '<div class="inline-block code-line">' + @htmlLineText + '</div>'
+        html += '</div>'
+      return html
