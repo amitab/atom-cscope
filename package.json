@@ -42,8 +42,7 @@
   },
   "dependencies": {
     "atom-notify": "^1.0.1",
-    "space-pen": "^5.0",
     "underscore-plus": "1.x",
-    "atom-space-pen-views": "^2.0.0"
+    "vue": "^2.1.10"
   }
 }

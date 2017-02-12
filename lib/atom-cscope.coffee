@@ -50,8 +50,7 @@ module.exports = AtomCscope =
       notifier.addSuccess "Success: Refreshed cscope database"
       @atomCscopeView.inputView.redoSearch()
     .catch (data) ->
-      notifier.addError "Error: Unable to refresh cscope database"
-      console.log data
+      notifier.addError "Error: " + data
     @atomCscopeView.inputView.findEditor.focus() if @atomCscopeView.isVisible()
 
   setUpEvents: ->
@@ -63,7 +62,7 @@ module.exports = AtomCscope =
       path = params.projectPath
 
       projects = if path is -1 then atom.project.getPaths() else [atom.project.getPaths()[path]]
-      
+
       # The option must be acceptable by cscope
       if option not in [0, 1, 2, 3, 4, 6, 7, 8, 9]
         notifier.addError "Error: Invalid option: " + option
@@ -78,7 +77,7 @@ module.exports = AtomCscope =
           notifier.addError "Error: Please generate the cscope database."
         else
           notifier.addError "Error: " + data.message
-        
+
     @atomCscopeView.onResultClick (result) =>
 
       if not @historyCurr?
@@ -152,8 +151,8 @@ module.exports = AtomCscope =
       'atom-cscope:project-select': => @atomCscopeView.inputView.openProjectSelector()
       'atom-cscope:next': => @goNext()
       'atom-cscope:prev': => @goPrev()
-      
-    @subscriptions.add atom.commands.add 'atom-workspace', 
+
+    @subscriptions.add atom.commands.add 'atom-workspace',
       'atom-cscope:toggle-symbol': => @togglePanelOption(0)
       'atom-cscope:toggle-global-definition': => @togglePanelOption(1)
       'atom-cscope:toggle-functions-called-by': => @togglePanelOption(2)
@@ -164,7 +163,7 @@ module.exports = AtomCscope =
       'atom-cscope:toggle-files-including': => @togglePanelOption(8)
       'atom-cscope:toggle-assignments-to': => @togglePanelOption(9)
 
-    @subscriptions.add atom.commands.add 'atom-workspace', 
+    @subscriptions.add atom.commands.add 'atom-workspace',
       'atom-cscope:find-symbol': => @autoInputFromCursor(0)
       'atom-cscope:find-global-definition': => @autoInputFromCursor(1)
       'atom-cscope:find-functions-called-by': => @autoInputFromCursor(2)
@@ -187,7 +186,7 @@ module.exports = AtomCscope =
     keyword = if selectedText is "" then activeEditor.getWordUnderCursor() else selectedText
     @show()
     @atomCscopeView.inputView.invokeSearch(option, keyword)
-  
+
   attachModal: (state) ->
     @atomCscopeView = new AtomCscopeView(state.atomCscopeViewState)
     @setupModalLocation()
@@ -204,12 +203,12 @@ module.exports = AtomCscope =
       when 'bottom' then @modalPanel = atom.workspace.addBottomPanel(item: @atomCscopeView.element, visible: false)
       when 'top' then @modalPanel = atom.workspace.addTopPanel(item: @atomCscopeView.element, visible: false)
       else @modalPanel = atom.workspace.addTopPanel(item: @atomCscopeView.element, visible: false)
-  
+
   activate: (state) ->
     @attachModal(state)
     @setUpBindings()
     @setUpEvents()
-  
+
   deactivate: ->
     @modalPanel.destroy()
     @subscriptions.dispose()
@@ -222,7 +221,7 @@ module.exports = AtomCscope =
     @prevEditor = atom.workspace.getActiveTextEditor()
     @modalPanel.show()
     @atomCscopeView.inputView.findEditor.focus()
-    
+
   hide: ->
     @modalPanel.hide()
     prevEditorView = atom.views.getView(@prevEditor)
@@ -230,7 +229,7 @@ module.exports = AtomCscope =
 
   toggle: ->
     if @modalPanel.isVisible() then @hide() else @show()
-    
+
   switchPanes: ->
     if @atomCscopeView.inputView.findEditor.hasFocus()
       prevEditorView = atom.views.getView(@prevEditor)
