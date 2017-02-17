@@ -1,0 +1,88 @@
+<!-- <h2>Property Binding</h2>
+
+<div>
+  {{ buttonMessage }}
+  {{ clicks == 0 ? 'never' : clicks }}
+  <button class="btn" v-on="click: clicks++">Click Me</button>
+</div>
+
+<div>
+  Clicks in words: <strong>{{ clicks | numToWords }}</strong>
+</div>
+
+<h2>Repeating</h2>
+<div> List one:
+  <span class="name" v-repeat="things">{{ name }},</span>
+</div>
+
+<div> List named looping:
+  <span class="name" v-repeat="thing: things">{{ thing.name }},</span>
+</div>
+
+<div> List indexed looping:
+  <span class="name" v-repeat="things">{{ $index }}: {{ name }},</span>
+</div>
+
+<h2>Repeating in a table</h2>
+
+<table>
+  <tr>
+    <td v-repeat="things">{{ name }}</td>
+  </tr>
+  <tr v-repeat="things">
+    <td>{{ name }}</td>
+  </tr>
+</table> -->
+<div class="header">
+  <div class="inline-block spaced-item">
+    <button class="btn just-btn icon icon-zap" id="refresh"></button>
+  </div>
+  <h4 class="inline-block">Atom Cscope</h4>
+  <h6 class="inline-block" id="result-count">0 results</h6>
+  <span class="loading loading-spinner-tiny inline-block no-show"></span>
+  <div id="atom-cscope-input" class="atom-cscope-input">
+    <div class="inline-block" id="form-container">
+      <select name="" id="cscope-options">
+        <option value="0">Find this C symbol</option>
+        <option value="1">Find this global definition</option>
+        <option value="2">Find functions called by this</option>
+        <option value="3">Find functions calling this</option>
+        <option value="4">Find this text string</option>
+        <option value="6">Find this egrep pattern</option>
+        <option value="7">Find this file</option>
+        <option value="8">Find files #including this file</option>
+        <option value="9">Find assignments to this symbol</option>
+      </select>
+      <atom-text-editor class="editor mini" mini="" placeholder-text="Input query here..."></atom-text-editor>
+      <select name="" id="path-options">
+        <option value="-1">All projects</option>
+        <option v-repeat="path: paths" value="{{ $index }}">{{ path }}</option>
+      </select>
+      <button class="btn icon icon-search" id="search"></button>
+    </div>
+  </div>
+  <div class="list-container">
+    <ul v-if="results.length == 0" id="empty-container" class="background-message centered">
+      <li>No Results</li>
+    </ul>
+    <ol v-if="results.length > 0" id="result-container">
+      <template v-repeat="item: results">
+        <li class="result-item">
+          <div class="inline-block" style="margin-right: 0px">
+            <span class="project-directory">{{ item.projectDir }}</span>
+            <span class="gap"></span>
+            <span class="file-name">{{ item.fileName }}</span>
+          </div>
+          <div v-if="!item.isJustFile" class="inline-block">
+            <span>:</span>
+            <span class="line-number bold">{{ item.lineNumber }}</span>
+            <span class="gap"></span>
+            <span class="highlight function-name">{{ item.functionName }}</span>
+            <span class="gap"></span>
+            <span class="inline-block code-line">{{ item.codeLine }}</span>
+          </div>
+        </li>
+      </template>
+    </ol>
+  </div>
+</div>
