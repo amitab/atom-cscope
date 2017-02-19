@@ -43,16 +43,16 @@ module.exports = AtomCscope =
     @modalPanel = atom.workspace.addTopPanel(item: @view.getElement(), visible: false)
     @viewModel = new AtomCscopeViewModel(@view, @model)
     
-    @viewModel.ractive.on 'toggle', (event) =>
+    @viewModel.onToggle (event) =>
       @toggle()
       
-    @viewModel.ractive.on 'confirm', (event) =>
+    @viewModel.onSearch (event) =>
       console.log 'SEARCH'
       
-    @viewModel.ractive.on 'refresh', (event) =>
+    @viewModel.onRefresh (event) =>
       console.log 'REFRESH'
       
-    @viewModel.ractive.on 'result-click', (event) =>
+    @viewModel.onResultClick (event) =>
       console.log 'RESULT CLICK'
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable

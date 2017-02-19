@@ -34,35 +34,48 @@ class AtomCscopeViewModel
     @model.onDataUpdate (itemName, newItem) =>
       @ractive.merge itemName, newItem
       
-    @ractive.on 'move-up', (event) =>
+    @view.onMoveUp (event) =>
       @arrowsUsed = true
       @view.selectPrev()
-
-    @ractive.on 'move-down', (event) =>
+      
+    @view.onMoveDown (event) =>
       @arrowsUsed = true
       @view.selectNext()
       
-    @ractive.on 'confirm', (event) =>
+    @view.onMoveToTop (event) =>
+      @arrowsUsed = true
+      @view.selectFirst()
+      
+    @view.onMoveToBottom (event) =>
+      @arrowsUsed = true
+      @view.selectLast()
+      
+    @view.onConfirm (event) =>
       newSearch = @view.getSearchParams()
       if @arrowsUsed and @sameAsPreviousSearch newSearch
         console.log 'OPENING FILE'
       else
-        console.log "SEARCH"
         @arrowsUsed = false
-        @updateSearch newSearch
-        @searchCallback newSearch
+        @previousSearch = newSearch
+        if @searchCallback? then @searchCallback newSearch else console.log "searchCallback not found."
 
   sameAsPreviousSearch: (newSearch) ->
-    return _.isEqual(search, @previousSearch)
-    
-  updateSearch: (newSearch) ->
-    @previousSearch = newSearch
+    return _.isEqual(newSearch, @previousSearch)
 
   resetSearch: () ->
     @previousSearch =
       keyword: null
       option: null
       path: null
+
+  onToggle: (callback) ->
+    @view.onToggle callback
+
+  onResultClick: (callback) ->
+    @ractive.on 'result-click', callback
+      
+  onRefresh: (callback) ->
+    @ractive.on 'refresh', callback
 
   onSearch: (callback) ->
     @searchCallback = callback

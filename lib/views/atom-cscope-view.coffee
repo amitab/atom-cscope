@@ -3,7 +3,7 @@ path = require 'path'
 
 module.exports =
 class AtomCscopeView
-  constructor: ->
+  constructor: () ->
     @element = document.createElement('div')
     @element.classList.add('atom-cscope')
     @element.id = "atom-cscope"
@@ -19,11 +19,41 @@ class AtomCscopeView
     @pathSelect = @element.querySelector '#path-options'
     
   getSearchParams: () ->
-    return {
-      option: parseInt @optionSelect.value,
-      path: atom.project.getPaths()[parseInt @pathSelect.value],
-      keyword: @input.getModel().getText(),
-    }
+    pathIndex = parseInt @pathSelect.value
+    if pathIndex == -1
+      path = atom.project.getPaths()
+    else
+      path = atom.project.getPaths()[pathIndex]
+    search =
+      option: parseInt @optionSelect.value
+      path: path
+      keyword: @input.getModel().getText()
+
+    return search
+    
+  onMoveUp: (callback) ->
+    atom.commands.add 'atom-text-editor#query-input',
+      'core:move-up': callback
+  
+  onMoveDown: (callback) ->
+    atom.commands.add 'atom-text-editor#query-input',
+      'core:move-down': callback
+    
+  onMoveToBottom: (callback) ->
+    atom.commands.add 'atom-text-editor#query-input',
+      'core:move-to-bottom': callback
+    
+  onMoveToTop: (callback) ->
+    atom.commands.add 'atom-text-editor#query-input',
+      'core:move-to-top': callback
+    
+  onConfirm: (callback) ->
+    atom.commands.add 'atom-text-editor#query-input',
+      'core:confirm': callback
+  
+  onToggle: (callback) ->
+    atom.commands.add 'atom-text-editor#query-input',
+      'core:cancel': callback
 
   selectLast: () ->
     @selectItemView @resultList.childNodes.length - 1

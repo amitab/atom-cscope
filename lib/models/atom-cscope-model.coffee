@@ -3,79 +3,23 @@ path = require 'path'
 
 module.exports =
 class AtomCscopeModel
-  constructor: ->
+  constructor: () ->
     @subscriptions = new CompositeDisposable
     @dataChangeCallback = null
     @dataUpdateCallback = null
     @data =
       paths: []
-      results: [
-        {
-          projectDir: 'test_dir',
-          fileName: 'test_file',
-          isJustFile: false,
-          lineNumber: 99,
-          functionName: 'test',
-          codeLine: 'test line'
-        },
-        {
-          projectDir: 'test_dir',
-          fileName: 'test_file',
-          isJustFile: false,
-          lineNumber: 99,
-          functionName: 'test',
-          codeLine: 'test line'
-        },
-        {
-          projectDir: 'test_dir',
-          fileName: 'test_file',
-          isJustFile: false,
-          lineNumber: 99,
-          functionName: 'test',
-          codeLine: 'test line'
-        },
-        {
-          projectDir: 'test_dir',
-          fileName: 'test_file',
-          isJustFile: false,
-          lineNumber: 99,
-          functionName: 'test',
-          codeLine: 'test line'
-        },{
-          projectDir: 'test_dir',
-          fileName: 'test_file',
-          isJustFile: false,
-          lineNumber: 99,
-          functionName: 'test',
-          codeLine: 'test line'
-        },
-        {
-          projectDir: 'test_dir',
-          fileName: 'test_file',
-          isJustFile: false,
-          lineNumber: 99,
-          functionName: 'test',
-          codeLine: 'test line'
-        },
-        {
-          projectDir: 'test_dir',
-          fileName: 'test_file',
-          isJustFile: false,
-          lineNumber: 99,
-          functionName: 'test',
-          codeLine: 'test line'
-        },
-        {
-          projectDir: 'test_dir',
-          fileName: 'test_file',
-          isJustFile: false,
-          lineNumber: 99,
-          functionName: 'test',
-          codeLine: 'test line'
-        }
-      ]
-    for project in atom.project.getPaths()
-      @data.paths.push path.basename project
+      results: []
+
+    @data.paths.push path.basename project for project in atom.project.getPaths()
+    @data.results.push({
+      projectDir: 'test_dir',
+      fileName: 'test_file',
+      isJustFile: false,
+      lineNumber: 99,
+      functionName: 'test',
+      codeLine: 'test line'
+    }) for x in [1..10]
       
     @setupEvents()
       
