@@ -46,17 +46,7 @@ class AtomCscopeView
     @resultList.childNodes[@currentSelection].classList.remove 'selected'
     @resultList.childNodes[index].classList.add 'selected'
     @currentSelection = index
-    @scrollToItemView index
-    
-  scrollToItemView: (index) ->
-    scrollTop = @resultList.scrollTop
-    desiredTop = @resultList.childNodes[index].offsetTop + scrollTop
-    desiredBottom = desiredTop + @resultList.childNodes[index].offsetHeight
-
-    if desiredTop < scrollTop
-      @resultList.scrollTop = desiredTop
-    else if desiredBottom > scrollTop + @resultList.offsetHeight
-      @resultList.scrollTop = desiredBottom
+    @resultList.childNodes[index].scrollIntoView false
       
   getSelectedItemView: ->
     return @resultList.childNodes[@currentSelection]
