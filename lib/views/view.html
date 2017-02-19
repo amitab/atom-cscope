@@ -1,41 +1,6 @@
-<!-- <h2>Property Binding</h2>
-
-<div>
-  {{ buttonMessage }}
-  {{ clicks == 0 ? 'never' : clicks }}
-  <button class="btn" v-on="click: clicks++">Click Me</button>
-</div>
-
-<div>
-  Clicks in words: <strong>{{ clicks | numToWords }}</strong>
-</div>
-
-<h2>Repeating</h2>
-<div> List one:
-  <span class="name" v-repeat="things">{{ name }},</span>
-</div>
-
-<div> List named looping:
-  <span class="name" v-repeat="thing: things">{{ thing.name }},</span>
-</div>
-
-<div> List indexed looping:
-  <span class="name" v-repeat="things">{{ $index }}: {{ name }},</span>
-</div>
-
-<h2>Repeating in a table</h2>
-
-<table>
-  <tr>
-    <td v-repeat="things">{{ name }}</td>
-  </tr>
-  <tr v-repeat="things">
-    <td>{{ name }}</td>
-  </tr>
-</table> -->
 <div class="header">
   <div class="inline-block spaced-item">
-    <button class="btn just-btn icon icon-zap" id="refresh"></button>
+    <button class="btn just-btn icon icon-zap" on-click="refresh" id="refresh"></button>
   </div>
   <h4 class="inline-block">Atom Cscope</h4>
   <h6 class="inline-block" id="result-count">0 results</h6>
@@ -53,36 +18,47 @@
         <option value="8">Find files #including this file</option>
         <option value="9">Find assignments to this symbol</option>
       </select>
-      <atom-text-editor class="editor mini" mini="" placeholder-text="Input query here..."></atom-text-editor>
+      <atom-text-editor id="query-input"
+                        class="editor mini" mini=""
+                        placeholder-text="Input query here..."
+                        on-escape="toggle" on-enter="confirm" on-up="move-up" on-down="move-down">          
+      </atom-text-editor>
       <select name="" id="path-options">
         <option value="-1">All projects</option>
-        <option v-repeat="path: paths" value="{{ $index }}">{{ path }}</option>
+        {{#paths:i}}
+          <option value="{{i}}">{{.}}</option>
+        {{/paths}}
       </select>
       <button class="btn icon icon-search" id="search"></button>
     </div>
   </div>
   <div class="list-container">
-    <ul v-if="results.length == 0" id="empty-container" class="background-message centered">
+    {{#if results.length == 0}}
+    <ul id="empty-container" class="background-message centered">
       <li>No Results</li>
     </ul>
-    <ol v-if="results.length > 0" id="result-container">
-      <template v-repeat="item: results">
-        <li class="result-item">
+    {{else}}
+    <ol id="result-container">
+      {{#each results}}
+        <li class="result-item" on-click="result-click">
           <div class="inline-block" style="margin-right: 0px">
-            <span class="project-directory">{{ item.projectDir }}</span>
+            <span class="project-directory">{{projectDir}}</span>
             <span class="gap"></span>
-            <span class="file-name">{{ item.fileName }}</span>
+            <span class="file-name">{{fileName}}</span>
           </div>
-          <div v-if="!item.isJustFile" class="inline-block">
+          {{#if !isJustFile}}
+          <div class="inline-block">
             <span>:</span>
-            <span class="line-number bold">{{ item.lineNumber }}</span>
+            <span class="line-number bold">{{lineNumber}}</span>
             <span class="gap"></span>
-            <span class="highlight function-name">{{ item.functionName }}</span>
+            <span class="highlight function-name">{{functionName}}</span>
             <span class="gap"></span>
-            <span class="inline-block code-line">{{ item.codeLine }}</span>
+            <span class="inline-block code-line">{{codeLine}}</span>
           </div>
+          {{/if}}
         </li>
-      </template>
+      {{/each}}
     </ol>
+    {{/if}}
   </div>
 </div>

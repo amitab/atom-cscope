@@ -9,11 +9,51 @@ module.exports = AtomCscope =
   modalPanel: null
   subscriptions: null
 
+  config:
+    LiveSearch:
+      title: 'Live Search toggle'
+      description: 'Allow Live Search?'
+      type: 'boolean'
+      default: true
+    LiveSearchDelay:
+      title: 'Live Search delay'
+      description: 'Time after typing in the search box to trigger Live Search'
+      type: 'integer'
+      default: 800
+    WidgetLocation:
+      title: 'Set Widget location'
+      description: 'Where do you want the widget?'
+      type: 'string'
+      default: 'top'
+      enum: ['top', 'bottom']
+    cscopeSourceFiles:
+      title: 'Source file extensions'
+      description: 'Enter the extensions of the source files with which you want cscope generated (with spaces)'
+      type: 'string'
+      default: '.c .cc .cpp .h .hpp'
+    cscopeBinaryLocation:
+      title: 'Path for cscope binary'
+      description: 'Enter the full path to cscope program'
+      type: 'string'
+      default: 'cscope'
+
   activate: (state) ->
     @model = new AtomCscopeModel
     @view = new AtomCscopeView
-    @viewModel = new AtomCscopeViewModel(@view.getElement(), @model)
-    @modalPanel = atom.workspace.addTopPanel(item: @viewModel.view, visible: false)
+    @modalPanel = atom.workspace.addTopPanel(item: @view.getElement(), visible: false)
+    @viewModel = new AtomCscopeViewModel(@view, @model)
+    
+    @viewModel.ractive.on 'toggle', (event) =>
+      @toggle()
+      
+    @viewModel.ractive.on 'confirm', (event) =>
+      console.log 'SEARCH'
+      
+    @viewModel.ractive.on 'refresh', (event) =>
+      console.log 'REFRESH'
+      
+    @viewModel.ractive.on 'result-click', (event) =>
+      console.log 'RESULT CLICK'
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable

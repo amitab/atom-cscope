@@ -19,8 +19,10 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
+    "loophole": "",
     "atom-notify": "^1.0.1",
     "underscore-plus": "1.x",
-    "vue": "^2.1.10"
+    "ractive": "^0.8.10",
+    "ractive-events-keys": "^0.2.1"
   }
 }
