@@ -1,1 +1,0 @@
-module.exports = require('atom-notify')('Atom Cscope')

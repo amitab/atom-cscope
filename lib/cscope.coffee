@@ -1,8 +1,9 @@
-ResultSetModel = require './models/result-set-model'
 fs = require 'fs'
 path = require 'path'
 spawn = require('child_process').spawn
 platform = require('os').platform()
+
+ResultModel = require './models/result-model'
 
 module.exports = CscopeCommands =
   getSourceFiles: (project, extStr) ->
@@ -54,7 +55,7 @@ module.exports = CscopeCommands =
       child.on 'error', (err) =>
         console.log "Debug: " + err
       child.on 'close', (code) =>
-        console.log "Eeek!: " + code
+        console.log "Closed command with " + code
         if code == -2 then reject "Unable to find cscope"
         if code != 0 then reject code else resolve output
 
@@ -64,28 +65,23 @@ module.exports = CscopeCommands =
   runCscopeCommand: (num, keyword, cwd) ->
     cscope_binary = atom.config.get('atom-cscope.cscopeBinaryLocation')
     if keyword.trim() is ''
-      return Promise.resolve new ResultSetModel()
+      return Promise.resolve []
     else
       return new Promise (resolve, reject) =>
         @runCommand cscope_binary, ['-dL' + num, keyword], {cwd: cwd}
         .then (data) ->
-          resolve new ResultSetModel(keyword, data, cwd)
+          resolve {output: data, cwd: cwd}
         .catch (data) ->
           reject data
 
   runCscopeCommands: (num, keyword, projects) ->
     promises = []
-    resultSet = new ResultSetModel(keyword)
+    resultSet = new ResultModel keyword
     for project in projects
       promises.push(@runCscopeCommand num, keyword, project)
 
-    motherSwear = new Promise (resolve, reject) =>
-      Promise.all(promises)
+    return Promise.all(promises)
       .then (values) ->
         for value in values
-          resultSet.addResultSet(value)
-        resolve resultSet
-      .catch (data) ->
-        reject data
-
-    return motherSwear
+          resultSet.processResults value.output, value.cwd
+        return resultSet.items

@@ -3,7 +3,7 @@
     <button class="btn just-btn icon icon-zap" on-click="refresh" id="refresh"></button>
   </div>
   <h4 class="inline-block">Atom Cscope</h4>
-  <h6 class="inline-block" id="result-count">0 results</h6>
+  <h6 class="inline-block" id="result-count">{{results.length}} results</h6>
   <span class="loading loading-spinner-tiny inline-block no-show"></span>
   <div id="atom-cscope-input" class="atom-cscope-input">
     <div class="inline-block" id="form-container">
@@ -29,22 +29,17 @@
           <option value="{{i}}">{{.}}</option>
         {{/paths}}
       </select>
-      <button class="btn icon icon-search" id="search"></button>
+      <button class="btn icon icon-search" id="search" on-click="search-force"></button>
     </div>
   </div>
   <div class="list-container">
-    {{#if results.length == 0}}
-    <ul id="empty-container" class="background-message centered">
-      <li>No Results</li>
-    </ul>
-    {{else}}
-    <ol id="result-container">
+    <ul id="result-container" {{#if results.length == 0}} class="background-message centered" {{else}} class="filled" {{/if}}>
       {{#each results}}
         <li class="result-item" on-click="result-click">
           <div class="inline-block" style="margin-right: 0px">
             <span class="project-directory">{{projectDir}}</span>
             <span class="gap"></span>
-            <span class="file-name">{{fileName}}</span>
+            <span class="file-name">{{{fileName}}}</span>
           </div>
           {{#if !isJustFile}}
           <div class="inline-block">
@@ -53,12 +48,13 @@
             <span class="gap"></span>
             <span class="highlight function-name">{{functionName}}</span>
             <span class="gap"></span>
-            <span class="inline-block code-line">{{codeLine}}</span>
+            <span class="inline-block code-line">{{{codeLine}}}</span>
           </div>
           {{/if}}
         </li>
+      {{else}}
+        <li>No Results</li>
       {{/each}}
-    </ol>
-    {{/if}}
+    </ul>
   </div>
 </div>

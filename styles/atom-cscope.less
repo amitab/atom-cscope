@@ -13,6 +13,7 @@
 .atom-cscope .list-container {
   position: relative;
   height: 200px;
+  overflow-y: scroll;
 }
 
 .atom-cscope ol {
@@ -30,13 +31,6 @@
 
 .atom-cscope li.selected {
   background: @background-color-selected;
-}
-
-.atom-cscope ol#result-container {
-  overflow: scroll;
-  height: 200px;
-  margin: 10px 0;
-  padding-right: 10px;
 }
 
 .atom-cscope-input #form-container {
@@ -94,4 +88,10 @@ span.bold {
 
 .spaced-item {
   margin: 5px 10px 5px 0;
+}
+
+#result-container.filled {
+  list-style: decimal outside;
+  padding-left: 20px;
+  margin-top: 10px;
 }

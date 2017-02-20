@@ -11,47 +11,47 @@ class AtomCscopeView
     @template = fs.readFileSync(path.join(__dirname, './view.html'))
     
     @currentSelection = 0
-    
+
   initilaize: () ->
     @resultList = @element.querySelector '#result-container'
     @input = @element.querySelector '#query-input'
     @optionSelect = @element.querySelector '#cscope-options'
     @pathSelect = @element.querySelector '#path-options'
-    
+
   getSearchParams: () ->
     pathIndex = parseInt @pathSelect.value
     if pathIndex == -1
       path = atom.project.getPaths()
     else
-      path = atom.project.getPaths()[pathIndex]
+      path = [atom.project.getPaths()[pathIndex]]
     search =
       option: parseInt @optionSelect.value
       path: path
       keyword: @input.getModel().getText()
 
     return search
-    
+
   onMoveUp: (callback) ->
     atom.commands.add 'atom-text-editor#query-input',
       'core:move-up': callback
-  
+
   onMoveDown: (callback) ->
     atom.commands.add 'atom-text-editor#query-input',
       'core:move-down': callback
-    
+
   onMoveToBottom: (callback) ->
     atom.commands.add 'atom-text-editor#query-input',
       'core:move-to-bottom': callback
-    
+
   onMoveToTop: (callback) ->
     atom.commands.add 'atom-text-editor#query-input',
       'core:move-to-top': callback
-    
+
   onConfirm: (callback) ->
     atom.commands.add 'atom-text-editor#query-input',
       'core:confirm': callback
-  
-  onToggle: (callback) ->
+
+  onCancel: (callback) ->
     atom.commands.add 'atom-text-editor#query-input',
       'core:cancel': callback
 
@@ -66,21 +66,20 @@ class AtomCscopeView
       @selectItemView (@currentSelection + 1) % @resultList.childNodes.length
     else
       @selectItemView (@currentSelection) % @resultList.childNodes.length
-    
+
   selectPrev: () ->
     newIndex = (@currentSelection - 1) % @resultList.childNodes.length
     newIndex += @resultList.childNodes.length if newIndex < 0
     @selectItemView newIndex
-  
+
   selectItemView: (index) ->
     @resultList.childNodes[@currentSelection].classList.remove 'selected'
     @resultList.childNodes[index].classList.add 'selected'
     @currentSelection = index
     @resultList.childNodes[index].scrollIntoView false
-      
+
   getSelectedItemView: ->
     return @resultList.childNodes[@currentSelection]
-    
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->

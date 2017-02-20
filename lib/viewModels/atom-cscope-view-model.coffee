@@ -49,15 +49,23 @@ class AtomCscopeViewModel
     @view.onMoveToBottom (event) =>
       @arrowsUsed = true
       @view.selectLast()
-      
+
+    @ractive.on 'search-force', (event) =>
+      newSearch = @view.getSearchParams()
+      @performSearch newSearch
+
     @view.onConfirm (event) =>
       newSearch = @view.getSearchParams()
       if @arrowsUsed and @sameAsPreviousSearch newSearch
         console.log 'OPENING FILE'
       else
-        @arrowsUsed = false
-        @previousSearch = newSearch
-        if @searchCallback? then @searchCallback newSearch else console.log "searchCallback not found."
+        @performSearch newSearch
+
+  performSearch: (newSearch) ->
+    if @searchCallback? then @searchCallback newSearch else console.log "searchCallback not found."
+    @arrowsUsed = false
+    @previousSearch = newSearch
+    @view.input.focus()
 
   sameAsPreviousSearch: (newSearch) ->
     return _.isEqual(newSearch, @previousSearch)
@@ -68,14 +76,17 @@ class AtomCscopeViewModel
       option: null
       path: null
 
-  onToggle: (callback) ->
-    @view.onToggle callback
-
   onResultClick: (callback) ->
-    @ractive.on 'result-click', callback
+    @ractive.on 'result-click', (event) =>
+      callback event
+      temp = event.resolve().split(".")
+      @view.selectItemView parseInt temp[temp.length - 1]
+      @view.input.focus()
       
   onRefresh: (callback) ->
-    @ractive.on 'refresh', callback
+    @ractive.on 'refresh', (event) =>
+      callback event
+      @view.input.focus()
 
   onSearch: (callback) ->
     @searchCallback = callback

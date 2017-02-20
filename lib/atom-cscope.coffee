@@ -3,6 +3,7 @@
 AtomCscopeModel = require './models/atom-cscope-model'
 AtomCscopeView = require './views/atom-cscope-view'
 AtomCscopeViewModel = require './viewModels/atom-cscope-view-model'
+cscope = require './cscope'
 
 module.exports = AtomCscope =
   atomCscopeView: null
@@ -37,23 +38,59 @@ module.exports = AtomCscope =
       type: 'string'
       default: 'cscope'
 
+  setupEvents: () ->
+    @view.onCancel (event) =>
+      @hide()
+
+    @viewModel.onSearch (params) =>
+      option = params.option
+      keyword = params.keyword
+      projects = params.path
+
+      # The option must be acceptable by cscope
+      if option not in [0, 1, 2, 3, 4, 6, 7, 8, 9]
+        notifier.addError "Error: Invalid option: " + option
+        return
+
+      cscope.runCscopeCommands option, keyword, projects
+      .then (data) =>
+        @model.results data
+      .catch (data) =>
+        atom.notifications.addError "Error: " + data
+
+    @viewModel.onRefresh (event) =>
+      exts = atom.config.get('atom-cscope.cscopeSourceFiles')
+      return if exts.trim() is ""
+      
+      cscope.setupCscope atom.project.getPaths(), exts, true
+        .then (data) =>
+          atom.notifications.addSuccess "Success: Refreshed cscope database"
+        .catch (data) ->
+          atom.notifications.addError "Error: " + data
+
+    @viewModel.onResultClick (event) =>
+      console.log 'RESULT CLICK'
+
+  attachModal: (state) ->
+    @view = new AtomCscopeView
+    atom.config.observe 'atom-cscope.WidgetLocation', (event) =>
+      wasVisible = if @modalPanel?.isVisible() then true else false
+      @modalPanel?.destroy()
+      @addPanel()
+      if @modalPanel? then @show() if wasVisible
+
+  addPanel: () ->
+    switch atom.config.get('atom-cscope.WidgetLocation')
+      when 'bottom' then @modalPanel = atom.workspace.addBottomPanel(item: @view.getElement(), visible: false)
+      when 'top' then @modalPanel = atom.workspace.addTopPanel(item: @view.getElement(), visible: false)
+      else @modalPanel = atom.workspace.addTopPanel(item: @view.getElement(), visible: false)
+
   activate: (state) ->
     @model = new AtomCscopeModel
     @view = new AtomCscopeView
-    @modalPanel = atom.workspace.addTopPanel(item: @view.getElement(), visible: false)
+    @attachModal()
     @viewModel = new AtomCscopeViewModel(@view, @model)
-    
-    @viewModel.onToggle (event) =>
-      @toggle()
-      
-    @viewModel.onSearch (event) =>
-      console.log 'SEARCH'
-      
-    @viewModel.onRefresh (event) =>
-      console.log 'REFRESH'
-      
-    @viewModel.onResultClick (event) =>
-      console.log 'RESULT CLICK'
+    @setupEvents()
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
@@ -65,10 +102,16 @@ module.exports = AtomCscope =
     @modalPanel.destroy()
     @subscriptions.dispose()
 
+  show: ->
+    @prevEditor = atom.workspace.getActiveTextEditor()
+    @modalPanel.show()
+    @view.input.focus()
+
+  hide: ->
+    @modalPanel.hide()
+    prevEditorView = atom.views.getView(@prevEditor)
+    prevEditorView?.focus()
+
   toggle: ->
     console.log 'Atom Cscope was toggled!'
-
-    if @modalPanel.isVisible()
-      @modalPanel.hide()
-    else
-      @modalPanel.show()
+    if @modalPanel.isVisible() then @hide() else @show()

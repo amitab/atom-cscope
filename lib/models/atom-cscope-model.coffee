@@ -12,15 +12,6 @@ class AtomCscopeModel
       results: []
 
     @data.paths.push path.basename project for project in atom.project.getPaths()
-    @data.results.push({
-      projectDir: 'test_dir',
-      fileName: 'test_file',
-      isJustFile: false,
-      lineNumber: 99,
-      functionName: 'test',
-      codeLine: 'test line'
-    }) for x in [1..10]
-      
     @setupEvents()
       
   setupEvents: () ->
@@ -29,7 +20,13 @@ class AtomCscopeModel
       for project, index in projects
         paths.push path.basename project
       if @dataUpdateCallback? then @dataUpdateCallback 'paths', paths else console.log 'Data Update callback not found.'
-      
+
+  results: (results) ->
+    if @dataChangeCallback?
+      @dataChangeCallback 'results', results
+    else
+      console.log 'dataChangeCallback not found.'
+
   onDataChange: (callback) ->
     @dataChangeCallback = callback
     
