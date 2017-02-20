@@ -23,6 +23,7 @@ class ResultModel
       lineNumber: parseInt data[2]
       codeLine: data[3]
       isJustFile: data[3].trim() is '<unknown>'
+      relativePath: data[0]
 
     if info.isJustFile
       info.fileName = info.fileName.replace(/</g, '&lt;')

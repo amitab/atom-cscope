@@ -90,8 +90,37 @@ span.bold {
   margin: 5px 10px 5px 0;
 }
 
-#result-container.filled {
-  list-style: decimal outside;
-  padding-left: 20px;
-  margin-top: 10px;
+#result-container {
+  counter-reset: section;
+  padding: 0;
+  margin: 5px;
+}
+
+#result-container.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+#result-container.centered.empty li {
+  display: inline-block;
+  font-size: 50px;
+  color: @text-color-subtle;
+}
+
+.flex-inline {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.result-item:before {
+  counter-increment: section;
+  content: counter(section) ".";
+  margin-right: 10px;
+}
+
+.result-item {
+  margin-right: 0px;
 }

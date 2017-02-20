@@ -70,10 +70,14 @@ class AtomCscopeViewModel
 
   performSearch: (newSearch) ->
     if @searchCallback?
-      @view.currentSelection = 0
-      promise = @searchCallback newSearch
       @view.startLoading()
-      promise.then @view.stopLoading
+      @searchCallback newSearch
+      .then () =>
+        @view.stopLoading()
+        @view.currentSelection = 0
+      .catch () =>
+        @view.stopLoading()
+        @resetSearch()
     else
       console.log "searchCallback not found."
     @previousSearch = newSearch

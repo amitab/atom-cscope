@@ -64,12 +64,12 @@ module.exports = CscopeCommands =
     return process
 
   runCscopeCommand: (num, keyword, cwd) ->
-    cscope_binary = atom.config.get('atom-cscope.cscopeBinaryLocation')
+    cscopeBinary = atom.config.get('atom-cscope.cscopeBinaryLocation')
     if keyword.trim() is ''
       return Promise.resolve []
     else
       return new Promise (resolve, reject) =>
-        @runCommand cscope_binary, ['-dL' + num, keyword], {cwd: cwd}
+        @runCommand cscopeBinary, ['-dL' + num, keyword], {cwd: cwd}
         .then (data) ->
           resolve {output: data, cwd: cwd}
         .catch (data) ->

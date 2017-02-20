@@ -33,28 +33,28 @@
     </div>
   </div>
   <div class="list-container">
-    <ul id="result-container" {{#if results.length == 0}} class="background-message centered" {{else}} class="filled" {{/if}}>
+    <ol id="result-container" {{#if results.length == 0}} class="empty centered" {{/if}}>
       {{#each results}}
-        <li class="result-item" on-click="result-click">
-          <div class="inline-block" style="margin-right: 0px">
-            <span class="project-directory">{{projectDir}}</span>
+        <li class="result-item flex-inline" on-click="result-click">
+          <div class="flex-inline">
+            <span class="project-directory">{{relativePath}}</span>
             <span class="gap"></span>
-            <span class="file-name">{{{fileName}}}</span>
+            <span class="file-name flex-inline">{{{fileName}}}</span>
           </div>
           {{#if !isJustFile}}
-          <div class="inline-block">
+          <div class="flex-inline">
             <span>:</span>
             <span class="line-number bold">{{lineNumber}}</span>
             <span class="gap"></span>
             <span class="highlight function-name">{{functionName}}</span>
             <span class="gap"></span>
-            <span class="inline-block code-line">{{{codeLine}}}</span>
+            <span class="flex-inline code-line">{{{codeLine}}}</span>
           </div>
           {{/if}}
         </li>
       {{else}}
         <li>No Results</li>
       {{/each}}
-    </ul>
+    </ol>
   </div>
 </div>

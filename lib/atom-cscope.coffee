@@ -52,6 +52,7 @@ module.exports = AtomCscope =
       .catch (data) =>
         message = if data? then data.toString() else "Unknown Error occured"
         atom.notifications.addError message
+        Promise.reject()
 
     @viewModel.onRefresh @refreshCscopeDB
     @viewModel.onResultClick (model) =>
@@ -129,6 +130,9 @@ module.exports = AtomCscope =
 
     selectedText = activeEditor.getSelectedText()
     keyword = if selectedText is "" then activeEditor.getWordUnderCursor() else selectedText
+    if keyword.trim() == ""
+      atom.notifications.addError "Could not find text under cursor."
+      return
     @show() if !@modalPanel.isVisible()
     @viewModel.invokeSearch(option, keyword)
 
