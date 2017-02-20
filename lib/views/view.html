@@ -4,9 +4,9 @@
   </div>
   <h4 class="inline-block">Atom Cscope</h4>
   <h6 class="inline-block" id="result-count">{{results.length}} results</h6>
-  <span class="loading loading-spinner-tiny inline-block no-show"></span>
+  <span id="loader" class="loading loading-spinner-tiny inline-block no-show"></span>
   <div id="atom-cscope-input" class="atom-cscope-input">
-    <div class="inline-block" id="form-container">
+    <div class="inline-block" id="form-container" on-change="search-force">
       <select name="" id="cscope-options">
         <option value="0">Find this C symbol</option>
         <option value="1">Find this global definition</option>
@@ -23,7 +23,7 @@
                         placeholder-text="Input query here..."
                         on-escape="toggle">          
       </atom-text-editor>
-      <select name="" id="path-options">
+      <select name="" id="path-options" on-change="path-select">
         <option value="-1">All projects</option>
         {{#paths:i}}
           <option value="{{i}}">{{.}}</option>

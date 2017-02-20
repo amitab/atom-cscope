@@ -21,6 +21,9 @@ class AtomCscopeModel
         paths.push path.basename project
       if @dataUpdateCallback? then @dataUpdateCallback 'paths', paths else console.log 'Data Update callback not found.'
 
+  clearResults: () ->
+    @results []
+
   results: (results) ->
     if @dataChangeCallback?
       @dataChangeCallback 'results', results

@@ -14,7 +14,8 @@ module.exports = CscopeCommands =
       args = ['/b/a/s'].concat(exts)
     else
       cmd = 'find'
-      args = [].concat.apply(['.', '-name', '*' + exts.shift()], ['-o', '-name', '*' + ext] for ext in exts)
+      args = [].concat.apply(['.', '\(', '-name', '*' + exts.shift()], ['-o', '-name', '*' + ext] for ext in exts)
+      args = args.concat.apply(args, ['\)', '-type', 'f'])
     return @runCommand cmd, args, {cwd: project, detached: true, stdio: ['ignore', out, 'pipe']}
 
   generateCscopeDB: (project) ->

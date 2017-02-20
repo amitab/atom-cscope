@@ -53,16 +53,38 @@ class AtomCscopeViewModel
     @ractive.on 'search-force', (event) =>
       newSearch = @view.getSearchParams()
       @performSearch newSearch
+    @ractive.on 'path-select', (event) =>
+      @view.input.focus()
 
     @view.onConfirm (event) =>
       newSearch = @view.getSearchParams()
       if @arrowsUsed and @sameAsPreviousSearch newSearch
-        console.log 'OPENING FILE'
+        @openResult @view.currentSelection
       else
         @performSearch newSearch
 
+    @subscriptions.add atom.config.observe 'atom-cscope.LiveSearch', (newValue) =>
+      if not newValue
+        @liveSearchListener?.dispose()
+        return
+
+      @liveSearchListener = @view.input.getModel().onDidStopChanging () =>
+        return unless newValue
+        newSearch = @view.getSearchParams()
+        @performSearch newSearch
+
+  invokeSearch: (option, keyword) ->
+    @view.autoFill option, keyword
+    newSearch = @view.getSearchParams()
+    @performSearch newSearch
+
   performSearch: (newSearch) ->
-    if @searchCallback? then @searchCallback newSearch else console.log "searchCallback not found."
+    if @searchCallback?
+      promise = @searchCallback newSearch
+      @view.startLoading()
+      promise.then @view.stopLoading
+    else
+      console.log "searchCallback not found."
     @arrowsUsed = false
     @previousSearch = newSearch
     @view.input.focus()
@@ -76,12 +98,16 @@ class AtomCscopeViewModel
       option: null
       path: null
 
+  openResult: (index) ->
+    @resultClickCallback @model.data.results[index]
+
   onResultClick: (callback) ->
+    @resultClickCallback = callback
     @ractive.on 'result-click', (event) =>
-      callback event
       temp = event.resolve().split(".")
-      @view.selectItemView parseInt temp[temp.length - 1]
-      @view.input.focus()
+      model = @model.data.results[parseInt temp.pop()]
+      @resultClickCallback model
+      @view.selectItemView
       
   onRefresh: (callback) ->
     @ractive.on 'refresh', (event) =>
