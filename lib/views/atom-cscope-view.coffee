@@ -14,6 +14,9 @@ class AtomCscopeView
     
     @currentSelection = 0
 
+  hasSelection: () ->
+    return @resultList.querySelector('.selected')?
+
   initilaize: () ->
     @resultList = @element.querySelector '#result-container'
     @input = @element.querySelector '#query-input'
@@ -33,7 +36,7 @@ class AtomCscopeView
     search =
       option: parseInt @optionSelect.value
       path: path
-      keyword: @input.getModel().getText()
+      keyword: @input.getModel().getText().trim()
 
     return search
 

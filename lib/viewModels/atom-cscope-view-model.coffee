@@ -1,6 +1,5 @@
 {allowUnsafeNewFunction} = require 'loophole'
 Ractive = require 'ractive'
-keys = require 'ractive-events-keys'
 {CompositeDisposable} = require 'atom'
 _ = require 'underscore-plus'
 
@@ -8,7 +7,6 @@ module.exports =
 class AtomCscopeViewModel
   constructor: (@view, @model) ->
     @subscriptions = new CompositeDisposable
-    @arrowsUsed = false
     @previousSearch =
       keyword: null
       option: null
@@ -18,11 +16,6 @@ class AtomCscopeViewModel
         el: @view.target
         data: @model.data
         template: @view.template.toString()
-        events:
-          escape: keys.escape
-          enter: keys.enter
-          up: keys.uparrow
-          down: keys.downarrow
 
     @view.initilaize()
     @setupEvents()
@@ -35,19 +28,15 @@ class AtomCscopeViewModel
       @ractive.merge itemName, newItem
       
     @view.onMoveUp (event) =>
-      @arrowsUsed = true
       @view.selectPrev()
       
     @view.onMoveDown (event) =>
-      @arrowsUsed = true
       @view.selectNext()
       
     @view.onMoveToTop (event) =>
-      @arrowsUsed = true
       @view.selectFirst()
       
     @view.onMoveToBottom (event) =>
-      @arrowsUsed = true
       @view.selectLast()
 
     @ractive.on 'search-force', (event) =>
@@ -58,9 +47,10 @@ class AtomCscopeViewModel
 
     @view.onConfirm (event) =>
       newSearch = @view.getSearchParams()
-      if @arrowsUsed and @sameAsPreviousSearch newSearch
+      sameAsPrev = @sameAsPreviousSearch newSearch
+      if @view.hasSelection() and sameAsPrev
         @openResult @view.currentSelection
-      else
+      else if !sameAsPrev
         @performSearch newSearch
 
     @subscriptions.add atom.config.observe 'atom-cscope.LiveSearch', (newValue) =>
@@ -74,18 +64,18 @@ class AtomCscopeViewModel
         @performSearch newSearch
 
   invokeSearch: (option, keyword) ->
-    @view.autoFill option, keyword
+    @view.autoFill option, keyword.trim()
     newSearch = @view.getSearchParams()
     @performSearch newSearch
 
   performSearch: (newSearch) ->
     if @searchCallback?
+      @view.currentSelection = 0
       promise = @searchCallback newSearch
       @view.startLoading()
       promise.then @view.stopLoading
     else
       console.log "searchCallback not found."
-    @arrowsUsed = false
     @previousSearch = newSearch
     @view.input.focus()
 

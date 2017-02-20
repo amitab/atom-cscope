@@ -1,4 +1,9 @@
 module.exports =
+  MaxCscopeResults:
+    title: 'Maximum Cscope Results'
+    description: 'Don\'t allow cscope results beyond this. 0 for infinite (not recommended).'
+    type: 'integer'
+    default: 1000
   LiveSearch:
     title: 'Live Search toggle'
     description: 'Allow Live Search?'

@@ -21,7 +21,8 @@ module.exports = AtomCscope =
       .then (data) =>
         atom.notifications.addSuccess "Refreshed cscope database!"
       .catch (data) ->
-        atom.notifications.addError data
+        message = if data? then data.toString() else "Unknown Error occured"
+        atom.notifications.addError message
 
   setupEvents: () ->
     @view.onCancel (event) =>
@@ -33,20 +34,24 @@ module.exports = AtomCscope =
       option = params.option
       keyword = params.keyword
       projects = params.path
+      if keyword.trim() == ""
+        return Promise.resolve()
 
       # The option must be acceptable by cscope
       if option not in [0, 1, 2, 3, 4, 6, 7, 8, 9]
-        atom.notifications.addError "Error: Invalid option: " + option
+        atom.notifications.addError "Invalid option: " + option
         return
 
       return cscope.runCscopeCommands option, keyword, projects
       .then (data) =>
-        if data.length > 1000
-          atom.notifications.addWarning "Results more than 1000! Maybe you were looking for something else?"
+        if data.length > @maxResults or @maxResults <= 0
+          atom.notifications.addWarning "Results more than #{@maxResults}!"
+          @viewModel.resetSearch()
         else
           @model.results data
       .catch (data) =>
-        atom.notifications.addError data
+        message = if data? then data.toString() else "Unknown Error occured"
+        atom.notifications.addError message
 
     @viewModel.onRefresh @refreshCscopeDB
     @viewModel.onResultClick (model) =>
@@ -75,7 +80,6 @@ module.exports = AtomCscope =
   activate: (state) ->
     @history = new History 10
     @model = new AtomCscopeModel
-    @view = new AtomCscopeView
     @attachModal()
     @viewModel = new AtomCscopeViewModel(@view, @model)
     @setupEvents()
@@ -83,7 +87,6 @@ module.exports = AtomCscope =
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
 
-    # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace',
       'atom-cscope:toggle': => @toggle()
       'atom-cscope:focus-next': => @switchPanes() if @modalPanel.isVisible()
@@ -113,6 +116,9 @@ module.exports = AtomCscope =
       'atom-cscope:find-file': => @autoInputFromCursor(7)
       'atom-cscope:find-files-including': => @autoInputFromCursor(8)
       'atom-cscope:find-assignments-to': => @autoInputFromCursor(9)
+
+    @subscriptions.add atom.config.observe 'atom-cscope.MaxCscopeResults', (newValue) =>
+      @maxResults = newValue
 
   autoInputFromCursor: (option) ->
     activeEditor = atom.workspace.getActiveTextEditor()
