@@ -1,7 +1,6 @@
 {allowUnsafeNewFunction} = require 'loophole'
 Ractive = require 'ractive'
 {CompositeDisposable} = require 'atom'
-_ = require 'underscore-plus'
 
 module.exports =
 class AtomCscopeViewModel
@@ -84,7 +83,11 @@ class AtomCscopeViewModel
     @view.input.focus()
 
   sameAsPreviousSearch: (newSearch) ->
-    return _.isEqual(newSearch, @previousSearch)
+    return false if newSearch.keyword != @previousSearch.keyword || newSearch.option != @previousSearch.option
+    return false if newSearch.path.length != @previousSearch.path.length
+    for i in [0..newSearch.path.length]
+      return false if newSearch.path[i] != @previousSearch.path[i]
+    return true
 
   resetSearch: () ->
     @previousSearch =
