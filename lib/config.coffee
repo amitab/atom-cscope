@@ -1,4 +1,9 @@
 module.exports =
+  EnableHistory:
+    title: 'Search history toggle'
+    description: 'Record the files opened with cscope search.'
+    type: 'boolean'
+    default: false
   MaxCscopeResults:
     title: 'Maximum Cscope Results'
     description: 'Don\'t allow cscope results beyond this. 0 for infinite (not recommended).'

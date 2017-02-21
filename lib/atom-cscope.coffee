@@ -26,7 +26,7 @@ module.exports = AtomCscope =
 
   setupEvents: () ->
     @viewModel.onSearch (params) =>
-      @history.clearHistory()
+      @history?.clearHistory()
 
       option = params.option
       keyword = params.keyword
@@ -53,17 +53,24 @@ module.exports = AtomCscope =
 
     @viewModel.onRefresh @refreshCscopeDB
     @viewModel.onResultClick (model) =>
-      @history.saveCurrent() if @history.isEmpty()
+      @history?.saveCurrent() if @history?.isEmpty()
       atom.workspace.open(model.projectDir, {initialLine: model.lineNumber - 1})
-      @history.saveNew
+      @history?.saveNew
         path: model.projectDir
         pos:
           row: model.lineNumber - 1
           column: 0
 
   activate: (state) ->
-    @history = new History 10
     @subscriptions = new CompositeDisposable
+    @subscriptions.add atom.config.observe 'atom-cscope.EnableHistory', (newValue) =>
+      if newValue
+        atom.notifications.addInfo "Enabled Cscope history!"
+        @history = new History 10
+      else
+        atom.notifications.addInfo "Disabled Cscope history!"
+        @history = null
+
     @viewModel = new AtomCscopeViewModel @subscriptions
     @setupEvents()
 
@@ -72,8 +79,8 @@ module.exports = AtomCscope =
       'atom-cscope:switch-panes': => @viewModel.switchPanes() if @viewModel.isVisible()
       'atom-cscope:refresh-db': => @refreshCscopeDB()
       'atom-cscope:project-select': => @viewModel.view.openProjectSelector()
-      'atom-cscope:next': => @history.openNext()
-      'atom-cscope:prev': => @history.openPrev()
+      'atom-cscope:next': => @history?.openNext()
+      'atom-cscope:prev': => @history?.openPrev()
 
     @subscriptions.add atom.commands.add 'atom-workspace',
       'atom-cscope:toggle-symbol': => @viewModel.togglePanelOption(0)
