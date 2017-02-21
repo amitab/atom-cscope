@@ -1,7 +1,7 @@
 {
   "name": "atom-cscope",
   "main": "./lib/atom-cscope",
-  "version": "0.15.0",
+  "version": "1.0.0",
   "description": "Cscope within Atom.",
   "keywords": [
     "cscope",
