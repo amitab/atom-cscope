@@ -1,15 +1,30 @@
 {allowUnsafeNewFunction} = require 'loophole'
 Ractive = require 'ractive'
-{CompositeDisposable} = require 'atom'
+
+AtomCscopeView = require '../views/atom-cscope-view'
+AtomCscopeModel = require '../models/atom-cscope-model'
 
 module.exports =
 class AtomCscopeViewModel
-  constructor: (@view, @model) ->
-    @subscriptions = new CompositeDisposable
-    @previousSearch =
-      keyword: null
-      option: null
-      path: null
+  view: null
+  model: null
+  subscriptions: null
+  modalPanel: null
+  previousSearch:
+    keyword: null
+    option: null
+    path: null
+  ractive: null
+
+  constructor: (subscriptions) ->
+    @model = new AtomCscopeModel subscriptions
+    @view = new AtomCscopeView subscriptions
+    window.x = @
+    @subscriptions = subscriptions
+    @attachModal()
+    @initilaize()
+
+  initilaize: () ->
     @ractive = allowUnsafeNewFunction =>
       new Ractive
         el: @view.target
@@ -19,12 +34,29 @@ class AtomCscopeViewModel
     @view.initilaize()
     @setupEvents()
 
+  attachModal: () ->
+    atom.config.observe 'atom-cscope.WidgetLocation', (event) =>
+      wasVisible = if @modalPanel?.isVisible() then true else false
+      @modalPanel?.destroy()
+      @addPanel()
+      if @modalPanel? then @show() if wasVisible
+    return @modalPanel
+
+  addPanel: () ->
+    switch atom.config.get('atom-cscope.WidgetLocation')
+      when 'bottom' then @modalPanel = atom.workspace.addBottomPanel(item: @view.getElement(), visible: false)
+      when 'top' then @modalPanel = atom.workspace.addTopPanel(item: @view.getElement(), visible: false)
+      else @modalPanel = atom.workspace.addTopPanel(item: @view.getElement(), visible: false)
+
   setupEvents: () ->
     @model.onDataChange (itemName, newItem) =>
       @ractive.set itemName, newItem
       
     @model.onDataUpdate (itemName, newItem) =>
       @ractive.merge itemName, newItem
+
+    @view.onCancel (event) =>
+      @hide()
       
     @view.onMoveUp (event) =>
       @view.selectPrev()
@@ -64,6 +96,7 @@ class AtomCscopeViewModel
 
   invokeSearch: (option, keyword) ->
     @view.autoFill option, keyword.trim()
+    return if keyword.trim() == ""
     newSearch = @view.getSearchParams()
     @performSearch newSearch
 
@@ -73,7 +106,7 @@ class AtomCscopeViewModel
       @searchCallback newSearch
       .then () =>
         @view.stopLoading()
-        @view.currentSelection = 0
+        @view.clearSelection()
       .catch () =>
         @view.stopLoading()
         @resetSearch()
@@ -113,3 +146,39 @@ class AtomCscopeViewModel
 
   onSearch: (callback) ->
     @searchCallback = callback
+
+  show: ->
+    @prevEditor = atom.workspace.getActiveTextEditor()
+    @modalPanel.show()
+    @view.input.focus()
+
+  hide: ->
+    @modalPanel.hide()
+    prevEditorView = atom.views.getView(@prevEditor)
+    prevEditorView?.focus()
+
+  toggle: ->
+    console.log 'Atom Cscope was toggled!'
+    if @modalPanel.isVisible() then @hide() else @show()
+
+  switchPanes: ->
+    if @view.input.hasFocus() and @prevEditor?
+      prevEditorView = atom.views.getView(@prevEditor)
+      prevEditorView?.focus()
+    else
+      @view.input.focus()
+
+  togglePanelOption: (option) ->
+    if parseInt @view.optionSelect.value is option
+      @toggle()
+    else
+      @show()
+      @view.autoFill(option, '')
+      @model.clearResults()
+
+  isVisible: () ->
+    return @modalPanel.isVisible()
+
+  deactivate: () ->
+    @modalPanel.destroy()
+    @view.destroy()

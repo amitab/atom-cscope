@@ -1,18 +1,20 @@
 fs = require 'fs'
 path = require 'path'
-{CompositeDisposable} = require 'atom'
 
 module.exports =
 class AtomCscopeView
-  constructor: () ->
-    @subscriptions = new CompositeDisposable
+  subscriptions: null
+  element: null
+  target: "#atom-cscope"
+  template: null
+  currentSelection: 0
+
+  constructor: (subscriptions) ->
+    @subscriptions = subscriptions
     @element = document.createElement('div')
     @element.classList.add('atom-cscope')
     @element.id = "atom-cscope"
-    @target = "#atom-cscope"
     @template = fs.readFileSync(path.join(__dirname, './view.html'))
-    
-    @currentSelection = 0
 
   hasSelection: () ->
     return @resultList.querySelector('.selected')?
@@ -89,6 +91,10 @@ class AtomCscopeView
 
   getSelectedItemView: ->
     return @resultList.childNodes[@currentSelection]
+
+  clearSelection: ->
+    @getSelectedItemView().classList.remove 'selected'
+    @currentSelection = 0
 
   # Courtesy: http://stackoverflow.com/a/20906852
   openSelectBox: (element) ->

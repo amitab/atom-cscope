@@ -1,16 +1,16 @@
-{CompositeDisposable} = require 'atom'
 path = require 'path'
 
 module.exports =
 class AtomCscopeModel
-  constructor: () ->
-    @subscriptions = new CompositeDisposable
-    @dataChangeCallback = null
-    @dataUpdateCallback = null
-    @data =
-      paths: []
-      results: []
+  subscriptions: null
+  dataChangeCallback: null
+  dataUpdateCallback: null
+  data:
+    paths: []
+    results: []
 
+  constructor: (subscriptions) ->
+    @subscriptions = subscriptions
     @data.paths.push path.basename project for project in atom.project.getPaths()
     @setupEvents()
       

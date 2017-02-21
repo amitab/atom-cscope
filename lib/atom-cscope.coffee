@@ -8,8 +8,8 @@ config = require './config'
 History = require './history'
 
 module.exports = AtomCscope =
-  atomCscopeView: null
-  modalPanel: null
+  viewModel: null
+  history: null
   subscriptions: null
   config: config
 
@@ -25,9 +25,6 @@ module.exports = AtomCscope =
         atom.notifications.addError message
 
   setupEvents: () ->
-    @view.onCancel (event) =>
-      @hide()
-
     @viewModel.onSearch (params) =>
       @history.clearHistory()
 
@@ -48,7 +45,7 @@ module.exports = AtomCscope =
           atom.notifications.addWarning "Results more than #{@maxResults}!"
           @viewModel.resetSearch()
         else
-          @model.results data
+          @viewModel.model.results data
       .catch (data) =>
         message = if data? then data.toString() else "Unknown Error occured"
         atom.notifications.addError message
@@ -64,48 +61,30 @@ module.exports = AtomCscope =
           row: model.lineNumber - 1
           column: 0
 
-  attachModal: (state) ->
-    @view = new AtomCscopeView
-    atom.config.observe 'atom-cscope.WidgetLocation', (event) =>
-      wasVisible = if @modalPanel?.isVisible() then true else false
-      @modalPanel?.destroy()
-      @addPanel()
-      if @modalPanel? then @show() if wasVisible
-
-  addPanel: () ->
-    switch atom.config.get('atom-cscope.WidgetLocation')
-      when 'bottom' then @modalPanel = atom.workspace.addBottomPanel(item: @view.getElement(), visible: false)
-      when 'top' then @modalPanel = atom.workspace.addTopPanel(item: @view.getElement(), visible: false)
-      else @modalPanel = atom.workspace.addTopPanel(item: @view.getElement(), visible: false)
-
   activate: (state) ->
     @history = new History 10
-    @model = new AtomCscopeModel
-    @attachModal()
-    @viewModel = new AtomCscopeViewModel(@view, @model)
+    @subscriptions = new CompositeDisposable
+    @viewModel = new AtomCscopeViewModel @subscriptions
     @setupEvents()
 
-    # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
-    @subscriptions = new CompositeDisposable
-
     @subscriptions.add atom.commands.add 'atom-workspace',
-      'atom-cscope:toggle': => @toggle()
-      'atom-cscope:focus-next': => @switchPanes() if @modalPanel.isVisible()
+      'atom-cscope:toggle': => @viewModel.toggle()
+      'atom-cscope:switch-panes': => @viewModel.switchPanes() if @viewModel.isVisible()
       'atom-cscope:refresh-db': => @refreshCscopeDB()
-      'atom-cscope:project-select': => @view.openProjectSelector()
+      'atom-cscope:project-select': => @viewModel.view.openProjectSelector()
       'atom-cscope:next': => @history.openNext()
       'atom-cscope:prev': => @history.openPrev()
 
     @subscriptions.add atom.commands.add 'atom-workspace',
-      'atom-cscope:toggle-symbol': => @togglePanelOption(0)
-      'atom-cscope:toggle-global-definition': => @togglePanelOption(1)
-      'atom-cscope:toggle-functions-called-by': => @togglePanelOption(2)
-      'atom-cscope:toggle-functions-calling': => @togglePanelOption(3)
-      'atom-cscope:toggle-text-string': => @togglePanelOption(4)
-      'atom-cscope:toggle-egrep-pattern': => @togglePanelOption(6)
-      'atom-cscope:toggle-file': => @togglePanelOption(7)
-      'atom-cscope:toggle-files-including': => @togglePanelOption(8)
-      'atom-cscope:toggle-assignments-to': => @togglePanelOption(9)
+      'atom-cscope:toggle-symbol': => @viewModel.togglePanelOption(0)
+      'atom-cscope:toggle-global-definition': => @viewModel.togglePanelOption(1)
+      'atom-cscope:toggle-functions-called-by': => @viewModel.togglePanelOption(2)
+      'atom-cscope:toggle-functions-calling': => @viewModel.togglePanelOption(3)
+      'atom-cscope:toggle-text-string': => @viewModel.togglePanelOption(4)
+      'atom-cscope:toggle-egrep-pattern': => @viewModel.togglePanelOption(6)
+      'atom-cscope:toggle-file': => @viewModel.togglePanelOption(7)
+      'atom-cscope:toggle-files-including': => @viewModel.togglePanelOption(8)
+      'atom-cscope:toggle-assignments-to': => @viewModel.togglePanelOption(9)
 
     @subscriptions.add atom.commands.add 'atom-workspace',
       'atom-cscope:find-symbol': => @autoInputFromCursor(0)
@@ -133,38 +112,9 @@ module.exports = AtomCscope =
     if keyword.trim() == ""
       atom.notifications.addError "Could not find text under cursor."
       return
-    @show() if !@modalPanel.isVisible()
+    @viewModel.show() if !@viewModel.isVisible()
     @viewModel.invokeSearch(option, keyword)
 
   deactivate: ->
-    @modalPanel.destroy()
+    @viewModel.deactivate()
     @subscriptions.dispose()
-
-  show: ->
-    @prevEditor = atom.workspace.getActiveTextEditor()
-    @modalPanel.show()
-    @view.input.focus()
-
-  hide: ->
-    @modalPanel.hide()
-    prevEditorView = atom.views.getView(@prevEditor)
-    prevEditorView?.focus()
-
-  toggle: ->
-    console.log 'Atom Cscope was toggled!'
-    if @modalPanel.isVisible() then @hide() else @show()
-
-  switchPanes: ->
-    if @view.input.hasFocus() and @prevEditor?
-      prevEditorView = atom.views.getView(@prevEditor)
-      prevEditorView?.focus()
-    else
-      @view.input.focus()
-
-  togglePanelOption: (option) ->
-    if parseInt @view.optionSelect.value is option
-      @toggle()
-    else
-      @show()
-      @view.autoFill(option, '')
-      @model.clearResults()
