@@ -1,3 +1,12 @@
+## 1.0.0
+* UI revamped with ractive.js
+* Added Cscope result history (Can be disabled in settings)
+* Added Cscope result limiter (Can be bypassed in settings)
+* Modified cscope.coffee to correctly bubble out the errors
+* Removed unnecessary npm modules for faster loading time (Only 2 dependencies)
+* Fix Issue #23 by @fadeevab
+* Fix Issue #26
+
 ## 0.15.0
 * PR - Check for absolute paths #16
 * Fix Issue #18 - Open files which are not in project directory
