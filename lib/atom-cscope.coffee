@@ -1,170 +1,99 @@
-AtomCscopeView = require './views/atom-cscope-view'
 {CompositeDisposable} = require 'atom'
-notifier = require './notifier'
+
+AtomCscopeModel = require './models/atom-cscope-model'
+AtomCscopeView = require './views/atom-cscope-view'
+AtomCscopeViewModel = require './viewModels/atom-cscope-view-model'
 cscope = require './cscope'
+config = require './config'
+History = require './history'
 
 module.exports = AtomCscope =
-  atomCscopeView: null
-  modalPanel: null
+  viewModel: null
+  history: null
   subscriptions: null
+  config: config
 
-  historyPrev: []
-  historyCurr: null
-  historyNext: []
-
-  config:
-    LiveSearch:
-      title: 'Live Search toggle'
-      description: 'Allow Live Search?'
-      type: 'boolean'
-      default: true
-    LiveSearchDelay:
-      title: 'Live Search delay'
-      description: 'Time after typing in the search box to trigger Live Search'
-      type: 'integer'
-      default: 800
-    WidgetLocation:
-      title: 'Set Widget location'
-      description: 'Where do you want the widget?'
-      type: 'string'
-      default: 'top'
-      enum: ['top', 'bottom']
-    cscopeSourceFiles:
-      title: 'Source file extensions'
-      description: 'Enter the extensions of the source files with which you want cscope generated (with spaces)'
-      type: 'string'
-      default: '.c .cc .cpp .h .hpp'
-    cscopeBinaryLocation:
-      title: 'Path for cscope binary'
-      description: 'Enter the full path to cscope program'
-      type: 'string'
-      default: 'cscope'
-
-  refreshCscopeDB: ->
-    notifier.addInfo "Refreshing... Please wait"
+  refreshCscopeDB: () ->
     exts = atom.config.get('atom-cscope.cscopeSourceFiles')
     return if exts.trim() is ""
 
     cscope.setupCscope atom.project.getPaths(), exts, true
-    .then (data) =>
-      notifier.addSuccess "Success: Refreshed cscope database"
-      @atomCscopeView.inputView.redoSearch()
-    .catch (data) ->
-      notifier.addError "Error: Unable to refresh cscope database"
-      console.log data
-    @atomCscopeView.inputView.findEditor.focus() if @atomCscopeView.isVisible()
+      .then (data) =>
+        atom.notifications.addSuccess "Refreshed cscope database!"
+      .catch (data) ->
+        message = if data? then data.toString() else "Unknown Error occured"
+        atom.notifications.addError message
 
-  setUpEvents: ->
-    @atomCscopeView.on 'click', 'button#refresh', => @refreshCscopeDB()
+  setupEvents: () ->
+    @viewModel.onSearch (params) =>
+      @history?.clearHistory()
 
-    @atomCscopeView.onSearch (params) =>
       option = params.option
       keyword = params.keyword
-      path = params.projectPath
+      projects = params.path
+      if keyword.trim() == ""
+        return Promise.resolve()
 
-      projects = if path is -1 then atom.project.getPaths() else [atom.project.getPaths()[path]]
-      
       # The option must be acceptable by cscope
       if option not in [0, 1, 2, 3, 4, 6, 7, 8, 9]
-        notifier.addError "Error: Invalid option: " + option
+        atom.notifications.addError "Invalid option: " + option
         return
 
-      cscope.runCscopeCommands option, keyword, projects
+      return cscope.runCscopeCommands option, keyword, projects
       .then (data) =>
-        @atomCscopeView.clearItems()
-        @atomCscopeView.applyResultSet(data)
+        if data.length > @maxResults or @maxResults <= 0
+          atom.notifications.addWarning "Results more than #{@maxResults}!"
+          @viewModel.resetSearch()
+        else
+          @viewModel.model.results data
       .catch (data) =>
-        if data.message.indexOf("cannot open file cscope.out") > 0
-          notifier.addError "Error: Please generate the cscope database."
-        else
-          notifier.addError "Error: " + data.message
-        
-    @atomCscopeView.onResultClick (result) =>
+        message = if data? then data.toString() else "Unknown Error occured"
+        atom.notifications.addError message
+        Promise.reject()
 
-      if not @historyCurr?
-        @pushCurrentToHistoryPrev()
-      else
-        if @historyCurr.keyword?
-          if @historyCurr.keyword isnt result.keyword
-            @historyPrevPush @historyCurr
-            @pushCurrentToHistoryPrev()
-        else
-          @pushCurrentToHistoryPrev()
-
-      @historyCurr =
-        path: result.getFilePath()
+    @viewModel.onRefresh @refreshCscopeDB
+    @viewModel.onResultClick (model) =>
+      @history?.saveCurrent() if @history?.isEmpty()
+      atom.workspace.open(model.projectDir, {initialLine: model.lineNumber - 1})
+      @history?.saveNew
+        path: model.projectDir
         pos:
+          row: model.lineNumber - 1
           column: 0
-          row: result.lineNumber - 1
-        keyword: result.keyword
-      @historyNext = []
 
-      @openHistoryCurr()
-
-  pushCurrentToHistoryPrev: ->
-    editor = atom.workspace.getActiveTextEditor()
-    pos = editor?.getCursorBufferPosition()
-    file = editor?.buffer.file
-    filePath = file?.path
-    if pos? and filePath?
-      @historyPrevPush
-        path: filePath
-        pos: pos
-        keyword: null
-
-  historyPrevPush: (item) ->
-    @historyPrev.push item
-    if @historyPrev.length > 30
-      @historyPrev.shift()
-
-  openHistoryCurr: ->
-    atom.workspace.open(@historyCurr.path, {initialLine: @historyCurr.pos.row, initialColumn: @historyCurr.pos.column})
-
-  goNext: ->
-    next = @historyNext.pop()
-    return if not next?
-    @historyPrev.push @historyCurr if @historyCurr?
-    @historyCurr = next
-    @openHistoryCurr()
-
-  goPrev: ->
-    prev = @historyPrev.pop()
-    return if not prev?
-    @historyNext.push @historyCurr if @historyCurr?
-    @historyCurr = prev
-    @openHistoryCurr()
-
-  togglePanelOption: (option) ->
-    if @atomCscopeView.inputView.getSelectedOption() is option
-      @toggle()
-    else
-      @show()
-      @atomCscopeView.inputView.autoFill(option, '')
-      @atomCscopeView.listView.clearItems()
-
-  setUpBindings: ->
+  activate: (state) ->
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add 'atom-workspace',
-      'atom-cscope:toggle': => @toggle()
-      'core:cancel': => @hide() if @modalPanel.isVisible()
-      'atom-cscope:focus-next': => @switchPanes() if @modalPanel.isVisible()
-      'atom-cscope:refresh-db': => @refreshCscopeDB()
-      'atom-cscope:project-select': => @atomCscopeView.inputView.openProjectSelector()
-      'atom-cscope:next': => @goNext()
-      'atom-cscope:prev': => @goPrev()
-      
-    @subscriptions.add atom.commands.add 'atom-workspace', 
-      'atom-cscope:toggle-symbol': => @togglePanelOption(0)
-      'atom-cscope:toggle-global-definition': => @togglePanelOption(1)
-      'atom-cscope:toggle-functions-called-by': => @togglePanelOption(2)
-      'atom-cscope:toggle-functions-calling': => @togglePanelOption(3)
-      'atom-cscope:toggle-text-string': => @togglePanelOption(4)
-      'atom-cscope:toggle-egrep-pattern': => @togglePanelOption(6)
-      'atom-cscope:toggle-file': => @togglePanelOption(7)
-      'atom-cscope:toggle-files-including': => @togglePanelOption(8)
-      'atom-cscope:toggle-assignments-to': => @togglePanelOption(9)
+    @subscriptions.add atom.config.observe 'atom-cscope.EnableHistory', (newValue) =>
+      if newValue
+        atom.notifications.addInfo "Enabled Cscope history!"
+        @history = new History 10
+      else
+        atom.notifications.addInfo "Disabled Cscope history!"
+        @history = null
 
-    @subscriptions.add atom.commands.add 'atom-workspace', 
+    @viewModel = new AtomCscopeViewModel @subscriptions
+    @setupEvents()
+
+    @subscriptions.add atom.commands.add 'atom-workspace',
+      'atom-cscope:toggle': => @viewModel.toggle()
+      'atom-cscope:switch-panes': => @viewModel.switchPanes() if @viewModel.isVisible()
+      'atom-cscope:refresh-db': => @refreshCscopeDB()
+      'atom-cscope:project-select': => @viewModel.view.openProjectSelector()
+      'atom-cscope:next': => @history?.openNext()
+      'atom-cscope:prev': => @history?.openPrev()
+
+    @subscriptions.add atom.commands.add 'atom-workspace',
+      'atom-cscope:toggle-symbol': => @viewModel.togglePanelOption(0)
+      'atom-cscope:toggle-global-definition': => @viewModel.togglePanelOption(1)
+      'atom-cscope:toggle-functions-called-by': => @viewModel.togglePanelOption(2)
+      'atom-cscope:toggle-functions-calling': => @viewModel.togglePanelOption(3)
+      'atom-cscope:toggle-text-string': => @viewModel.togglePanelOption(4)
+      'atom-cscope:toggle-egrep-pattern': => @viewModel.togglePanelOption(6)
+      'atom-cscope:toggle-file': => @viewModel.togglePanelOption(7)
+      'atom-cscope:toggle-files-including': => @viewModel.togglePanelOption(8)
+      'atom-cscope:toggle-assignments-to': => @viewModel.togglePanelOption(9)
+
+    @subscriptions.add atom.commands.add 'atom-workspace',
       'atom-cscope:find-symbol': => @autoInputFromCursor(0)
       'atom-cscope:find-global-definition': => @autoInputFromCursor(1)
       'atom-cscope:find-functions-called-by': => @autoInputFromCursor(2)
@@ -175,65 +104,24 @@ module.exports = AtomCscope =
       'atom-cscope:find-files-including': => @autoInputFromCursor(8)
       'atom-cscope:find-assignments-to': => @autoInputFromCursor(9)
 
+    @subscriptions.add atom.config.observe 'atom-cscope.MaxCscopeResults', (newValue) =>
+      @maxResults = newValue
+
   autoInputFromCursor: (option) ->
     activeEditor = atom.workspace.getActiveTextEditor()
 
     if not activeEditor?
-      notifier.addInfo "Could not find text under cursor."
+      atom.notifications.addError "Could not find text under cursor."
       return
 
     selectedText = activeEditor.getSelectedText()
-
     keyword = if selectedText is "" then activeEditor.getWordUnderCursor() else selectedText
-    @show()
-    @atomCscopeView.inputView.invokeSearch(option, keyword)
-  
-  attachModal: (state) ->
-    @atomCscopeView = new AtomCscopeView(state.atomCscopeViewState)
-    @setupModalLocation()
-    atom.config.onDidChange 'atom-cscope.WidgetLocation', (event) =>
-      # Just for UX sake - If the panel was already visible when the user
-      # changed location in settings, we display it again
-      wasVisible = if @modalPanel.isVisible() then true else false
-      @modalPanel.destroy()
-      @setupModalLocation()
-      @modalPanel.show() if wasVisible
+    if keyword.trim() == ""
+      atom.notifications.addError "Could not find text under cursor."
+      return
+    @viewModel.show() if !@viewModel.isVisible()
+    @viewModel.invokeSearch(option, keyword)
 
-  setupModalLocation: ->
-    switch atom.config.get('atom-cscope.WidgetLocation')
-      when 'bottom' then @modalPanel = atom.workspace.addBottomPanel(item: @atomCscopeView.element, visible: false)
-      when 'top' then @modalPanel = atom.workspace.addTopPanel(item: @atomCscopeView.element, visible: false)
-      else @modalPanel = atom.workspace.addTopPanel(item: @atomCscopeView.element, visible: false)
-  
-  activate: (state) ->
-    @attachModal(state)
-    @setUpBindings()
-    @setUpEvents()
-  
   deactivate: ->
-    @modalPanel.destroy()
+    @viewModel.deactivate()
     @subscriptions.dispose()
-    @atomCscopeView.destroy()
-
-  serialize: ->
-    atomCscopeViewState: @atomCscopeView.serialize()
-
-  show: ->
-    @prevEditor = atom.workspace.getActiveTextEditor()
-    @modalPanel.show()
-    @atomCscopeView.inputView.findEditor.focus()
-    
-  hide: ->
-    @modalPanel.hide()
-    prevEditorView = atom.views.getView(@prevEditor)
-    prevEditorView?.focus()
-
-  toggle: ->
-    if @modalPanel.isVisible() then @hide() else @show()
-    
-  switchPanes: ->
-    if @atomCscopeView.inputView.findEditor.hasFocus()
-      prevEditorView = atom.views.getView(@prevEditor)
-      prevEditorView?.focus()
-    else
-      @atomCscopeView.inputView.findEditor.focus()

@@ -13,6 +13,7 @@
 .atom-cscope .list-container {
   position: relative;
   height: 200px;
+  overflow-y: scroll;
 }
 
 .atom-cscope ol {
@@ -32,19 +33,12 @@
   background: @background-color-selected;
 }
 
-.atom-cscope ol#result-container {
-  overflow: scroll;
-  height: 200px;
-  margin: 10px 0;
-  padding-right: 10px;
-}
-
 .atom-cscope-input #form-container {
   display: flex;
   width: 100%;
 }
 
-.atom-cscope .header, .atom-cscope-input #form-container {
+.atom-cscope .header {
   padding: 0 20px;
 }
 
@@ -68,7 +62,8 @@
 }
 
 .atom-cscope-input #form-container button {
-  flex-basis: 100px;
+  flex-basis: 20px;
+  margin: 0 10px;
 }
 
 .header .loading {
@@ -93,4 +88,39 @@ span.bold {
 
 .spaced-item {
   margin: 5px 10px 5px 0;
+}
+
+#result-container {
+  counter-reset: section;
+  padding: 0;
+  margin: 5px;
+}
+
+#result-container.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+#result-container.centered.empty li {
+  display: inline-block;
+  font-size: 50px;
+  color: @text-color-subtle;
+}
+
+.flex-inline {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.result-item:before {
+  counter-increment: section;
+  content: counter(section) ".";
+  margin-right: 10px;
+}
+
+.result-item {
+  margin-right: 0px;
 }

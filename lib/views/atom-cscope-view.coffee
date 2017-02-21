@@ -1,54 +1,124 @@
-{$, View} = require 'space-pen'
-InputView = require './input-view'
-ListView = require './list-view'
+fs = require 'fs'
+path = require 'path'
 
 module.exports =
-class AtomCscopeView extends View
-  @content: ->
-    @div class: "atom-cscope", =>
-      @div class: "header", =>
-        @div class: "inline-block spaced-item", =>
-          @button class: "btn just-btn icon icon-zap", id: "refresh"
-        @h4 class: "inline-block", "Atom Cscope"
-        @h6 class: "inline-block", id: 'result-count', "0 results"
-        @span class: 'loading loading-spinner-tiny inline-block no-show'
-      @subview 'inputView', new InputView()
-      @subview 'listView', new ListView()
-  
-  initialize: ->
-    @on 'core:move-up', =>
-      @listView.keyUsed = true
-      @listView.selectPreviousItemView()
-    @on 'core:move-down', =>
-      @listView.keyUsed = true
-      @listView.selectNextItemView()
-    @on 'core:move-to-top', =>
-      @listView.keyUsed = true
-      @listView.selectFirstItemView()
-    @on 'core:move-to-bottom', =>
-      @listView.keyUsed = true
-      @listView.selectLastItemView()
-  
-  clearItems: ->
-    @listView.clearItems()
-    
-  applyResultSet: (resultSet = []) ->
-    @find('h6#result-count').text(resultSet.results.length + ' results')
-    @listView.setItems(resultSet.results)
-    
-  onSearch: (callback) ->
-    @inputView.onSearch callback
-      
-  removeLoading: ->
-    callback = => @find('span.loading').addClass('no-show')
-    setTimeout callback, 600
-  
-  showLoading: ->
-    callback = => @find('span.loading').removeClass('no-show')
-    setTimeout callback, 10
+class AtomCscopeView
+  subscriptions: null
+  element: null
+  target: "#atom-cscope"
+  template: null
+  currentSelection: 0
 
-  onResultClick: (callback) ->
-    @listView.onConfirm callback
+  constructor: (subscriptions) ->
+    @subscriptions = subscriptions
+    @element = document.createElement('div')
+    @element.classList.add('atom-cscope')
+    @element.id = "atom-cscope"
+    @template = fs.readFileSync(path.join(__dirname, './view.html'))
+
+  hasSelection: () ->
+    return @resultList.querySelector('.selected')?
+
+  initilaize: () ->
+    @resultList = @element.querySelector '#result-container'
+    @input = @element.querySelector '#query-input'
+    @optionSelect = @element.querySelector '#cscope-options'
+    @pathSelect = @element.querySelector '#path-options'
+    @loader = @element.querySelector '#loader'
+
+    @subscriptions.add atom.config.observe 'atom-cscope.LiveSearchDelay', (newValue) =>
+      @input.getModel().getBuffer().stoppedChangingDelay = newValue
+
+  getSearchParams: () ->
+    pathIndex = parseInt @pathSelect.value
+    if pathIndex == -1
+      path = atom.project.getPaths()
+    else
+      path = [atom.project.getPaths()[pathIndex]]
+    search =
+      option: parseInt @optionSelect.value
+      path: path
+      keyword: @input.getModel().getText().trim()
+
+    return search
+
+  onMoveUp: (callback) ->
+    atom.commands.add 'atom-text-editor#query-input',
+      'core:move-up': callback
+
+  onMoveDown: (callback) ->
+    atom.commands.add 'atom-text-editor#query-input',
+      'core:move-down': callback
+
+  onMoveToBottom: (callback) ->
+    atom.commands.add 'atom-text-editor#query-input',
+      'core:move-to-bottom': callback
+
+  onMoveToTop: (callback) ->
+    atom.commands.add 'atom-text-editor#query-input',
+      'core:move-to-top': callback
+
+  onConfirm: (callback) ->
+    atom.commands.add 'atom-text-editor#query-input',
+      'core:confirm': callback
+
+  onCancel: (callback) ->
+    atom.commands.add 'atom-text-editor#query-input',
+      'core:cancel': callback
+
+  selectLast: () ->
+    @selectItemView @resultList.childNodes.length - 1
+
+  selectFirst: () ->
+    @selectItemView 0
+
+  selectNext: () ->
+    if @resultList.childNodes[@currentSelection].classList.contains 'selected'
+      @selectItemView (@currentSelection + 1) % @resultList.childNodes.length
+    else
+      @selectItemView (@currentSelection) % @resultList.childNodes.length
+
+  selectPrev: () ->
+    newIndex = (@currentSelection - 1) % @resultList.childNodes.length
+    newIndex += @resultList.childNodes.length if newIndex < 0
+    @selectItemView newIndex
+
+  selectItemView: (index) ->
+    @resultList.childNodes[@currentSelection].classList.remove 'selected'
+    @resultList.childNodes[index].classList.add 'selected'
+    @currentSelection = index
+    @resultList.childNodes[index].scrollIntoView false
+
+  getSelectedItemView: ->
+    return @resultList.childNodes[@currentSelection]
+
+  clearSelection: ->
+    @getSelectedItemView().classList.remove 'selected'
+    @currentSelection = 0
+
+  # Courtesy: http://stackoverflow.com/a/20906852
+  openSelectBox: (element) ->
+    event = document.createEvent 'MouseEvents'
+    event.initMouseEvent 'mousedown', true, true, window
+    element.dispatchEvent event
+  
+  openProjectSelector: ->
+    try
+      @openSelectBox @pathSelect
+    catch error
+      console.log error
+    false
+
+  autoFill: (option, keyword) ->
+    @optionSelect.value = option
+    @input.getModel().setText keyword
+
+  startLoading: () ->
+    @loader.classList.remove 'no-show'
+
+  stopLoading: () ->
+    callback = => @loader.classList.add 'no-show'
+    setTimeout callback, 600
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->

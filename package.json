@@ -2,7 +2,7 @@
   "name": "atom-cscope",
   "main": "./lib/atom-cscope",
   "version": "0.15.0",
-  "description": "Using cscope within Atom Code Editor CUZ I wanted one.",
+  "description": "Cscope within Atom.",
   "keywords": [
     "cscope",
     "code browsing",
@@ -10,29 +10,7 @@
   ],
   "activationCommands": {
     "atom-workspace": [
-      "atom-cscope:toggle",
-      "atom-cscope:find-symbol",
-      "atom-cscope:find-global-definition",
-      "atom-cscope:find-functions-called-by",
-      "atom-cscope:find-functions-calling",
-      "atom-cscope:find-text-string",
-      "atom-cscope:find-egrep-pattern",
-      "atom-cscope:find-file",
-      "atom-cscope:find-files-including",
-      "atom-cscope:find-assignments-to",
-      "atom-cscope:toggle-symbol",
-      "atom-cscope:toggle-global-definition",
-      "atom-cscope:toggle-functions-called-by",
-      "atom-cscope:toggle-functions-calling",
-      "atom-cscope:toggle-text-string",
-      "atom-cscope:toggle-egrep-pattern",
-      "atom-cscope:toggle-file",
-      "atom-cscope:toggle-files-including",
-      "atom-cscope:toggle-assignments-to",
-      "atom-cscope:refresh-db",
-      "atom-cscope:project-select",
-      "atom-cscope:next",
-      "atom-cscope:prev"
+      "atom-cscope:toggle"
     ]
   },
   "repository": "https://github.com/amitab/atom-cscope",
@@ -41,9 +19,7 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
-    "atom-notify": "^1.0.1",
-    "space-pen": "^5.0",
-    "underscore-plus": "1.x",
-    "atom-space-pen-views": "^2.0.0"
+    "loophole": "",
+    "ractive": "^0.8.10"
   }
 }

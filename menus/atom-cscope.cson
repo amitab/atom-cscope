@@ -10,7 +10,7 @@
   {
     'label': 'Packages'
     'submenu': [
-      'label': 'Cscope'
+      'label': 'Atom Cscope'
       'submenu': [
         {
           'label': 'Toggle Widget'

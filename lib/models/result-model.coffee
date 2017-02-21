@@ -1,59 +1,37 @@
-ResultItemView = require '../views/result-item-view'
 path = require 'path'
 
-module.exports = 
-  class ResultModel
-    constructor: (response, keyword, cwd) ->
-      @keyword = if keyword? and keyword.trim() isnt "" then keyword else false
-      @cwd = cwd
-      @processResultString(response)
+module.exports =
+class ResultModel
+  constructor: (keyword=null) ->
+    @keyword = keyword
+    @regex = new RegExp(@keyword, 'g')
+    @items = []
 
-    getFilePath: ->
-      filePath = if path.isAbsolute(@fileName) then @fileName else path.join(@cwd, @fileName)
-      return filePath
-    
-    processResultString: (response) ->
-      @resultString = response
-      data = response.split(" ", 3)
-      data.push(response.replace(data.join(" ") + " ", ""))
+  processResults: (results, cwd) ->
+    for line in results.split '\n'
+      line = line.trim()
+      continue if line is ""
+      @items.push @processLine line, cwd
 
-      @fileName = data[0]
-      @functionName = data[1]
-      @lineNumber = parseInt(data[2])
-      @lineText = data[3]
-      
-      @isJustFile = data[3].trim() is '<unknown>' 
-      regex = new RegExp(@keyword, 'g')
-      @htmlFileName = @fileName.replace(regex, '<span class="text-highlight bold">\$&</span>')
-      @projectPath = path.basename(@cwd)
-      
-      if @keyword
-        @htmlLineText = data[3].replace(/</g, '&lt;')
-        @htmlLineText = @htmlLineText.replace(/>/g, '&gt;')
-        @htmlLineText = @htmlLineText.replace(regex, '<span class="text-highlight bold">\$&</span>')
+  processLine: (line, cwd) ->
+    data = line.split(" ", 3)
+    data.push(line.replace(data.join(" ") + " ", ""))
+    info =
+      projectDir: if path.isAbsolute data[0] then data[0] else path.join cwd, data[0]
+      fileName: path.basename data[0]
+      functionName: data[1]
+      lineNumber: parseInt data[2]
+      codeLine: data[3]
+      isJustFile: data[3].trim() is '<unknown>'
+      relativePath: data[0]
 
-    generateView: ->
-      return ResultItemView.setup(@)
+    if info.isJustFile
+      info.fileName = info.fileName.replace(/</g, '&lt;')
+      info.fileName = info.fileName.replace(/>/g, '&gt;')
+      info.fileName = info.fileName.replace(@regex, '<span class="text-highlight bold">\$&</span>')
+    else
+      info.codeLine = info.codeLine.replace(/</g, '&lt;')
+      info.codeLine = info.codeLine.replace(/>/g, '&gt;')
+      info.codeLine = info.codeLine.replace(@regex, '<span class="text-highlight bold">\$&</span>')
 
-    encodeHtmlEntity: (str) ->
-      buf = []
-      buf.unshift(['&#', str[i].charCodeAt(), ';'].join('')) for i in [str.length-1...-1] by -1
-      return buf.join('')
-
-    generateHTML: (index) ->
-      html  = '<li class="result-item" data-index="' + index + '">'
-      html += '<div class="inline-block", style="margin-right=0px;">'
-      html += '<span class="project-directory">[' + @projectPath + ']</span>'
-      html += '<span class="gap"></span>'
-      html += '<span class="file-name">' + @htmlFileName + '<span>'
-      html += '</div>'
-      if not @isJustFile
-        html += '<div class="inline-block">'
-        html += '<span>:</span>'
-        html += '<span class="line-number bold">' + @lineNumber + '</span>'
-        html += '<span class="gap"></span>'
-        html += '<span class="highlight function-name">' + @encodeHtmlEntity(@functionName) + '</span>'
-        html += '<span class="gap"></span>'
-        html += '<div class="inline-block code-line">' + @htmlLineText + '</div>'
-        html += '</div>'
-      return html
+    return info
