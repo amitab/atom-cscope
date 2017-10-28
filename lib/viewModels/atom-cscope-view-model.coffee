@@ -104,9 +104,10 @@ class AtomCscopeViewModel
     if @searchCallback?
       @view.startLoading()
       @searchCallback newSearch
-      .then () =>
-        @view.stopLoading()
+      .then (data) =>
         @view.clearSelection()
+        @model.results data
+        @view.stopLoading()
       .catch () =>
         @view.stopLoading()
         @resetSearch()

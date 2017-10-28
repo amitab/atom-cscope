@@ -40,16 +40,16 @@ module.exports = AtomCscope =
         return
 
       return cscope.runCscopeCommands option, keyword, projects
-      .then (data) =>
-        if data.length > @maxResults or @maxResults <= 0
-          atom.notifications.addWarning "Results more than #{@maxResults}!"
-          @viewModel.resetSearch()
-        else
-          @viewModel.model.results data
       .catch (data) =>
         message = if data? then data.toString() else "Unknown Error occured"
         atom.notifications.addError message
         Promise.reject()
+      .then (data) =>
+        if data.length > @maxResults or @maxResults <= 0
+          atom.notifications.addWarning "Results more than #{@maxResults}!"
+          Promise.reject()
+        else
+          Promise.resolve(data)
 
     @viewModel.onRefresh @refreshCscopeDB
     @viewModel.onResultClick (model) =>
