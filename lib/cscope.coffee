@@ -7,16 +7,19 @@ ResultModel = require './models/result-model'
 
 module.exports = CscopeCommands =
   getSourceFiles: (project, extStr) ->
-    exts = extStr.split(/\s+/)
+    exts = ("*" + ext for ext in extStr.split(/\s+/))
     out = fs.openSync(path.join(project, 'cscope.files'), 'w')
+    opts = {cwd: project, detached: true, stdio: ['ignore', out, 'pipe']}
     if platform == "win32"
-      cmd = 'dir'
-      args = ['/b/a/s'].concat(exts)
+      cmd = 'C:\\Windows\\System32\\cmd.exe'
+      args = ['/s', '/c', 'dir'].concat(exts)
+      args.push('/b/s');
     else
       cmd = 'find'
-      args = [].concat.apply(['.', '\(', '-name', '*' + exts.shift()], ['-o', '-name', '*' + ext] for ext in exts)
+      args = [].concat.apply(['.', '\(', '-name', exts.shift()], ['-o', '-name', ext] for ext in exts)
       args = args.concat.apply(args, ['\)', '-type', 'f'])
-    return @runCommand cmd, args, {cwd: project, detached: true, stdio: ['ignore', out, 'pipe']}
+      opts.cwd = project
+    return @runCommand cmd, args, opts
 
   generateCscopeDB: (project) ->
     cscope_binary = atom.config.get('atom-cscope.cscopeBinaryLocation')
@@ -51,7 +54,7 @@ module.exports = CscopeCommands =
       if child.stdout != null then child.stdout.on 'data', (data) =>
         output += data.toString()
       if child.stderr != null then child.stderr.on 'data', (data) =>
-        reject data.toString()
+        console.log command + "(stderr): " + data.toString()
 
       child.on 'error', (err) =>
         console.log "Debug: " + err
