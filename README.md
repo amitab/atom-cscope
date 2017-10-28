@@ -78,9 +78,22 @@ You can navigate the Result Items using arrow keys and press `enter` to open
 the target file in a new buffer and the cursor automatically moves to the 
 location of the query or you can click on the Result Item for the same effect.
 
+## Ctrl-T like feature of ctags:
+This package has a history feature as of 24c51c.
+`atom-cscope:next` and `atom-cscope:prev` are the commands you need to map.
+Each time you open a result using this package, it is recorded in a history
+stack. You can move back and forth in this stack. Ofcourse, if you move to the
+middle of the stack and open a new result, you will lose the forward history, as
+it is the behaviour of a stack.
+
 ## Set it up?
 You can use the existing cscope.out file, generate on your own, or generate
 through the widget with the lightning button.
+
+To generate the cscope.out file on windows, you need to have the windows port
+of the cscope binary and point to the location in the settings of this package.
+Or just put it in your $PATH and mention `cscope` in the settings of this
+package.
 
 To generate cscope.out manually, in your project directory run:
 ```bash

@@ -1,3 +1,7 @@
+## 1.0.1
+* Fix issue#30
+* Fix issue#31, issue#28, issue#17
+
 ## 1.0.0
 * UI revamped with ractive.js
 * Added Cscope result history (Can be disabled in settings)
