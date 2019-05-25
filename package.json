@@ -19,7 +19,7 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
-    "loophole": "",
+    "path": "^0.12.7",
     "ractive": "^0.8.10"
   }
 }

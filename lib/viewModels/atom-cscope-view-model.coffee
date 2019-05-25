@@ -1,8 +1,8 @@
-{allowUnsafeNewFunction} = require 'loophole'
 Ractive = require 'ractive'
 
 AtomCscopeView = require '../views/atom-cscope-view'
-AtomCscopeModel = require '../models/atom-cscope-model'
+#AtomCscopeModel = require '../models/atom-cscope-model.js'
+{AtomCscopeModel} = require '../../dist/atom-cscope-model.js'
 
 module.exports =
 class AtomCscopeViewModel
@@ -17,7 +17,10 @@ class AtomCscopeViewModel
   ractive: null
 
   constructor: (subscriptions) ->
-    @model = new AtomCscopeModel subscriptions
+    @model = new AtomCscopeModel subscriptions, (itemName, newItem) =>
+      @ractive.merge(itemName, newItem)
+    , (itemName, newItem) =>
+      @ractive.set(itemName, newItem)
     @view = new AtomCscopeView subscriptions
     window.x = @
     @subscriptions = subscriptions
@@ -25,7 +28,7 @@ class AtomCscopeViewModel
     @initilaize()
 
   initilaize: () ->
-    @ractive = allowUnsafeNewFunction =>
+    @ractive =
       new Ractive
         el: @view.target
         data: @model.data
@@ -49,24 +52,18 @@ class AtomCscopeViewModel
       else @modalPanel = atom.workspace.addTopPanel(item: @view.getElement(), visible: false)
 
   setupEvents: () ->
-    @model.onDataChange (itemName, newItem) =>
-      @ractive.set itemName, newItem
-      
-    @model.onDataUpdate (itemName, newItem) =>
-      @ractive.merge itemName, newItem
-
     @view.onCancel (event) =>
       @hide()
-      
+
     @view.onMoveUp (event) =>
       @view.selectPrev()
-      
+
     @view.onMoveDown (event) =>
       @view.selectNext()
-      
+
     @view.onMoveToTop (event) =>
       @view.selectFirst()
-      
+
     @view.onMoveToBottom (event) =>
       @view.selectLast()
 
@@ -139,7 +136,7 @@ class AtomCscopeViewModel
       model = @model.data.results[parseInt temp.pop()]
       @resultClickCallback model
       @view.selectItemView
-      
+
   onRefresh: (callback) ->
     @ractive.on 'refresh', (event) =>
       callback event
