@@ -149,6 +149,7 @@ class AtomCscopeView {
             if (this.pathSelect == null)
                 return false;
             this.openSelectBox(this.pathSelect);
+            this.pathSelect.focus();
         }
         catch (error) {
             console.log(error);

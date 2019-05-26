@@ -18,7 +18,7 @@ export class AtomCscopeViewModel {
   subscriptions: CompositeDisposable;
   modalPanel: Panel;
   previousSearch: Search;
-  ractive: Ractive;
+  ractive: any;
   prevEditor: TextEditor | undefined;
 
   resultClickCallback: (model: LineInfo) => void;
@@ -228,6 +228,7 @@ export class AtomCscopeViewModel {
         prevEditorView.focus();
       }
     } else {
+      this.prevEditor = atom.workspace.getActiveTextEditor();
       this.view.inputFocus();
     }
   }

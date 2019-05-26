@@ -55,11 +55,11 @@ function setupEvents() {
     });
     viewModel.onRefresh(refreshCscopeDB);
     viewModel.onResultClick((model) => {
-        if (history == null)
-            return;
-        if (history.isEmpty())
+        if (history != null && history.isEmpty())
             history.saveCurrent();
         atom.workspace.open(model.projectDir, { initialLine: model.lineNumber - 1 });
+        if (history == null)
+            return;
         history.saveNew({
             path: model.projectDir,
             pos: {
@@ -71,7 +71,7 @@ function setupEvents() {
     });
 }
 exports.setupEvents = setupEvents;
-async function activate(state) {
+async function activate() {
     subscriptions = new atom_1.CompositeDisposable();
     subscriptions.add(atom.config.observe("atom-cscope.EnableHistory", (newValue) => {
         if (newValue) {

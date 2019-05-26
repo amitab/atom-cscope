@@ -193,6 +193,7 @@ class AtomCscopeViewModel {
             }
         }
         else {
+            this.prevEditor = atom.workspace.getActiveTextEditor();
             this.view.inputFocus();
         }
     }

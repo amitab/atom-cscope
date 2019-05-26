@@ -23,6 +23,7 @@
     "@types/atom-keymap": "^8.0.3",
     "@types/ractive": "^0.7.27",
     "ractive": "^0.8.10",
-    "tslib": "^1.9.3"
+    "tslib": "^1.9.3",
+    "typescript": "^3.4.5"
   }
 }
