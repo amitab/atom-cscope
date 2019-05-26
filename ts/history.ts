@@ -16,7 +16,6 @@ class History {
   cur: number;
   stack: HistoryItem[];
 
-
   constructor(size: number) {
     this.size = size;
     this.clear();
@@ -27,7 +26,10 @@ class History {
       this.stack.push(item);
       ++this.cur;
     } else if (this.cur < this.stack.length) {
-      this.stack.splice(++this.cur, 0, item);
+      ++this.cur;
+      this.stack.splice(this.cur, this.stack.length - (this.cur + 1));
+      this.stack.push(item);
+      ++this.cur;
     }
 
     if (this.cur > this.size) {
@@ -51,13 +53,17 @@ class History {
   }
 
   clear() {
-    this.stack = new Array(this.size);
+    this.stack = new Array();
     this.cur = -1;
   }
 }
 
 export class Navigation {
   history: History;
+
+  updateHistorySize(size: number) {
+    this.history.size = size;
+  }
 
   constructor(size: number) {
     this.history = new History(size);

@@ -4,6 +4,11 @@ export var config = {
     description: 'Record the files opened with cscope search.',
     type: 'boolean',
     default: false
+  }, HistorySize: {
+    title: 'Search History size',
+    description: 'Size of the search history.',
+    type: 'integer',
+    default: 10
   }, MaxCscopeResults: {
     title: 'Maximum Cscope Results',
     description: 'Don\'t allow cscope results beyond this. 0 for infinite (not recommended).',
