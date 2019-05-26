@@ -3,7 +3,7 @@ path = require 'path'
 spawn = require('child_process').spawn
 platform = require('os').platform()
 
-{ResultModel} = require '../dist/result-model.js'
+{ResultModel} = require '../dist/models/result-model.js'
 
 module.exports = CscopeCommands =
   getSourceFiles: (project, extStr) ->

@@ -19,6 +19,9 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
+    "@types/atom": "^1.36.1",
+    "@types/atom-keymap": "^8.0.3",
+    "@types/ractive": "^0.7.27",
     "path": "^0.12.7",
     "ractive": "^0.8.10"
   }

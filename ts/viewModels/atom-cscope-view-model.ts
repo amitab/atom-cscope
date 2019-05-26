@@ -1,3 +1,4 @@
+//import {Ractive} from 'ractive';
 import * as Ractive from 'ractive';
 import {CompositeDisposable, Panel, TextEditor, Disposable} from "atom";
 
@@ -5,9 +6,9 @@ import {AtomCscopeView} from '../views/atom-cscope-view';
 import {AtomCscopeModel} from '../models/atom-cscope-model';
 import {LineInfo} from "../models/result-model"
 
-interface Search {
+export interface Search {
   keyword: string;
-  option: string;
+  option: number;
   path: string[];
 }
 
@@ -18,14 +19,18 @@ export class AtomCscopeViewModel {
   modalPanel: Panel;
   previousSearch: Search;
   ractive: Ractive;
-  prevEditor: TextEditor;
+  prevEditor: TextEditor | undefined;
 
   resultClickCallback: (model: LineInfo) => void;
   searchCallback: (params: Search) => Promise<LineInfo[]>;
   liveSearchListener: Disposable;
 
   constructor(subscriptions: CompositeDisposable) {
-    this.resetSearch();
+    this.previousSearch = {
+      keyword: "",
+      option: -1,
+      path: new Array()
+    }
     this.model = new AtomCscopeModel(subscriptions,
       (itemName: string, newItem: string[]) => {
         this.ractive.merge(itemName, newItem);
@@ -33,7 +38,7 @@ export class AtomCscopeViewModel {
       (itemName: string, newItem: LineInfo[]) => {
         this.ractive.set(itemName, newItem);
       });
-
+    this.view = new AtomCscopeView(subscriptions);
     this.subscriptions = subscriptions;
 
     // Attach Modal
@@ -60,11 +65,17 @@ export class AtomCscopeViewModel {
   addPanel() {
     switch (atom.config.get('atom-cscope.WidgetLocation')) {
       case 'bottom': {
-        this.modalPanel = atom.workspace.addBottomPanel(this.view.getElement(), false);
+        this.modalPanel = atom.workspace.addBottomPanel({
+          item: this.view.getElement(),
+          visible: false
+        });
         break;
       }
       default: {
-        this.modalPanel = atom.workspace.addTopPanel(this.view.getElement(), false);
+        this.modalPanel = atom.workspace.addTopPanel({
+          item: this.view.getElement(),
+          visible: false
+        });
         break;
       }
     }
@@ -91,7 +102,8 @@ export class AtomCscopeViewModel {
       this.performSearch(newSearch);
     });
     this.ractive.on('path-select', () => {
-      this.view.input.focus();
+      if (this.view.input == null) return;
+      this.view.inputFocus();
     });
 
     this.subscriptions.add(atom.config.observe('atom-cscope.LiveSearch', (newValue: boolean) => {
@@ -100,6 +112,7 @@ export class AtomCscopeViewModel {
         return;
       }
 
+      if (this.view.input == null) return;
       this.liveSearchListener = this.view.input.getModel().onDidStopChanging(() => {
         if (!newValue) {
           return;
@@ -133,7 +146,7 @@ export class AtomCscopeViewModel {
     })
 
     this.previousSearch = newSearch;
-    this.view.input.focus();
+    this.view.inputFocus();
   }
 
   sameAsPreviousSearch(newSearch: Search) {
@@ -153,7 +166,7 @@ export class AtomCscopeViewModel {
   resetSearch() {
     this.previousSearch = {
       keyword: "",
-      option: "",
+      option: -1,
       path: new Array()
     }
   }
@@ -168,14 +181,14 @@ export class AtomCscopeViewModel {
       var temp: string[] = event.resolve().split(".");
       var model: LineInfo = this.model.data.results[parseInt(temp[temp.length - 1])];
       this.resultClickCallback(model);
-      this.view.selectItemView();
+      return this.view.selectItemView;
     });
   }
 
   onRefresh(callback: () => void) {
     this.ractive.on('refresh', () => {
       callback();
-      this.view.input.focus();
+      this.view.inputFocus();
     });
   }
 
@@ -186,11 +199,12 @@ export class AtomCscopeViewModel {
   show() {
     this.prevEditor = atom.workspace.getActiveTextEditor();
     this.modalPanel.show();
-    this.view.input.focus();
+    this.view.inputFocus();
   }
 
   hide() {
     this.modalPanel.hide();
+    if (this.prevEditor == undefined) return;
     var prevEditorView: HTMLElement = atom.views.getView(this.prevEditor)
     if (prevEditorView) {
       prevEditorView.focus();
@@ -207,22 +221,23 @@ export class AtomCscopeViewModel {
   }
 
   switchPanes() {
+    if (this.view.input == null) return;
     if (this.view.input.hasFocus() && this.prevEditor) {
       var prevEditorView: HTMLElement = atom.views.getView(this.prevEditor)
       if (prevEditorView) {
         prevEditorView.focus();
       }
     } else {
-      this.view.input.focus();
+      this.view.inputFocus();
     }
   }
 
   togglePanelOption(option: number) {
-    if (parseInt(this.view.optionSelect.value) === option) {
+    if (this.view.optionSelect != null && parseInt(this.view.optionSelect.value) === option) {
       this.toggle();
     } else {
       this.show();
-      this.view.autoFill(option, '');
+      this.view.autoFill(option.toString(), '');
       this.model.clearResults();
     }
   }

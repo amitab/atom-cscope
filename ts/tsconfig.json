@@ -13,7 +13,8 @@
     "noUnusedLocals": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
-    "noImplicitThis": true
+    "noImplicitThis": true,
+    "strictPropertyInitialization": false
   },
   "compileOnSave": true
 }

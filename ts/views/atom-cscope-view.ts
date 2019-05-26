@@ -1,21 +1,23 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import {CompositeDisposable} from "atom";
+import {CompositeDisposable, TextEditorElement} from "atom";
+
+import {Search} from '../viewModels/atom-cscope-view-model';
 
 export class AtomCscopeView {
   subscriptions: CompositeDisposable;
-  element: Element;
+  element: HTMLElement;
   target: string;
-  template: string;
+  template: Buffer;
   currentSelection: number;
 
-  resultList: Element;
-  input: Element;
-  optionSelect: Element;
-  pathSelect: Element;
-  loader: Element;
+  resultList: Node | null;
+  input: TextEditorElement | null;
+  optionSelect: HTMLSelectElement | null;
+  pathSelect: HTMLSelectElement | null;
+  loader: HTMLElement | null;
 
-  constructor(subscriptions) {
+  constructor(subscriptions: CompositeDisposable) {
     this.target = "#atom-cscope";
     this.currentSelection = 0;
     this.subscriptions = subscriptions;
@@ -23,10 +25,23 @@ export class AtomCscopeView {
     this.element.classList.add('atom-cscope');
     this.element.id = "atom-cscope";
     this.template = fs.readFileSync(path.join(__dirname, './view.html'));
+
+    this.resultList = null;
+    this.input = null;
+    this.optionSelect = null;
+    this.pathSelect = null;
+    this.loader = null;
+  }
+
+  inputFocus() {
+    if (this.input == null) return;
+    this.input.focus();
   }
 
   hasSelection() {
-    return this.resultList.querySelector('.selected')?
+    if (this.resultList == null) return false;
+    var results: Document = <Document> this.resultList;
+    return results.querySelector('.selected') != null;
   }
 
   initilaize() {
@@ -37,107 +52,163 @@ export class AtomCscopeView {
     this.loader = this.element.querySelector('#loader');
 
     this.subscriptions.add(atom.config.observe('atom-cscope.LiveSearchDelay', (newValue: number) => {
+      if (this.input == null) return;
       this.input.getModel().getBuffer().stoppedChangingDelay = newValue;
     }));
   }
 
-  getSearchParams: () ->
-    pathIndex = parseInt this.pathSelect.value
-    if pathIndex == -1
-      path = atom.project.getPaths()
-    else
-      path = [atom.project.getPaths()[pathIndex]]
-    search =
-      option: parseInt this.optionSelect.value
+  getSearchParams() {
+    var pathIndex: number = this.pathSelect == null ? -1 : parseInt(this.pathSelect.value);
+    var path: string[];
+    if (pathIndex == -1) {
+      path = atom.project.getPaths();
+    } else {
+      path = [atom.project.getPaths()[pathIndex]];
+    }
+
+    var search: Search = {
+      keyword: this.input == null ? "" : this.input.getModel().getText().trim(),
+      option: this.optionSelect == null ? -1 : parseInt(this.optionSelect.value),
       path: path
-      keyword: this.input.getModel().getText().trim()
+    }
+    return search;
+  }
 
-    return search
-
-  onMoveUp: (callback) ->
-    atom.commands.add 'atom-text-editor#query-input',
+  onMoveUp(callback: () => void) {
+    atom.commands.add('atom-text-editor#query-input', {
       'core:move-up': callback
+    });
+  }
 
-  onMoveDown: (callback) ->
-    atom.commands.add 'atom-text-editor#query-input',
+  onMoveDown(callback: () => void) {
+    atom.commands.add('atom-text-editor#query-input', {
       'core:move-down': callback
+    });
+  }
 
-  onMoveToBottom: (callback) ->
-    atom.commands.add 'atom-text-editor#query-input',
+  onMoveToBottom(callback: () => void) {
+    atom.commands.add('atom-text-editor#query-input', {
       'core:move-to-bottom': callback
+    });
+  }
 
-  onMoveToTop: (callback) ->
-    atom.commands.add 'atom-text-editor#query-input',
+  onMoveToTop(callback: () => void) {
+    atom.commands.add('atom-text-editor#query-input', {
       'core:move-to-top': callback
+    });
+  }
 
-  onConfirm: (callback) ->
-    atom.commands.add 'atom-text-editor#query-input',
+  onConfirm(callback: () => void) {
+    atom.commands.add('atom-text-editor#query-input', {
       'core:confirm': callback
+    });
+  }
 
-  onCancel: (callback) ->
-    atom.commands.add 'atom-text-editor#query-input',
+  onCancel(callback: () => void) {
+    atom.commands.add('atom-text-editor#query-input', {
       'core:cancel': callback
+    });
+  }
 
-  selectLast: () ->
-    this.selectItemView this.resultList.childNodes.length - 1
+  selectLast() {
+    if (this.resultList == null) return;
+    this.selectItemView(this.resultList.childNodes.length - 1);
+  }
 
-  selectFirst: () ->
-    this.selectItemView 0
+  selectFirst() {
+    this.selectItemView(0);
+  }
 
-  selectNext: () ->
-    if this.resultList.childNodes[this.currentSelection].classList.contains 'selected'
-      this.selectItemView (this.currentSelection + 1) % this.resultList.childNodes.length
-    else
-      this.selectItemView (this.currentSelection) % this.resultList.childNodes.length
+  selectNext() {
+    if (this.resultList == null) return;
+    var current: Element = <Element> this.resultList.childNodes[this.currentSelection];
 
-  selectPrev: () ->
-    newIndex = (this.currentSelection - 1) % this.resultList.childNodes.length
-    newIndex += this.resultList.childNodes.length if newIndex < 0
-    this.selectItemView newIndex
+    if (current.classList.contains('selected')) {
+      this.selectItemView((this.currentSelection + 1) % this.resultList.childNodes.length);
+    } else {
+      this.selectItemView((this.currentSelection) % this.resultList.childNodes.length);
+    }
+  }
 
-  selectItemView: (index) ->
-    this.resultList.childNodes[this.currentSelection].classList.remove 'selected'
-    this.resultList.childNodes[index].classList.add 'selected'
-    this.currentSelection = index
-    this.resultList.childNodes[index].scrollIntoView false
+  selectPrev() {
+    if (this.resultList == null) return;
+    var newIndex: number = (this.currentSelection - 1) % this.resultList.childNodes.length;
+    if (newIndex < 0) {
+      newIndex += this.resultList.childNodes.length;
+    }
+    this.selectItemView(newIndex);
+  }
 
-  getSelectedItemView: ->
-    return this.resultList.childNodes[this.currentSelection]
+  selectItemView(index: number) {
+    if (this.resultList == null) return;
+    var current: Element = <Element> this.resultList.childNodes[this.currentSelection];
+    var newItem: Element = <Element> this.resultList.childNodes[index];
 
-  clearSelection: ->
-    this.getSelectedItemView().classList.remove 'selected'
-    this.currentSelection = 0
+    current.classList.remove('selected');
+    newItem.classList.add('selected');
+    this.currentSelection = index;
+    newItem.scrollIntoView(false);
+  }
 
-  # Courtesy: http://stackoverflow.com/a/20906852
-  openSelectBox: (element) ->
-    event = document.createEvent 'MouseEvents'
-    event.initMouseEvent 'mousedown', true, true, window
-    element.dispatchEvent event
+  getSelectedItemView() {
+    if (this.resultList == null) return null;
+    return <Element> this.resultList.childNodes[this.currentSelection];
+  }
 
-  openProjectSelector: ->
-    try
-      this.openSelectBox this.pathSelect
-    catch error
-      console.log error
-    false
+  clearSelection() {
+    var sel: Element | null = this.getSelectedItemView();
+    if (sel == null) {
+      this.currentSelection = 0;
+      return;
+    }
+    sel.classList.remove('selected');
+    this.currentSelection = 0;
+  }
 
-  autoFill: (option, keyword) ->
-    this.optionSelect.value = option
-    this.input.getModel().setText keyword
+  // Picked up from: http://stackoverflow.com/a/20906852
+  openSelectBox(element: HTMLElement) {
+    event = document.createEvent('MouseEvents');
+    event.initMouseEvent('mousedown', true, true, window);
+    element.dispatchEvent(event);
+  }
 
-  startLoading: () ->
-    this.loader.classList.remove 'no-show'
+  openProjectSelector() {
+    try {
+      if (this.pathSelect == null) return false;
+      this.openSelectBox(this.pathSelect);
+    } catch (error) {
+      console.log(error);
+    }
+    return false;
+  }
 
-  stopLoading: () ->
-    callback = => this.loader.classList.add 'no-show'
-    setTimeout callback, 600
+  autoFill(option: string, keyword: string) {
+    if (this.input == null || this.optionSelect == null) return;
+    this.optionSelect.value = option;
+    this.input.getModel().setText(keyword);
+  }
 
-  # Returns an object that can be retrieved when package is activated
-  serialize: ->
+  startLoading() {
+    if (this.loader == null) return;
+    this.loader.classList.remove('no-show');
+  }
 
-  # Tear down any state and detach
-  destroy: ->
-    this.element.remove()
+  stopLoading() {
+    setTimeout(() => {
+      if (this.loader == null) return;
+      this.loader.classList.add('no-show');
+    }, 600);
+  }
 
-  getElement: ->
-    this.element
+  // Returns an object that can be retrieved when package is activated
+  serialize() {}
+
+  // Tear down any state and detach
+  destroy() {
+    return this.element.remove();
+  }
+
+  getElement() {
+    return this.element;
+  }
+}

@@ -1,8 +1,8 @@
 {CompositeDisposable} = require 'atom'
 
-AtomCscopeModel = require './models/atom-cscope-model'
-AtomCscopeView = require './views/atom-cscope-view'
-AtomCscopeViewModel = require './viewModels/atom-cscope-view-model'
+{AtomCscopeModel} = require '../dist/models/atom-cscope-model'
+{AtomCscopeView} = require '../dist/views/atom-cscope-view'
+{AtomCscopeViewModel} = require '../dist/viewModels/atom-cscope-view-model'
 cscope = require './cscope'
 config = require './config'
 History = require './history'
