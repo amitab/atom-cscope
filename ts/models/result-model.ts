@@ -21,6 +21,10 @@ export class ResultModel {
     this.items = new Array();
   }
 
+  getItems(): LineInfo[] {
+    return this.items;
+  }
+
   processResults(results: string, cwd: string) {
     for (var line of results.split("\n")) {
       line = line.trim();

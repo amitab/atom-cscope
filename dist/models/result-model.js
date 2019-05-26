@@ -7,6 +7,9 @@ class ResultModel {
         this.regex = new RegExp(this.keyword, 'g');
         this.items = new Array();
     }
+    getItems() {
+        return this.items;
+    }
     processResults(results, cwd) {
         for (var line of results.split("\n")) {
             line = line.trim();

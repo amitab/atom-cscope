@@ -1,6 +1,6 @@
 {
   "name": "atom-cscope",
-  "main": "./lib/atom-cscope",
+  "main": "./dist/atom-cscope",
   "version": "1.0.1",
   "description": "Cscope within Atom.",
   "keywords": [
@@ -22,7 +22,7 @@
     "@types/atom": "^1.36.1",
     "@types/atom-keymap": "^8.0.3",
     "@types/ractive": "^0.7.27",
-    "path": "^0.12.7",
-    "ractive": "^0.8.10"
+    "ractive": "^0.8.10",
+    "tslib": "^1.9.3"
   }
 }
