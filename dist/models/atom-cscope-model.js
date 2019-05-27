@@ -18,7 +18,7 @@ class AtomCscopeModel {
     setupEvents() {
         this.subscriptions.add(atom.project.onDidChangePaths((projects) => {
             var paths = new Array();
-            for (var project in projects) {
+            for (var project of projects) {
                 paths.push(path.basename(project));
             }
             this.pathsUpdateCallback('paths', paths);

@@ -33,7 +33,7 @@ export class AtomCscopeModel {
   setupEvents() {
     this.subscriptions.add(atom.project.onDidChangePaths((projects: string[]) => {
       var paths: string[] = new Array();
-      for (var project in projects) {
+      for (var project of projects) {
         paths.push(path.basename(project));
       }
 
