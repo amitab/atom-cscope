@@ -148,7 +148,7 @@ class AtomCscopeViewModel {
             var temp = event.resolve().split(".");
             var model = this.model.data.results[parseInt(temp[temp.length - 1])];
             this.resultClickCallback(model);
-            return this.view.selectItemView;
+            return this.view.selectItemView(parseInt(temp[temp.length - 1]));
         });
     }
     onRefresh(callback) {

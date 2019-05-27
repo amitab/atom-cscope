@@ -27,6 +27,8 @@ class History {
         return this.stack[--this.cur];
     }
     getCurrent() {
+        if (this.cur == -1 || this.stack.length == 0)
+            return null;
         return this.stack[this.cur];
     }
     moveFront() {

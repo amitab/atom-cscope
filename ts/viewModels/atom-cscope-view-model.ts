@@ -181,7 +181,7 @@ export class AtomCscopeViewModel {
       var temp: string[] = event.resolve().split(".");
       var model: LineInfo = this.model.data.results[parseInt(temp[temp.length - 1])];
       this.resultClickCallback(model);
-      return this.view.selectItemView;
+      return this.view.selectItemView(parseInt(temp[temp.length - 1]));
     });
   }
 
