@@ -24,7 +24,7 @@ export class AtomCscopeModel {
       paths: [],
       results: []
     };
-    for (var project in atom.project.getPaths()) {
+    for (var project of atom.project.getPaths()) {
       this.data.paths.push(path.basename(project));
     }
     this.setupEvents();

@@ -8,5 +8,4 @@
 # For more detailed documentation see
 # https://atom.io/docs/latest/behind-atom-keymaps-in-depth
 'atom-workspace':
-  'ctrl-alt-o': 'atom-cscope:prev'
-  'ctrl-shift-o': 'atom-cscope:next'
+  'ctrl-alt-o': 'atom-cscope:project-select'
