@@ -44,6 +44,7 @@ class History {
   }
 
   getCurrent() {
+    if (this.cur == -1 || this.stack.length == 0) return null;
     return this.stack[this.cur];
   }
 
@@ -56,13 +57,24 @@ class History {
     this.stack = new Array();
     this.cur = -1;
   }
+
+  updateHistorySize(size: number) {
+    if (size > this.size) {
+      this.size = size;
+    } else if (size < this.size) {
+      // Keep the last `size` items
+      this.size = size;
+      this.stack = this.stack.splice(this.stack.length - size, size);
+      if (this.cur >= size) this.cur = size - 1;
+    }
+  }
 }
 
 export class Navigation {
   history: History;
 
   updateHistorySize(size: number) {
-    this.history.size = size;
+    this.history.updateHistorySize(size);
   }
 
   constructor(size: number) {

@@ -130,6 +130,11 @@ async function activate() {
     subscriptions.add(atom.config.observe('atom-cscope.MaxCscopeResults', (newValue) => {
         maxResults = newValue;
     }));
+    subscriptions.add(atom.config.observe('atom-cscope.HistorySize', (newValue) => {
+        if (history == null)
+            return;
+        history.updateHistorySize(newValue);
+    }));
 }
 exports.activate = activate;
 function autoInputFromCursor(option) {

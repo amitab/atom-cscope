@@ -21,7 +21,7 @@ export var config = {
     default: true
   }, LiveSearchDelay: {
     title: 'Live Search delay',
-    description: 'Time after typing in the search box to trigger Live Search',
+    description: 'Time after typing in the search box to trigger Live Search. (Does not work currently)',
     type: 'integer',
     default: 800
   }, WidgetLocation: {
@@ -32,12 +32,12 @@ export var config = {
     enum: ['top', 'bottom']
   }, cscopeSourceFiles: {
     title: 'Source file extensions',
-    description: 'Enter the extensions of the source files with which you want cscope generated (with spaces)',
+    description: 'Enter the extensions of the source files with which you want cscope generated (with spaces).',
     type: 'string',
     default: '.c .cc .cpp .h .hpp'
   }, cscopeBinaryLocation: {
     title: 'Path for cscope binary',
-    description: 'Enter the full path to cscope program',
+    description: 'Enter the full path to cscope binary.',
     type: 'string',
     default: 'cscope'
   }

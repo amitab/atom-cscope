@@ -38,10 +38,22 @@ class History {
         this.stack = new Array();
         this.cur = -1;
     }
+    updateHistorySize(size) {
+        if (size > this.size) {
+            this.size = size;
+        }
+        else if (size < this.size) {
+            // Keep the last `size` items
+            this.size = size;
+            this.stack = this.stack.splice(this.stack.length - size, size);
+            if (this.cur >= size)
+                this.cur = size - 1;
+        }
+    }
 }
 class Navigation {
     updateHistorySize(size) {
-        this.history.size = size;
+        this.history.updateHistorySize(size);
     }
     constructor(size) {
         this.history = new History(size);
