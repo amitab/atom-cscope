@@ -48,13 +48,6 @@ class CscopeCommands {
                     return true;
                 });
             }
-            // if (!exists || force) {
-            //   return this.getSourceFiles(project, exts).then(() => {
-            //     return this.generateCscopeDB(project).then(() => {
-            //       return true;
-            //     });
-            //   })
-            // }
             return Promise.resolve(true);
         });
         return cscopeExists;

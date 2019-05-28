@@ -98,7 +98,7 @@ export async function activate() {
       }
     },
     'atom-cscope:refresh-db': () => refreshCscopeDB(),
-    'atom-cscope:project-select': () => viewModel.view.openProjectSelector(),
+    // 'atom-cscope:project-select': () => viewModel.view.openProjectSelector(),
     'atom-cscope:next': () => {
       if (history == null) return;
       history.openNext();
