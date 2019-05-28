@@ -93,7 +93,7 @@ export class Navigation {
     var filePath: string | undefined = editor.getPath();
 
     if (pos && filePath) {
-      var item: HistoryItem = this.history.getCurrent();
+      var item: HistoryItem | null = this.history.getCurrent();
 
       if (item != null &&
           item.path == filePath &&

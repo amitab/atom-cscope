@@ -167,8 +167,7 @@ export class AtomCscopeView {
 
   // Picked up from: http://stackoverflow.com/a/20906852
   openSelectBox(element: HTMLElement) {
-    event = document.createEvent('MouseEvents');
-    event.initMouseEvent('mousedown', true, true, window);
+    var event: MouseEvent = new MouseEvent('mousedown');
     element.dispatchEvent(event);
   }
 
@@ -176,7 +175,6 @@ export class AtomCscopeView {
     try {
       if (this.pathSelect == null) return false;
       this.openSelectBox(this.pathSelect);
-      this.pathSelect.focus();
     } catch (error) {
       console.log(error);
     }
