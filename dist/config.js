@@ -21,11 +21,11 @@ exports.config = {
         description: 'Allow Live Search?',
         type: 'boolean',
         default: true
-        // }, LiveSearchDelay: {
-        //   title: 'Live Search delay',
-        //   description: 'Time after typing in the search box to trigger Live Search. (Does not work currently)',
-        //   type: 'integer',
-        //   default: 800
+    }, LiveSearchDelay: {
+        title: 'Live Search delay',
+        description: 'Time after typing in the search box to trigger Live Search.',
+        type: 'integer',
+        default: 800
     }, WidgetLocation: {
         title: 'Set Widget location',
         description: 'Where do you want the widget?',

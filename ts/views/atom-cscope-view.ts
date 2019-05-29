@@ -50,11 +50,6 @@ export class AtomCscopeView {
     this.optionSelect = this.element.querySelector('#cscope-options');
     this.pathSelect = this.element.querySelector('#path-options');
     this.loader = this.element.querySelector('#loader');
-
-    this.subscriptions.add(atom.config.observe('atom-cscope.LiveSearchDelay', (newValue: number) => {
-      if (this.input == null) return;
-      this.input.getModel().getBuffer().stoppedChangingDelay = newValue;
-    }));
   }
 
   getSearchParams() {

@@ -6,6 +6,7 @@ const atom_cscope_view_1 = require("../views/atom-cscope-view");
 const atom_cscope_model_1 = require("../models/atom-cscope-model");
 class AtomCscopeViewModel {
     constructor(subscriptions) {
+        this.currentSearch = -1;
         this.previousSearch = {
             keyword: "",
             option: -1,
@@ -92,7 +93,18 @@ class AtomCscopeViewModel {
                     return;
                 }
                 var newSearch = this.view.getSearchParams();
-                this.performSearch(newSearch);
+                var timeout = atom.config.get('atom-cscope.LiveSearchDelay');
+                if (timeout <= 300) {
+                    this.performSearch(newSearch);
+                    return;
+                }
+                if (this.currentSearch != -1) {
+                    window.clearTimeout(this.currentSearch);
+                }
+                this.currentSearch = window.setTimeout((newSearch) => {
+                    this.performSearch(newSearch);
+                    this.currentSearch = -1;
+                }, timeout, newSearch);
             });
         }));
     }

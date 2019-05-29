@@ -25,7 +25,10 @@ export class AtomCscopeViewModel {
   searchCallback: (params: Search) => Promise<LineInfo[]>;
   liveSearchListener: Disposable;
 
+  currentSearch: number;
+
   constructor(subscriptions: CompositeDisposable) {
+    this.currentSearch = -1;
     this.previousSearch = {
       keyword: "",
       option: -1,
@@ -118,7 +121,20 @@ export class AtomCscopeViewModel {
           return;
         }
         var newSearch: Search = this.view.getSearchParams();
-        this.performSearch(newSearch);
+        var timeout: number = atom.config.get('atom-cscope.LiveSearchDelay');
+
+        if (timeout <= 300) {
+          this.performSearch(newSearch);
+          return;
+        }
+
+        if (this.currentSearch != -1) {
+          window.clearTimeout(this.currentSearch);
+        }
+        this.currentSearch = window.setTimeout((newSearch: Search) => {
+          this.performSearch(newSearch);
+          this.currentSearch = -1;
+        }, timeout, newSearch);
       });
     }));
   }
