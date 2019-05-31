@@ -29,7 +29,12 @@
           <option value="{{this}}">{{ projectName(this) }}</option>
         {{/paths}}
       </select>
-      <button class="btn icon icon-search" id="search" on-click="search-force"></button>
+      <div>
+        <div class="atom-cscope-search">
+          <button class="btn icon icon-search" title="" style="height: 100%;" id="search" on-click="search-force"></button>
+        </div>
+      </div>
+      <!-- <button class="btn icon icon-search" id="search" on-click="search-force"></button> -->
     </div>
   </div>
   <div class="list-container">

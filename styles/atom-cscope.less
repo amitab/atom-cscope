@@ -55,12 +55,14 @@
   //margin: 0 10px;
   flex-shrink: 0;
   height: calc(100%);
-  max-width: calc(75%);
+  max-width: calc(70%);
+  padding-left: 10px;
+  padding-right: 10px;
   border: 1px @background-color-highlight solid;
 }
 
-.atom-cscope-input button#search::before {
-  font-size: 12px;
+.atom-cscope-input .atom-cscope-search, .atom-cscope-input .atom-cscope-search #search {
+  height: 100%;
 }
 
 .atom-cscope-input #form-container select {
