@@ -1,24 +1,20 @@
 import * as SelectListView from "atom-select-list";
 import {Panel} from "atom";
 
-export class Selector {
+export class Selector<T> {
   selectListView: SelectListView;
   element: HTMLElement;
   panel: Panel | null;
   previouslyFocusedElement: Element | null;
 
-  constructor(items: string[], didConfirmSelection: (item: string) => void, emptyMessage: string) {
+  constructor(items: T[], elementForItem: (item: T) => HTMLElement, didConfirmSelection: (item: T) => void, emptyMessage: string, id: string) {
     this.element = document.createElement('div');
     this.element.classList.add('atom-cscope');
-    this.element.id = "atom-cscope-item-selector";
+    this.element.id = id;
 
     this.selectListView = new SelectListView({
       items: items,
-      elementForItem: (item: string) => {
-        const li = document.createElement('li');
-        li.textContent = item;
-        return li;
-      },
+      elementForItem: elementForItem,
       emptyMessage: emptyMessage,
       didConfirmSelection: didConfirmSelection,
       didCancelSelection: () => {
@@ -30,7 +26,7 @@ export class Selector {
     this.panel = null;
   }
 
-  update(items: string[]) {
+  update(items: T[]) {
     this.selectListView.update({
       items: items
     });

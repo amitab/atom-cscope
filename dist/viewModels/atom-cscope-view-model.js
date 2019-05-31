@@ -5,6 +5,7 @@ const Ractive = require("ractive");
 const atom_cscope_view_1 = require("../views/atom-cscope-view");
 const atom_cscope_model_1 = require("../models/atom-cscope-model");
 const select_view_1 = require("../views/select-view");
+const cscope_1 = require("../cscope");
 class AtomCscopeViewModel {
     constructor(subscriptions) {
         this.currentSearch = -1;
@@ -33,6 +34,10 @@ class AtomCscopeViewModel {
         });
         // Other views
         this.projectSelector = new select_view_1.Selector(["All Projects"].concat(atom.project.getPaths()), (item) => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            return li;
+        }, (item) => {
             console.log("selected " + item);
             if (this.view.pathSelect == null)
                 return;
@@ -43,7 +48,26 @@ class AtomCscopeViewModel {
                 throw "Mistmatch between atom-select-list and #path-select";
             }
             this.projectSelector.hide();
-        }, "No projects opened.");
+        }, "No projects opened.", "atom-cscope-project-selector");
+        this.cscopeOptSelector = new select_view_1.Selector(cscope_1.CscopeCommands.filter((item) => item != null), (item) => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            return li;
+        }, (item) => {
+            console.log("selected " + item);
+            if (this.view.optionSelect == null)
+                return;
+            var num = cscope_1.Cscope.commandToNumber(item);
+            this.view.optionSelect.value = num.toString();
+            if (this.view.optionSelect.value === "") {
+                throw "Mistmatch between atom-select-list and #option-select";
+            }
+            this.cscopeOptSelector.hide();
+        }, "No cscope options registered.", "atom-cscope-option-selector");
+        this.subscriptions.add(atom.commands.add('div.atom-cscope', {
+            'atom-cscope:project-select': () => this.projectSelector.toggle(),
+            'atom-cscope:option-select': () => this.cscopeOptSelector.toggle()
+        }));
         // Initilaize
         this.ractive = new Ractive({
             el: this.view.target,
@@ -213,6 +237,7 @@ class AtomCscopeViewModel {
     switchPanes() {
         if (this.view.input == null)
             return;
+        // @ts-ignore
         if (this.view.input.hasFocus() && this.prevEditor) {
             var prevEditorView = atom.views.getView(this.prevEditor);
             if (prevEditorView) {

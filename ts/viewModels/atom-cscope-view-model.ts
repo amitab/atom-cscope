@@ -5,7 +5,8 @@ import {CompositeDisposable, Panel, TextEditor, Disposable} from "atom";
 import {AtomCscopeView} from '../views/atom-cscope-view';
 import {AtomCscopeModel} from '../models/atom-cscope-model';
 import {LineInfo} from "../models/result-model"
-import {Selector} from '../views/select-view'
+import {Selector} from "../views/select-view"
+import {CscopeCommands, Cscope} from "../cscope"
 
 export interface Search {
   keyword: string;
@@ -15,7 +16,8 @@ export interface Search {
 
 export class AtomCscopeViewModel {
   view: AtomCscopeView;
-  projectSelector: Selector;
+  projectSelector: Selector<string>;
+  cscopeOptSelector: Selector<string>;
 
   model: AtomCscopeModel;
   subscriptions: CompositeDisposable;
@@ -60,8 +62,13 @@ export class AtomCscopeViewModel {
     });
 
     // Other views
-    this.projectSelector = new Selector(
+    this.projectSelector = new Selector<string>(
       ["All Projects"].concat(atom.project.getPaths()),
+      (item: string) => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        return li;
+      },
       (item: string) => {
         console.log("selected " + item);
         if (this.view.pathSelect == null) return;
@@ -72,7 +79,33 @@ export class AtomCscopeViewModel {
         }
         this.projectSelector.hide();
       },
-      "No projects opened.");
+      "No projects opened.",
+      "atom-cscope-project-selector");
+
+    this.cscopeOptSelector = new Selector<string>(
+        <string[]>CscopeCommands.filter((item) => item != null),
+        (item: string) => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          return li;
+        },
+        (item: string) => {
+          console.log("selected " + item);
+          if (this.view.optionSelect == null) return;
+          var num: number = Cscope.commandToNumber(item);
+          this.view.optionSelect.value = num.toString();
+          if (this.view.optionSelect.value === "") {
+            throw "Mistmatch between atom-select-list and #option-select";
+          }
+          this.cscopeOptSelector.hide();
+        },
+        "No cscope options registered.",
+        "atom-cscope-option-selector");
+
+    this.subscriptions.add(atom.commands.add('div.atom-cscope', {
+      'atom-cscope:project-select': () => this.projectSelector.toggle(),
+      'atom-cscope:option-select': () => this.cscopeOptSelector.toggle()
+    }));
 
     // Initilaize
     this.ractive = new Ractive({
@@ -257,6 +290,7 @@ export class AtomCscopeViewModel {
 
   switchPanes() {
     if (this.view.input == null) return;
+    // @ts-ignore
     if (this.view.input.hasFocus() && this.prevEditor) {
       var prevEditorView: HTMLElement = atom.views.getView(this.prevEditor)
       if (prevEditorView) {

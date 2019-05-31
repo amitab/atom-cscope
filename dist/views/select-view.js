@@ -2,17 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const SelectListView = require("atom-select-list");
 class Selector {
-    constructor(items, didConfirmSelection, emptyMessage) {
+    constructor(items, elementForItem, didConfirmSelection, emptyMessage, id) {
         this.element = document.createElement('div');
         this.element.classList.add('atom-cscope');
-        this.element.id = "atom-cscope-item-selector";
+        this.element.id = id;
         this.selectListView = new SelectListView({
             items: items,
-            elementForItem: (item) => {
-                const li = document.createElement('li');
-                li.textContent = item;
-                return li;
-            },
+            elementForItem: elementForItem,
             emptyMessage: emptyMessage,
             didConfirmSelection: didConfirmSelection,
             didCancelSelection: () => {

@@ -2,7 +2,7 @@ import {CompositeDisposable, TextEditor} from 'atom';
 
 import {AtomCscopeViewModel, Search} from './viewModels/atom-cscope-view-model';
 import {LineInfo} from './models/result-model';
-import {CscopeCommands} from './cscope';
+import {Cscope} from './cscope';
 export * from './config';
 import {Navigation} from './history';
 
@@ -15,7 +15,7 @@ export function refreshCscopeDB() {
   var exts: string = atom.config.get('atom-cscope.cscopeSourceFiles');
   if (exts.trim() == "") return;
 
-  CscopeCommands.setupCscope(atom.project.getPaths(), exts, true)
+  Cscope.setupCscope(atom.project.getPaths(), exts, true)
     .then(() => {
       atom.notifications.addSuccess("Refreshed cscope database!");
     }).catch((data: string) => {
@@ -36,13 +36,13 @@ export function setupEvents() {
       return Promise.resolve(new Array());
 
     // The option must be acceptable by cscope
-    if ([0, 1, 2, 3, 4, 6, 7, 8, 9].indexOf(option) == -1) {
+    if (!Cscope.isValidCommandNumber(option)) {
       atom.notifications.addError("Invalid cscope option: " + option);
       return Promise.resolve(new Array());
     }
 
     var response: Promise<LineInfo[]> = new Promise<LineInfo[]>((resolve, reject) => {
-      CscopeCommands.runCscopeCommands(option, keyword, projects)
+      Cscope.runCscopeCommands(option, keyword, projects)
       .then((data: LineInfo[]) => {
         if (data.length > maxResults || maxResults <= 0) {
           atom.notifications.addWarning("Results more than #{maxResults}!");
@@ -98,7 +98,6 @@ export async function activate() {
       }
     },
     'atom-cscope:refresh-db': () => refreshCscopeDB(),
-    // 'atom-cscope:project-select': () => viewModel.view.openProjectSelector(),
     'atom-cscope:next': () => {
       if (history == null) return;
       history.openNext();
@@ -107,10 +106,6 @@ export async function activate() {
       if (history == null) return;
       history.openPrev();
     }
-  }));
-
-  subscriptions.add(atom.commands.add('atom-workspace', {
-    'atom-cscope:toggle-sample': () => viewModel.projectSelector.toggle()
   }));
 
   subscriptions.add(atom.commands.add('atom-workspace', {

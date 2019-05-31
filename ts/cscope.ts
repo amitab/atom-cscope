@@ -9,7 +9,33 @@ interface CscopeResult {
   cwd: string;
 }
 
-export class CscopeCommands {
+export let CscopeCommands: (string | null)[] = [
+  "Find this C symbol",
+  "Find this global definition",
+  "Find functions called by this",
+  "Find functions calling this",
+  "Find this text string",
+  null,
+  "Find this egrep pattern",
+  "Find this file",
+  "Find files #including this file",
+  "Find assignments to this symbol"
+];
+
+export class Cscope {
+  public static commandToNumber(cmd: string) {
+    if (CscopeCommands.indexOf(cmd) == -1) {
+      throw "Invalid cscope command #{cmd}";
+    }
+    return CscopeCommands.indexOf(cmd);
+  }
+
+  public static isValidCommandNumber(num: number) {
+    if (num < CscopeCommands.length && CscopeCommands[num] != null)
+      return true;
+    return false;
+  }
+
   public static getSourceFiles(project: string, extStr: string): Promise<string> {
     var exts: string[] = new Array();
     for (var ext of extStr.split(/\s+/)) {

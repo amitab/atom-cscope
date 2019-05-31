@@ -5,7 +5,30 @@ const fs = require("fs");
 const child_process = require("child_process");
 const os = require("os");
 const result_model_1 = require("./models/result-model");
-class CscopeCommands {
+exports.CscopeCommands = [
+    "Find this C symbol",
+    "Find this global definition",
+    "Find functions called by this",
+    "Find functions calling this",
+    "Find this text string",
+    null,
+    "Find this egrep pattern",
+    "Find this file",
+    "Find files #including this file",
+    "Find assignments to this symbol"
+];
+class Cscope {
+    static commandToNumber(cmd) {
+        if (exports.CscopeCommands.indexOf(cmd) == -1) {
+            throw "Invalid cscope command #{cmd}";
+        }
+        return exports.CscopeCommands.indexOf(cmd);
+    }
+    static isValidCommandNumber(num) {
+        if (num < exports.CscopeCommands.length && exports.CscopeCommands[num] != null)
+            return true;
+        return false;
+    }
     static getSourceFiles(project, extStr) {
         var exts = new Array();
         for (var ext of extStr.split(/\s+/)) {
@@ -139,5 +162,5 @@ class CscopeCommands {
         });
     }
 }
-exports.CscopeCommands = CscopeCommands;
+exports.Cscope = Cscope;
 //# sourceMappingURL=cscope.js.map
