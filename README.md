@@ -71,7 +71,7 @@ There are 3 ways of executing a search:
 * Live search: Executes a search with configurable delay after you input your
   search term.
 * Enter Key: Just press enter after typing your input.
-* "SCOPE IT!" button: Click the button.
+* Search button: Click the button.
 
 If new search is same as previous search, no action is taken. However, you can
 force search by clicking on the "SCOPE IT!" button
