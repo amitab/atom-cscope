@@ -126,7 +126,6 @@ export class Cscope {
         throw "Error executing command " + command + " [" + args.join() + "] " + err;
       });
       child.on('close', (code: number) => {
-        console.log("Closed command with " + code);
         if (code == -2) {
           reject("Unable to find cscope");
         }

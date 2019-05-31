@@ -132,22 +132,6 @@ class AtomCscopeView {
         sel.classList.remove('selected');
         this.currentSelection = 0;
     }
-    // Picked up from: http://stackoverflow.com/a/20906852
-    openSelectBox(element) {
-        var event = new MouseEvent('mousedown');
-        element.dispatchEvent(event);
-    }
-    openProjectSelector() {
-        try {
-            if (this.pathSelect == null)
-                return false;
-            this.openSelectBox(this.pathSelect);
-        }
-        catch (error) {
-            console.log(error);
-        }
-        return false;
-    }
     autoFill(option, keyword) {
         if (this.input == null || this.optionSelect == null)
             return;

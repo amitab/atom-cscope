@@ -38,7 +38,6 @@ class AtomCscopeViewModel {
             li.textContent = item;
             return li;
         }, (item) => {
-            console.log("selected " + item);
             if (this.view.pathSelect == null)
                 return;
             if (item.toLowerCase() === "all projects")
@@ -54,7 +53,6 @@ class AtomCscopeViewModel {
             li.textContent = item;
             return li;
         }, (item) => {
-            console.log("selected " + item);
             if (this.view.optionSelect == null)
                 return;
             var num = cscope_1.Cscope.commandToNumber(item);
@@ -226,7 +224,6 @@ class AtomCscopeViewModel {
         }
     }
     toggle() {
-        console.log('Atom Cscope was toggled!');
         if (this.modalPanel.isVisible()) {
             this.hide();
         }
