@@ -13,6 +13,7 @@ let maxResults: number;
 
 export function refreshCscopeDB() {
   var exts: string = atom.config.get('atom-cscope.cscopeSourceFiles');
+  atom.notifications.addInfo("(Re)generating cscope database...");
   if (exts.trim() == "") return;
 
   Cscope.setupCscope(atom.project.getPaths(), exts, true)

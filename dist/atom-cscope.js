@@ -12,6 +12,7 @@ let subscriptions;
 let maxResults;
 function refreshCscopeDB() {
     var exts = atom.config.get('atom-cscope.cscopeSourceFiles');
+    atom.notifications.addInfo("(Re)generating cscope database...");
     if (exts.trim() == "")
         return;
     cscope_1.Cscope.setupCscope(atom.project.getPaths(), exts, true)
