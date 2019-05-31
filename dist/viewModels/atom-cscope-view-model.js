@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Ractive = require("ractive");
 const atom_cscope_view_1 = require("../views/atom-cscope-view");
 const atom_cscope_model_1 = require("../models/atom-cscope-model");
+const select_view_1 = require("../views/select-view");
 class AtomCscopeViewModel {
     constructor(subscriptions) {
         this.currentSearch = -1;
@@ -12,8 +13,9 @@ class AtomCscopeViewModel {
             option: -1,
             path: new Array()
         };
-        this.model = new atom_cscope_model_1.AtomCscopeModel(subscriptions, (itemName, newItem) => {
-            this.ractive.merge(itemName, newItem);
+        this.model = new atom_cscope_model_1.AtomCscopeModel(subscriptions, (itemName, paths) => {
+            this.ractive.merge(itemName, paths);
+            this.projectSelector.update(["All Projects"].concat(paths));
         }, (itemName, newItem) => {
             this.ractive.set(itemName, newItem);
         });
@@ -29,6 +31,19 @@ class AtomCscopeViewModel {
                 this.show();
             }
         });
+        // Other views
+        this.projectSelector = new select_view_1.Selector(["All Projects"].concat(atom.project.getPaths()), (item) => {
+            console.log("selected " + item);
+            if (this.view.pathSelect == null)
+                return;
+            if (item.toLowerCase() === "all projects")
+                item = "-1";
+            this.view.pathSelect.value = item;
+            if (this.view.pathSelect.value === "") {
+                throw "Mistmatch between atom-select-list and #path-select";
+            }
+            this.projectSelector.hide();
+        }, "No projects opened.");
         // Initilaize
         this.ractive = new Ractive({
             el: this.view.target,

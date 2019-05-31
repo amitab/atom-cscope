@@ -7,21 +7,17 @@ class AtomCscopeModel {
         this.pathsUpdateCallback = pathsUpdateCallback;
         this.subscriptions = subscriptions;
         this.data = {
-            paths: [],
-            results: []
+            paths: atom.project.getPaths(),
+            results: [],
+            projectName: (projectPath) => {
+                return path.basename(projectPath);
+            }
         };
-        for (var project of atom.project.getPaths()) {
-            this.data.paths.push(path.basename(project));
-        }
         this.setupEvents();
     }
     setupEvents() {
         this.subscriptions.add(atom.project.onDidChangePaths((projects) => {
-            var paths = new Array();
-            for (var project of projects) {
-                paths.push(path.basename(project));
-            }
-            this.pathsUpdateCallback('paths', paths);
+            this.pathsUpdateCallback('paths', projects);
         }));
     }
     clearResults() {

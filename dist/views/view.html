@@ -26,7 +26,7 @@
       <select name="" id="path-options" on-change="path-select">
         <option value="-1">All projects</option>
         {{#paths:i}}
-          <option value="{{i}}">{{.}}</option>
+          <option value="{{this}}">{{ projectName(this) }}</option>
         {{/paths}}
       </select>
       <button class="btn icon icon-search" id="search" on-click="search-force"></button>

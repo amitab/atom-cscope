@@ -5,10 +5,11 @@ import {LineInfo} from "./result-model"
 interface Data {
   paths: string[];
   results: LineInfo[];
+  projectName: (projectPath: string) => string;
 }
 
 type DataChangeCallback = (itemName: string, newItem: LineInfo[]) => void;
-type PathsUpdateCallback = (itemName: string, newItem: string[]) => void;
+type PathsUpdateCallback = (itemName: string, projects: string[]) => void;
 
 export class AtomCscopeModel {
   subscriptions: CompositeDisposable;
@@ -21,23 +22,18 @@ export class AtomCscopeModel {
     this.pathsUpdateCallback = pathsUpdateCallback;
     this.subscriptions = subscriptions;
     this.data = {
-      paths: [],
-      results: []
+      paths: atom.project.getPaths(),
+      results: [],
+      projectName: (projectPath: string) => {
+        return path.basename(projectPath);
+      }
     };
-    for (var project of atom.project.getPaths()) {
-      this.data.paths.push(path.basename(project));
-    }
     this.setupEvents();
   }
 
   setupEvents() {
     this.subscriptions.add(atom.project.onDidChangePaths((projects: string[]) => {
-      var paths: string[] = new Array();
-      for (var project of projects) {
-        paths.push(path.basename(project));
-      }
-
-      this.pathsUpdateCallback('paths', paths);
+      this.pathsUpdateCallback('paths', projects);
     }));
   }
 

@@ -5,6 +5,7 @@ import {CompositeDisposable, Panel, TextEditor, Disposable} from "atom";
 import {AtomCscopeView} from '../views/atom-cscope-view';
 import {AtomCscopeModel} from '../models/atom-cscope-model';
 import {LineInfo} from "../models/result-model"
+import {Selector} from '../views/select-view'
 
 export interface Search {
   keyword: string;
@@ -14,6 +15,8 @@ export interface Search {
 
 export class AtomCscopeViewModel {
   view: AtomCscopeView;
+  projectSelector: Selector;
+
   model: AtomCscopeModel;
   subscriptions: CompositeDisposable;
   modalPanel: Panel;
@@ -35,8 +38,9 @@ export class AtomCscopeViewModel {
       path: new Array()
     }
     this.model = new AtomCscopeModel(subscriptions,
-      (itemName: string, newItem: string[]) => {
-        this.ractive.merge(itemName, newItem);
+      (itemName: string, paths: string[]) => {
+        this.ractive.merge(itemName, paths);
+        this.projectSelector.update(["All Projects"].concat(paths));
       },
       (itemName: string, newItem: LineInfo[]) => {
         this.ractive.set(itemName, newItem);
@@ -54,6 +58,21 @@ export class AtomCscopeViewModel {
         this.show();
       }
     });
+
+    // Other views
+    this.projectSelector = new Selector(
+      ["All Projects"].concat(atom.project.getPaths()),
+      (item: string) => {
+        console.log("selected " + item);
+        if (this.view.pathSelect == null) return;
+        if (item.toLowerCase() === "all projects") item = "-1";
+        this.view.pathSelect.value = item;
+        if (this.view.pathSelect.value === "") {
+          throw "Mistmatch between atom-select-list and #path-select";
+        }
+        this.projectSelector.hide();
+      },
+      "No projects opened.");
 
     // Initilaize
     this.ractive = new Ractive({

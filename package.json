@@ -19,6 +19,7 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
+    "atom-select-list": "^0.7.2",
     "ractive": "^0.8.10",
     "tslib": "^1.9.3"
   },

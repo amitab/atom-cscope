@@ -53,12 +53,11 @@ export class AtomCscopeView {
   }
 
   getSearchParams() {
-    var pathIndex: number = this.pathSelect == null ? -1 : parseInt(this.pathSelect.value);
     var path: string[];
-    if (pathIndex == -1) {
+    if (this.pathSelect == null || this.pathSelect.value == "-1") {
       path = atom.project.getPaths();
     } else {
-      path = [atom.project.getPaths()[pathIndex]];
+      path = [this.pathSelect.value];
     }
 
     var search: Search = {

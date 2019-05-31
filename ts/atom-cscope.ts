@@ -110,6 +110,10 @@ export async function activate() {
   }));
 
   subscriptions.add(atom.commands.add('atom-workspace', {
+    'atom-cscope:toggle-sample': () => viewModel.projectSelector.toggle()
+  }));
+
+  subscriptions.add(atom.commands.add('atom-workspace', {
     'atom-cscope:toggle-symbol': () => viewModel.togglePanelOption(0),
     'atom-cscope:toggle-global-definition': () => viewModel.togglePanelOption(1),
     'atom-cscope:toggle-functions-called-by': () => viewModel.togglePanelOption(2),

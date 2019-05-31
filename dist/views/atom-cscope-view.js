@@ -36,13 +36,12 @@ class AtomCscopeView {
         this.loader = this.element.querySelector('#loader');
     }
     getSearchParams() {
-        var pathIndex = this.pathSelect == null ? -1 : parseInt(this.pathSelect.value);
         var path;
-        if (pathIndex == -1) {
+        if (this.pathSelect == null || this.pathSelect.value == "-1") {
             path = atom.project.getPaths();
         }
         else {
-            path = [atom.project.getPaths()[pathIndex]];
+            path = [this.pathSelect.value];
         }
         var search = {
             keyword: this.input == null ? "" : this.input.getModel().getText().trim(),
