@@ -8,6 +8,17 @@
   height: 300px;
   overflow: hidden;
   padding: 20px 0;
+  min-width: 500px;
+  position: relative;
+}
+
+.atom-cscope.narrow {
+  max-width: 800px;
+}
+
+.atom-cscope.narrow .list-container {
+  // WTF
+  height: calc(~"100%" - 12em)!important;
 }
 
 .atom-cscope .list-container {
@@ -26,6 +37,7 @@
 .atom-cscope li {
   padding: 10px;
   cursor: pointer;
+  flex-flow: wrap;
 }
 
 .atom-cscope li span.code-line {
@@ -34,6 +46,10 @@
 
 .atom-cscope li.selected {
   background: @background-color-selected;
+}
+
+.atom-cscope.narrow #form-container {
+  flex-flow: column!important;
 }
 
 .atom-cscope-input #form-container {
@@ -47,6 +63,10 @@
 .atom-cscope .header {
   padding: 0 20px;
   height: calc(100%);
+}
+
+.atom-cscope.narrow #form-container atom-text-editor {
+  max-width: calc(100%)!important;
 }
 
 .atom-cscope-input #form-container atom-text-editor {
@@ -63,6 +83,10 @@
   font-size: 12px;
 }
 
+.atom-cscope.narrow #form-container select {
+  max-width: calc(100%)!important;
+}
+
 .atom-cscope-input #form-container select {
   flex-basis: 100px;
   max-width: 200px;
@@ -71,6 +95,22 @@
   border: 1px @background-color-highlight solid;
   border-radius: 2px;
   flex-shrink: 0;
+  min-height: 27px;
+  max-height: 27px;
+}
+
+.atom-cscope.narrow #form-container button#search {
+  position: absolute;
+  top: 24px;
+  right: 20px;
+}
+
+.atom-cscope.narrow #atom-cscope-input {
+  height: 8.5em;
+}
+
+.atom-cscope.narrow #form-container {
+  height: calc(100%);
 }
 
 .atom-cscope-input #form-container button {
