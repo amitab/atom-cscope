@@ -6,7 +6,7 @@
   <h6 class="inline-block" id="result-count">{{results.length}} results</h6>
   <span id="loader" class="loading loading-spinner-tiny inline-block no-show"></span>
   <div id="atom-cscope-input" class="atom-cscope-input">
-    <div class="inline-block" id="form-container" on-change="search-force">
+    <div id="form-container" on-change="search-force">
       <select name="" id="cscope-options">
         <option value="0">Find this C symbol</option>
         <option value="1">Find this global definition</option>
@@ -40,11 +40,11 @@
             <span class="project-directory">{{relativePath}}</span>
             <span class="gap"></span>
             <span class="file-name flex-inline">{{{fileName}}}</span>
+            <span>:</span>
+            <span class="line-number bold">{{lineNumber}}</span>
           </div>
           {{#if !isJustFile}}
           <div class="flex-inline">
-            <span>:</span>
-            <span class="line-number bold">{{lineNumber}}</span>
             <span class="gap"></span>
             <span class="highlight function-name">{{functionName}}</span>
             <span class="gap"></span>

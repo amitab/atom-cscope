@@ -31,7 +31,10 @@ exports.config = {
         description: 'Where do you want the widget?',
         type: 'string',
         default: 'top',
-        enum: ['top', 'bottom']
+        enum: [
+            'top',
+            'bottom'
+        ]
     }, cscopeSourceFiles: {
         title: 'Source file extensions',
         description: 'Enter the extensions of the source files with which you want cscope generated (with spaces).',
