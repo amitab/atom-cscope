@@ -85,6 +85,7 @@ class AtomCscopeView {
     }
     onCancel(callback) {
         atom.commands.add('atom-text-editor#query-input', {
+            'tool-panel:unfocus': callback,
             'core:cancel': callback
         });
     }
