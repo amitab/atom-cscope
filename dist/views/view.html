@@ -130,19 +130,18 @@
   <section id="cscope-results">
     <ol id="result-container" {{#if results.length == 0}} class="empty centered" {{/if}}>
       {{#each results}}
-        <li class="result-item flex-inline" on-click="result-click">
-          <div class="flex-inline">
+        <li class="result-item" on-click="result-click">
+          <div class="">
             <span class="project-directory">{{relativePath}}</span>
-            <span class="gap"></span>
-            <span class="file-name flex-inline">{{{fileName}}}</span>
+            <span class="file-name">{{{fileName}}}</span>
+            {{#if !isJustFile}}
             <span>:</span>
             <span class="line-number bold">{{lineNumber}}</span>
+            {{/if}}
           </div>
           {{#if !isJustFile}}
-          <div class="flex-inline">
-            <span class="gap"></span>
+          <div class="line-info">
             <span class="highlight function-name">{{functionName}}</span>
-            <span class="gap"></span>
             <span class="flex-inline code-line">{{{codeLine}}}</span>
           </div>
           {{/if}}
