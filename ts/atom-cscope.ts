@@ -3,7 +3,6 @@ import {CompositeDisposable, TextEditor} from 'atom';
 import {AtomCscopeViewModel, Search} from './viewModels/atom-cscope-view-model';
 import {LineInfo} from './models/result-model';
 import {Cscope} from './cscope';
-// export * from './config';
 import cscopeConfig from './config';
 import {Navigation} from './history';
 

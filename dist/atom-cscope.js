@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const atom_1 = require("atom");
 const atom_cscope_view_model_1 = require("./viewModels/atom-cscope-view-model");
 const cscope_1 = require("./cscope");
-// export * from './config';
 const config_1 = require("./config");
 const history_1 = require("./history");
 let viewModel;
