@@ -1,4 +1,4 @@
-export var config = {
+var cscopeConfig = {
   EnableHistory: {
     title: 'Search history toggle',
     description: 'Record the files opened with cscope search.',
@@ -47,3 +47,5 @@ export var config = {
     default: 'cscope'
   }
 };
+
+export default cscopeConfig;

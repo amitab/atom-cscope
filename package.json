@@ -20,8 +20,7 @@
   },
   "dependencies": {
     "atom-select-list": "^0.7.2",
-    "ractive": "^0.8.10",
-    "tslib": "^1.9.3"
+    "ractive": "^0.8.10"
   },
   "devDependencies": {
     "@types/atom": "^1.36.1",
