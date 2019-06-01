@@ -152,10 +152,41 @@
 // }
 
 .atom-cscope {
-  padding: 20px;
+  margin: 20px;
+  display: flex;
+  flex-flow: column;
+  position: relative;
+
+  .header {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    section {
+      margin-right: 10px;
+    }
+
+    .title {
+      display: flex;
+      align-items: baseline;
+
+      #result-count {
+        margin-left: 10px;
+      }
+    }
+
+    .loading {
+      transition: all .3s ease .15s;
+    }
+
+    .loading.no-show {
+      display: none;
+    }
+  }
 
   #form-container {
     display: flex;
+    flex-shrink: 0;
 
     atom-text-editor {
       margin: 0;
@@ -168,9 +199,21 @@
       border-radius: @component-border-radius;
     }
   }
+
+  .list-container {
+    display: flex;
+
+    #result-container {
+      overflow: scroll;
+      height: 100%;
+    }
+  }
 }
 
 .atom-cscope.wide {
+  min-height: 300px;
+  max-height: 300px;
+
   #form-container {
     flex-direction: row;
     justify-content: space-between;
@@ -208,6 +251,13 @@
     }
 
   }
+
+  .list-container {
+    #cscope-results {
+      width: 100%;
+      margin-top: 10px;
+    }
+  }
 }
 
 .atom-cscope.narrow {
@@ -216,9 +266,16 @@
 
   #form-container {
     flex-direction: column;
-  }
 
-  section {
-    margin-top: 10px;
+    section {
+      margin-top: 10px;
+    }
+
+    .atom-cscope-search-wrapper {
+      margin-top: 0;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
   }
 }
