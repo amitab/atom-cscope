@@ -31,7 +31,9 @@ export var config = {
     default: 'top',
     enum: [
       'top',
-      'bottom'
+      'bottom',
+      'left',
+      'right'
     ]
   }, cscopeSourceFiles: {
     title: 'Source file extensions',

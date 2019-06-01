@@ -1,142 +1,224 @@
-// The ui-variables file is provided by base themes provided by Atom.
-//
-// See https://github.com/atom/atom-dark-ui/blob/master/styles/ui-variables.less
-// for a full listing of what's available.
+// // The ui-variables file is provided by base themes provided by Atom.
+// //
+// // See https://github.com/atom/atom-dark-ui/blob/master/styles/ui-variables.less
+// // for a full listing of what's available.
 @import "ui-variables";
+//
+// .atom-cscope {
+//   height: 300px;
+//   overflow: hidden;
+//   padding: 20px 0;
+// }
+//
+// .atom-cscope .list-container {
+//   position: relative;
+//   height: 200px;
+//   overflow-y: scroll;
+//   // WTF
+//   height: calc(~"100%" - 5em);
+//   margin-top: 10px;
+// }
+//
+// .atom-cscope ol {
+//   margin: 0;
+// }
+//
+// .atom-cscope li {
+//   padding: 10px;
+//   cursor: pointer;
+// }
+//
+// .atom-cscope li span.code-line {
+//   color: @text-color-highlight;
+// }
+//
+// .atom-cscope li.selected {
+//   background: @background-color-selected;
+// }
+//
+// .atom-cscope-input #form-container {
+//   display: flex;
+//   width: 100%;
+//   flex-wrap: wrap;
+//   justify-content: space-between;
+//   flex-flow: row wrap;
+// }
+//
+// .atom-cscope .header {
+//   padding: 0 20px;
+//   height: calc(100%);
+// }
+//
+// .atom-cscope-input #form-container atom-text-editor {
+//   flex-grow: 2;
+//   flex-basis: 400px;
+//   //margin: 0 10px;
+//   flex-shrink: 0;
+//   height: calc(100%);
+//   max-width: calc(70%);
+//   padding-left: 10px;
+//   padding-right: 10px;
+//   border: 1px @background-color-highlight solid;
+// }
+//
+// .atom-cscope-input .atom-cscope-search, .atom-cscope-input .atom-cscope-search #search {
+//   height: 100%;
+// }
+//
+// .atom-cscope.narrow select, .atom-cscope.narrow atom-text-editor {
+//   height: @component-line-height;
+// }
+//
+// .atom-cscope.narrow .atom-cscope-search-wrapper {
+//   position: absolute;
+//   top: 24px;
+//   right: 20px;
+// }
+//
+// .atom-cscope-input #form-container select {
+//   flex-basis: 100px;
+//   max-width: 200px;
+//   flex-grow: 1;
+//   background: @app-background-color;
+//   border: 1px @background-color-highlight solid;
+//   border-radius: 2px;
+//   flex-shrink: 0;
+// }
+//
+// .atom-cscope-input #form-container button {
+//   flex-basis: 20px;
+//   // margin: 0 10px;
+//   flex-shrink: 0;
+// }
+//
+// .header .loading {
+//   transition: all .3s ease .15s;
+// }
+//
+// .no-show {
+//   opacity: 0;
+// }
+//
+// span.gap {
+//    margin: 0 5px;
+// }
+//
+// span.bold {
+//   font-weight: bold;
+// }
+//
+// .btn.just-btn::before {
+//   margin-right: 0!important;
+// }
+//
+// .spaced-item {
+//   margin: 5px 10px 5px 0;
+// }
+//
+// #result-container {
+//   counter-reset: section;
+//   padding: 0;
+//   margin: 5px;
+// }
+//
+// #result-container.centered {
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   height: 100%;
+// }
+//
+// #result-container.centered.empty li {
+//   display: inline-block;
+//   font-size: 50px;
+//   color: @text-color-subtle;
+// }
+//
+// .flex-inline {
+//   display: flex;
+//   flex-direction: row;
+//   justify-content: flex-start;
+//   flex-flow: wrap;
+// }
+//
+// .result-item:before {
+//   counter-increment: section;
+//   content: counter(section) ".";
+//   margin-right: 10px;
+// }
+//
+// .result-item {
+//   margin-right: 0px;
+// }
 
 .atom-cscope {
-  height: 300px;
-  overflow: hidden;
-  padding: 20px 0;
+  padding: 20px;
+
+  #form-container {
+    display: flex;
+
+    atom-text-editor {
+      margin: 0;
+    }
+
+    select {
+      margin: 0;
+      // background: @input-background-color;
+      border: 1px @input-border-color solid;
+      border-radius: @component-border-radius;
+    }
+  }
 }
 
-.atom-cscope .list-container {
-  position: relative;
-  height: 200px;
-  overflow-y: scroll;
-  // WTF
-  height: calc(~"100%" - 5em);
-  margin-top: 10px;
+.atom-cscope.wide {
+  #form-container {
+    flex-direction: row;
+    justify-content: space-between;
+
+    .text-input-section {
+      width: calc(70%);
+
+      .text-input-block {
+        height: calc(100%);
+
+        atom-text-editor {
+          width: 100%;
+          min-height: calc(100%);
+          font-size: @font-size;
+          line-height: @component-line-height;
+        }
+      }
+    }
+
+    .atom-cscope-search {
+      height: 100%;
+
+      #search {
+        height: 100%;
+      }
+    }
+
+    .select-input-section {
+      width: calc(10%);
+      min-width: 200px;
+
+      select {
+        width: 100%;
+      }
+    }
+
+  }
 }
 
-.atom-cscope ol {
-  margin: 0;
-}
+.atom-cscope.narrow {
+  min-width: 500px;
+  max-width: 800px;
 
-.atom-cscope li {
-  padding: 10px;
-  cursor: pointer;
-}
+  #form-container {
+    flex-direction: column;
+  }
 
-.atom-cscope li span.code-line {
-  color: @text-color-highlight;
-}
-
-.atom-cscope li.selected {
-  background: @background-color-selected;
-}
-
-.atom-cscope-input #form-container {
-  display: flex;
-  width: 100%;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  flex-flow: row wrap;
-}
-
-.atom-cscope .header {
-  padding: 0 20px;
-  height: calc(100%);
-}
-
-.atom-cscope-input #form-container atom-text-editor {
-  flex-grow: 2;
-  flex-basis: 400px;
-  //margin: 0 10px;
-  flex-shrink: 0;
-  height: calc(100%);
-  max-width: calc(70%);
-  padding-left: 10px;
-  padding-right: 10px;
-  border: 1px @background-color-highlight solid;
-}
-
-.atom-cscope-input .atom-cscope-search, .atom-cscope-input .atom-cscope-search #search {
-  height: 100%;
-}
-
-.atom-cscope-input #form-container select {
-  flex-basis: 100px;
-  max-width: 200px;
-  flex-grow: 1;
-  background: @app-background-color;
-  border: 1px @background-color-highlight solid;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.atom-cscope-input #form-container button {
-  flex-basis: 20px;
-  // margin: 0 10px;
-  flex-shrink: 0;
-}
-
-.header .loading {
-  transition: all .3s ease .15s;
-}
-
-.no-show {
-  opacity: 0;
-}
-
-span.gap {
-   margin: 0 5px;
-}
-
-span.bold {
-  font-weight: bold;
-}
-
-.btn.just-btn::before {
-  margin-right: 0!important;
-}
-
-.spaced-item {
-  margin: 5px 10px 5px 0;
-}
-
-#result-container {
-  counter-reset: section;
-  padding: 0;
-  margin: 5px;
-}
-
-#result-container.centered {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
-#result-container.centered.empty li {
-  display: inline-block;
-  font-size: 50px;
-  color: @text-color-subtle;
-}
-
-.flex-inline {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  flex-flow: wrap;
-}
-
-.result-item:before {
-  counter-increment: section;
-  content: counter(section) ".";
-  margin-right: 10px;
-}
-
-.result-item {
-  margin-right: 0px;
+  section {
+    margin-top: 10px;
+  }
 }
