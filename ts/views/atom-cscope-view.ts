@@ -33,6 +33,16 @@ export class AtomCscopeView {
     this.loader = null;
   }
 
+  narrow() {
+    this.element.classList.add('narrow');
+    this.element.classList.remove('wide');
+  }
+
+  wide() {
+    this.element.classList.add('wide');
+    this.element.classList.remove('narrow');
+  }
+
   inputFocus() {
     if (this.input == null) return;
     this.input.focus();

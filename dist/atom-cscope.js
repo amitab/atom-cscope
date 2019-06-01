@@ -1,15 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = require("tslib");
 const atom_1 = require("atom");
 const atom_cscope_view_model_1 = require("./viewModels/atom-cscope-view-model");
 const cscope_1 = require("./cscope");
-tslib_1.__exportStar(require("./config"), exports);
+// export * from './config';
+const config_1 = require("./config");
 const history_1 = require("./history");
 let viewModel;
 let history;
 let subscriptions;
 let maxResults;
+exports.config = config_1.default;
 function refreshCscopeDB() {
     var exts = atom.config.get('atom-cscope.cscopeSourceFiles');
     atom.notifications.addInfo("(Re)generating cscope database...");

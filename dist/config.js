@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.config = {
+var cscopeConfig = {
     EnableHistory: {
         title: 'Search history toggle',
         description: 'Record the files opened with cscope search.',
@@ -33,7 +33,9 @@ exports.config = {
         default: 'top',
         enum: [
             'top',
-            'bottom'
+            'bottom',
+            'left',
+            'right'
         ]
     }, cscopeSourceFiles: {
         title: 'Source file extensions',
@@ -47,4 +49,5 @@ exports.config = {
         default: 'cscope'
     }
 };
+exports.default = cscopeConfig;
 //# sourceMappingURL=config.js.map

@@ -110,7 +110,7 @@ export class AtomCscopeViewModel {
       el: this.view.target,
       data: this.model.data,
       template: this.view.template.toString()
-    })
+    });
     this.view.initilaize();
     this.setupEvents();
   }
@@ -122,6 +122,23 @@ export class AtomCscopeViewModel {
           item: this.view.getElement(),
           visible: false
         });
+        this.view.wide();
+        break;
+      }
+      case 'left': {
+        this.modalPanel = atom.workspace.addLeftPanel({
+          item: this.view.getElement(),
+          visible: false
+        });
+        this.view.narrow();
+        break;
+      }
+      case 'right': {
+        this.modalPanel = atom.workspace.addRightPanel({
+          item: this.view.getElement(),
+          visible: false
+        });
+        this.view.narrow();
         break;
       }
       default: {
@@ -129,6 +146,7 @@ export class AtomCscopeViewModel {
           item: this.view.getElement(),
           visible: false
         });
+        this.view.wide();
         break;
       }
     }

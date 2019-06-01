@@ -1,53 +1,147 @@
-<div class="header">
+<!-- <div class="header">
   <div class="inline-block spaced-item">
     <button class="btn just-btn icon icon-repo-sync" on-click="refresh" id="refresh" title="(Re)generate cscope database"></button>
   </div>
   <h4 class="inline-block">Atom Cscope</h4>
   <h6 class="inline-block" id="result-count">{{results.length}} results</h6>
   <span id="loader" class="loading loading-spinner-tiny inline-block no-show"></span>
-  <div id="atom-cscope-input" class="atom-cscope-input">
-    <div id="form-container" on-change="search-force">
-      <select name="" id="cscope-options">
-        <option value="0">Find this C symbol</option>
-        <option value="1">Find this global definition</option>
-        <option value="2">Find functions called by this</option>
-        <option value="3">Find functions calling this</option>
-        <option value="4">Find this text string</option>
-        <option value="6">Find this egrep pattern</option>
-        <option value="7">Find this file</option>
-        <option value="8">Find files #including this file</option>
-        <option value="9">Find assignments to this symbol</option>
-      </select>
-      <atom-text-editor id="query-input"
-                        class="editor mini" mini=""
-                        placeholder-text="Input query here..."
-                        on-escape="toggle">
-      </atom-text-editor>
-      <select name="" id="path-options" on-change="path-select">
-        <option value="-1">All projects</option>
-        {{#paths:i}}
-          <option value="{{this}}">{{ projectName(this) }}</option>
-        {{/paths}}
-      </select>
-      <button class="btn icon icon-search" id="search" on-click="search-force"></button>
+</div>
+
+<div id="atom-cscope-input" class="atom-cscope-input">
+  <div id="form-container" on-change="search-force">
+    <select name="" id="cscope-options">
+      <option value="0">Find this C symbol</option>
+      <option value="1">Find this global definition</option>
+      <option value="2">Find functions called by this</option>
+      <option value="3">Find functions calling this</option>
+      <option value="4">Find this text string</option>
+      <option value="6">Find this egrep pattern</option>
+      <option value="7">Find this file</option>
+      <option value="8">Find files #including this file</option>
+      <option value="9">Find assignments to this symbol</option>
+    </select>
+    <atom-text-editor id="query-input"
+                      class="editor mini" mini=""
+                      placeholder-text="Input query here..."
+                      on-escape="toggle">
+    </atom-text-editor>
+    <select name="" id="path-options" on-change="path-select">
+      <option value="-1">All projects</option>
+      {{#paths:i}}
+        <option value="{{this}}">{{ projectName(this) }}</option>
+      {{/paths}}
+    </select>
+    <div class="atom-cscope-search-wrapper">
+      <div class="atom-cscope-search">
+        <button class="btn icon icon-search" title="" style="height: 100%;" id="search" on-click="search-force"></button>
+      </div>
     </div>
   </div>
-  <div class="list-container">
+</div>
+
+<div class="list-container">
+  <ol id="result-container" {{#if results.length == 0}} class="empty centered" {{/if}}>
+    {{#each results}}
+      <li class="result-item flex-inline" on-click="result-click">
+        <div class="flex-inline">
+          <span class="project-directory">{{relativePath}}</span>
+          <span class="gap"></span>
+          <span class="file-name flex-inline">{{{fileName}}}</span>
+          <span>:</span>
+          <span class="line-number bold">{{lineNumber}}</span>
+        </div>
+        {{#if !isJustFile}}
+        <div class="flex-inline">
+          <span class="gap"></span>
+          <span class="highlight function-name">{{functionName}}</span>
+          <span class="gap"></span>
+          <span class="flex-inline code-line">{{{codeLine}}}</span>
+        </div>
+        {{/if}}
+      </li>
+    {{else}}
+      <li>No Results</li>
+    {{/each}}
+  </ol>
+</div>
+ -->
+
+<div class="header">
+  <section>
+    <div class="">
+      <button class="btn just-btn icon icon-repo-sync" on-click="refresh" id="refresh" title="(Re)generate cscope database"></button>
+    </div>
+  </section>
+  <section>
+    <div class="title">
+      <h4 class="">Atom Cscope</h4>
+      <h6 class="" id="result-count">{{results.length}} results</h6>
+    </div>
+  </section>
+  <section>
+    <div class="">
+      <span id="loader" class="loading loading-spinner-tiny inline-block no-show"></span>
+    </div>
+  </section>
+</div>
+
+<div id="form-container" class="settings-view" on-change="search-force">
+    <section class="select-input-section">
+        <div>
+            <select name="" class="form-control" id="cscope-options">
+              <option value="0">Find this C symbol</option>
+              <option value="1">Find this global definition</option>
+              <option value="2">Find functions called by this</option>
+              <option value="3">Find functions calling this</option>
+              <option value="4">Find this text string</option>
+              <option value="6">Find this egrep pattern</option>
+              <option value="7">Find this file</option>
+              <option value="8">Find files #including this file</option>
+              <option value="9">Find assignments to this symbol</option>
+            </select>
+        </div>
+    </section><section class="text-input-section">
+        <div class="text-input-block">
+          <atom-text-editor id="query-input"
+                            class="editor mini" mini=""
+                            placeholder-text="Input query here..."
+                            on-escape="toggle">
+          </atom-text-editor>
+        </div>
+    </section>
+    <section class="select-input-section">
+        <div>
+        	<select class="form-control" name="" id="path-options" on-change="path-select">
+              <option value="-1" selected="">All projects</option>
+              {{#paths:i}}
+                <option value="{{this}}">{{ projectName(this) }}</option>
+              {{/paths}}
+          </select>
+        </div>
+    </section>
+    <section class="atom-cscope-search-wrapper">
+      <div class="atom-cscope-search">
+        <button class="btn icon icon-search" title="" style="height: 100%;" id="search" on-click="search-force"></button>
+      </div>
+    </section>
+</div>
+
+<div class="list-container">
+  <section id="cscope-results">
     <ol id="result-container" {{#if results.length == 0}} class="empty centered" {{/if}}>
       {{#each results}}
-        <li class="result-item flex-inline" on-click="result-click">
-          <div class="flex-inline">
+        <li class="result-item" on-click="result-click">
+          <div class="">
             <span class="project-directory">{{relativePath}}</span>
-            <span class="gap"></span>
-            <span class="file-name flex-inline">{{{fileName}}}</span>
+            <span class="file-name">{{{fileName}}}</span>
+            {{#if !isJustFile}}
             <span>:</span>
             <span class="line-number bold">{{lineNumber}}</span>
+            {{/if}}
           </div>
           {{#if !isJustFile}}
-          <div class="flex-inline">
-            <span class="gap"></span>
+          <div class="line-info">
             <span class="highlight function-name">{{functionName}}</span>
-            <span class="gap"></span>
             <span class="flex-inline code-line">{{{codeLine}}}</span>
           </div>
           {{/if}}
@@ -56,5 +150,5 @@
         <li>No Results</li>
       {{/each}}
     </ol>
-  </div>
+  </section>
 </div>

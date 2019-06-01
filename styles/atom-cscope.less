@@ -1,140 +1,332 @@
-// The ui-variables file is provided by base themes provided by Atom.
-//
-// See https://github.com/atom/atom-dark-ui/blob/master/styles/ui-variables.less
-// for a full listing of what's available.
+// // The ui-variables file is provided by base themes provided by Atom.
+// //
+// // See https://github.com/atom/atom-dark-ui/blob/master/styles/ui-variables.less
+// // for a full listing of what's available.
 @import "ui-variables";
+//
+// .atom-cscope {
+//   height: 300px;
+//   overflow: hidden;
+//   padding: 20px 0;
+// }
+//
+// .atom-cscope .list-container {
+//   position: relative;
+//   height: 200px;
+//   overflow-y: scroll;
+//   // WTF
+//   height: calc(~"100%" - 5em);
+//   margin-top: 10px;
+// }
+//
+// .atom-cscope ol {
+//   margin: 0;
+// }
+//
+// .atom-cscope li {
+//   padding: 10px;
+//   cursor: pointer;
+// }
+//
+// .atom-cscope li span.code-line {
+//   color: @text-color-highlight;
+// }
+//
+// .atom-cscope li.selected {
+//   background: @background-color-selected;
+// }
+//
+// .atom-cscope-input #form-container {
+//   display: flex;
+//   width: 100%;
+//   flex-wrap: wrap;
+//   justify-content: space-between;
+//   flex-flow: row wrap;
+// }
+//
+// .atom-cscope .header {
+//   padding: 0 20px;
+//   height: calc(100%);
+// }
+//
+// .atom-cscope-input #form-container atom-text-editor {
+//   flex-grow: 2;
+//   flex-basis: 400px;
+//   //margin: 0 10px;
+//   flex-shrink: 0;
+//   height: calc(100%);
+//   max-width: calc(70%);
+//   padding-left: 10px;
+//   padding-right: 10px;
+//   border: 1px @background-color-highlight solid;
+// }
+//
+// .atom-cscope-input .atom-cscope-search, .atom-cscope-input .atom-cscope-search #search {
+//   height: 100%;
+// }
+//
+// .atom-cscope.narrow select, .atom-cscope.narrow atom-text-editor {
+//   height: @component-line-height;
+// }
+//
+// .atom-cscope.narrow .atom-cscope-search-wrapper {
+//   position: absolute;
+//   top: 24px;
+//   right: 20px;
+// }
+//
+// .atom-cscope-input #form-container select {
+//   flex-basis: 100px;
+//   max-width: 200px;
+//   flex-grow: 1;
+//   background: @app-background-color;
+//   border: 1px @background-color-highlight solid;
+//   border-radius: 2px;
+//   flex-shrink: 0;
+// }
+//
+// .atom-cscope-input #form-container button {
+//   flex-basis: 20px;
+//   // margin: 0 10px;
+//   flex-shrink: 0;
+// }
+//
+// .header .loading {
+//   transition: all .3s ease .15s;
+// }
+//
+// .no-show {
+//   opacity: 0;
+// }
+//
+// span.gap {
+//    margin: 0 5px;
+// }
+//
+// span.bold {
+//   font-weight: bold;
+// }
+//
+// .btn.just-btn::before {
+//   margin-right: 0!important;
+// }
+//
+// .spaced-item {
+//   margin: 5px 10px 5px 0;
+// }
+//
+// #result-container {
+//   counter-reset: section;
+//   padding: 0;
+//   margin: 5px;
+// }
+//
+// #result-container.centered {
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   height: 100%;
+// }
+//
+// #result-container.centered.empty li {
+//   display: inline-block;
+//   font-size: 50px;
+//   color: @text-color-subtle;
+// }
+//
+// .flex-inline {
+//   display: flex;
+//   flex-direction: row;
+//   justify-content: flex-start;
+//   flex-flow: wrap;
+// }
+//
+// .result-item:before {
+//   counter-increment: section;
+//   content: counter(section) ".";
+//   margin-right: 10px;
+// }
+//
+// .result-item {
+//   margin-right: 0px;
+// }
 
 .atom-cscope {
-  height: 300px;
-  overflow: hidden;
-  padding: 20px 0;
-}
-
-.atom-cscope .list-container {
+  margin: 20px;
+  display: flex;
+  flex-flow: column;
   position: relative;
-  height: 200px;
-  overflow-y: scroll;
-  // WTF
-  height: calc(~"100%" - 5em);
-  margin-top: 10px;
+
+  .header {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    section {
+      margin-right: 10px;
+    }
+
+    .title {
+      display: flex;
+      align-items: baseline;
+
+      #result-count {
+        margin-left: 10px;
+      }
+    }
+
+    .loading {
+      transition: all .3s ease .15s;
+    }
+
+    .loading.no-show {
+      display: none;
+    }
+  }
+
+  #form-container {
+    display: flex;
+    flex-shrink: 0;
+
+    atom-text-editor {
+      margin: 0;
+    }
+
+    select {
+      margin: 0;
+      border: 1px @input-border-color solid;
+      border-radius: @component-border-radius;
+    }
+  }
+
+  .list-container {
+    display: flex;
+    flex-grow: 2;
+
+    #cscope-results {
+      margin-top: 10px;
+
+      #result-container.empty {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        padding: 0;
+
+        li {
+          text-align: center;
+          flex-direction: column;
+          justify-content: space-around;
+          padding: 0;
+          font-size: 45px;
+          color: @text-color-subtle;
+        }
+      }
+
+      #result-container {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        height: 100%;
+        counter-reset: section;
+
+        li.result-item {
+          padding: 10px;
+          display: flex;
+          flex-wrap: wrap;
+
+          .line-info {
+            margin-left: 20px;
+          }
+
+          .bold {
+            font-weight: bold;
+          }
+        }
+
+        li.result-item:before {
+          counter-increment: section;
+          content: counter(section) ".";
+          margin-right: 10px;
+        }
+
+        li.result-item.selected {
+          background: @background-color-selected;
+          color: @text-color-selected;
+        }
+      }
+    }
+
+  }
 }
 
-.atom-cscope ol {
-  margin: 0;
+.atom-cscope.wide {
+  min-height: 300px;
+  max-height: 300px;
+
+  #form-container {
+    flex-direction: row;
+    justify-content: space-between;
+
+    .text-input-section {
+      width: calc(70%);
+
+      .text-input-block {
+        height: calc(100%);
+
+        atom-text-editor {
+          width: 100%;
+          min-height: calc(100%);
+          font-size: @font-size;
+          line-height: @component-line-height;
+        }
+      }
+    }
+
+    .atom-cscope-search {
+      height: 100%;
+
+      #search {
+        height: 100%;
+      }
+    }
+
+    .select-input-section {
+      width: calc(10%);
+      min-width: 200px;
+
+      select {
+        width: 100%;
+      }
+    }
+
+  }
+
+  .list-container {
+    #cscope-results {
+      width: 100%;
+    }
+  }
 }
 
-.atom-cscope li {
-  padding: 10px;
-  cursor: pointer;
-}
+.atom-cscope.narrow {
+  min-width: 500px;
+  max-width: 800px;
 
-.atom-cscope li span.code-line {
-  color: @text-color-highlight;
-}
+  #form-container {
+    flex-direction: column;
 
-.atom-cscope li.selected {
-  background: @background-color-selected;
-}
+    section {
+      margin-top: 10px;
+    }
 
-.atom-cscope-input #form-container {
-  display: flex;
-  width: 100%;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  flex-flow: row wrap;
-}
+    .atom-cscope-search-wrapper {
+      margin-top: 0;
+      position: absolute;
+      top: 4px;
+      right: 0;
+    }
+  }
 
-.atom-cscope .header {
-  padding: 0 20px;
-  height: calc(100%);
-}
-
-.atom-cscope-input #form-container atom-text-editor {
-  flex-grow: 2;
-  flex-basis: 400px;
-  //margin: 0 10px;
-  flex-shrink: 0;
-  height: calc(100%);
-  max-width: calc(75%);
-  border: 1px @background-color-highlight solid;
-}
-
-.atom-cscope-input button#search::before {
-  font-size: 12px;
-}
-
-.atom-cscope-input #form-container select {
-  flex-basis: 100px;
-  max-width: 200px;
-  flex-grow: 1;
-  background: @app-background-color;
-  border: 1px @background-color-highlight solid;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.atom-cscope-input #form-container button {
-  flex-basis: 20px;
-  // margin: 0 10px;
-  flex-shrink: 0;
-}
-
-.header .loading {
-  transition: all .3s ease .15s;
-}
-
-.no-show {
-  opacity: 0;
-}
-
-span.gap {
-   margin: 0 5px;
-}
-
-span.bold {
-  font-weight: bold;
-}
-
-.btn.just-btn::before {
-  margin-right: 0!important;
-}
-
-.spaced-item {
-  margin: 5px 10px 5px 0;
-}
-
-#result-container {
-  counter-reset: section;
-  padding: 0;
-  margin: 5px;
-}
-
-#result-container.centered {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
-#result-container.centered.empty li {
-  display: inline-block;
-  font-size: 50px;
-  color: @text-color-subtle;
-}
-
-.flex-inline {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  flex-flow: wrap;
-}
-
-.result-item:before {
-  counter-increment: section;
-  content: counter(section) ".";
-  margin-right: 10px;
-}
-
-.result-item {
-  margin-right: 0px;
+  #cscope-results {
+    width: 100%;
+  }
 }

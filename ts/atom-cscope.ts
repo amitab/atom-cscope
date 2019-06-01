@@ -3,13 +3,16 @@ import {CompositeDisposable, TextEditor} from 'atom';
 import {AtomCscopeViewModel, Search} from './viewModels/atom-cscope-view-model';
 import {LineInfo} from './models/result-model';
 import {Cscope} from './cscope';
-export * from './config';
+// export * from './config';
+import cscopeConfig from './config';
 import {Navigation} from './history';
 
 let viewModel: AtomCscopeViewModel;
 let history: Navigation | null;
 let subscriptions: CompositeDisposable;
 let maxResults: number;
+
+export var config: object = cscopeConfig;
 
 export function refreshCscopeDB() {
   var exts: string = atom.config.get('atom-cscope.cscopeSourceFiles');
