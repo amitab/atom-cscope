@@ -82,23 +82,6 @@ class AtomCscopeViewModel {
                     item: this.view.getElement(),
                     visible: false
                 });
-                this.view.wide();
-                break;
-            }
-            case 'left': {
-                this.modalPanel = atom.workspace.addLeftPanel({
-                    item: this.view.getElement(),
-                    visible: false
-                });
-                this.view.narrow();
-                break;
-            }
-            case 'right': {
-                this.modalPanel = atom.workspace.addRightPanel({
-                    item: this.view.getElement(),
-                    visible: false
-                });
-                this.view.narrow();
                 break;
             }
             default: {
@@ -106,7 +89,6 @@ class AtomCscopeViewModel {
                     item: this.view.getElement(),
                     visible: false
                 });
-                this.view.wide();
                 break;
             }
         }
