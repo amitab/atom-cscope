@@ -43,6 +43,11 @@
 
     atom-text-editor {
       margin: 0;
+      font-size: @font-size;
+      line-height: @component-line-height;
+      justify-content: space-around;
+      display: flex;
+      flex-direction: column;
     }
 
     select {
@@ -128,8 +133,6 @@
         atom-text-editor {
           width: 100%;
           min-height: calc(100%);
-          font-size: @font-size;
-          line-height: @component-line-height;
         }
       }
     }
