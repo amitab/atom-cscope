@@ -51,15 +51,17 @@ export class AtomCscopeViewModel {
     this.subscriptions = subscriptions;
 
     // Attach Modal
-    this.addPanel();
-    atom.config.observe('atom-cscope.WidgetLocation', () => {
-      var wasVisible: boolean = this.modalPanel.isVisible();
-      this.modalPanel.destroy();
+    this.subscriptions.add(atom.config.observe('atom-cscope.WidgetLocation', () => {
+      var wasVisible: boolean = false;
+      if (this.modalPanel != null) {
+        wasVisible = this.modalPanel.isVisible();
+        this.modalPanel.destroy();
+      }
       this.addPanel();
       if (wasVisible) {
         this.show();
       }
-    });
+    }));
 
     // Other views
     this.projectSelector = new Selector<string>(
@@ -227,7 +229,7 @@ export class AtomCscopeViewModel {
     .catch(() => {
       this.view.stopLoading();
       this.resetSearch();
-    })
+    });
 
     this.previousSearch = newSearch;
     this.view.inputFocus();

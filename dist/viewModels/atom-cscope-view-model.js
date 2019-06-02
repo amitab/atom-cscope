@@ -23,15 +23,17 @@ class AtomCscopeViewModel {
         this.view = new atom_cscope_view_1.AtomCscopeView(subscriptions);
         this.subscriptions = subscriptions;
         // Attach Modal
-        this.addPanel();
-        atom.config.observe('atom-cscope.WidgetLocation', () => {
-            var wasVisible = this.modalPanel.isVisible();
-            this.modalPanel.destroy();
+        this.subscriptions.add(atom.config.observe('atom-cscope.WidgetLocation', () => {
+            var wasVisible = false;
+            if (this.modalPanel != null) {
+                wasVisible = this.modalPanel.isVisible();
+                this.modalPanel.destroy();
+            }
             this.addPanel();
             if (wasVisible) {
                 this.show();
             }
-        });
+        }));
         // Other views
         this.projectSelector = new select_view_1.Selector(["All Projects"].concat(atom.project.getPaths()), (item) => {
             const li = document.createElement('li');
