@@ -1,6 +1,6 @@
 {
   "name": "atom-cscope",
-  "main": "./lib/atom-cscope",
+  "main": "./dist/atom-cscope",
   "version": "1.0.1",
   "description": "Cscope within Atom.",
   "keywords": [
@@ -19,7 +19,13 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
-    "loophole": "",
+    "atom-select-list": "^0.7.2",
     "ractive": "^0.8.10"
+  },
+  "devDependencies": {
+    "@types/atom": "^1.36.1",
+    "@types/atom-keymap": "^8.0.3",
+    "@types/ractive": "^0.7.27",
+    "typescript": "^3.4.5"
   }
 }
