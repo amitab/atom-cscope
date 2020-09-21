@@ -60,6 +60,9 @@
   .list-container {
     display: flex;
     flex-grow: 2;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
 
     #cscope-results {
       margin-top: 10px;
@@ -81,9 +84,6 @@
       }
 
       #result-container {
-        overflow-y: scroll;
-        overflow-x: hidden;
-        height: 100%;
         counter-reset: section;
 
         li.result-item {
